@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">BrainBattle</string>
+    <string name="app_title">BrainBattle</string>
+    <string name="email_hint">Email or username</string>
+    <string name="password_hint">Password</string>
+    <string name="login_btn">Login</string>
+    <string name="register_link">Don\'t have an account? Register</string>
+</resources>
