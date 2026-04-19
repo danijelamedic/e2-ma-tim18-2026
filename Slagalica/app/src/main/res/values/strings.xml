@@ -5,4 +5,37 @@
     <string name="password_hint">Password</string>
     <string name="login_btn">Login</string>
     <string name="register_link">Don\'t have an account? Register</string>
+    <string name="welcome">Welcome!</string>
+    <string name="play">Play</string>
+    <string name="profile">Profile</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="register">Register</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm password</string>
+    <string name="hint_region">Region</string>
+    <string name="step_by_step">Step by Step</string>
+    <string name="timer">Time: 10s</string>
+    <string name="step_placeholder">Step 1</string>
+    <string name="hint_answer">Enter your answer</string>
+    <string name="confirm">Confirm</string>
+    <string name="my_number">My Number</string>
+    <string name="target_number">\?\?\?</string>
+    <string name="stop">STOP</string>
+    <string name="hint_expression">Enter expression</string>
+    <string name="confirm_email_title">Confirm Your Email</string>
+    <string name="confirm_email_message">We sent a confirmation link to your email address. Please check your inbox.</string>
+    <string name="resend_email">Resend Email</string>
+    <string name="continue_btn">Continue</string>
+
+    <!-- Reset lozinke -->
+    <string name="reset_password_title">Reset Password</string>
+    <string name="hint_old_password">Old password</string>
+    <string name="hint_new_password">New password</string>
+    <string name="hint_confirm_new_password">Confirm new password</string>
+    <string name="reset_password_btn">Reset Password</string>
+    <string name="error_fields_empty">Please fill in all fields</string>
+    <string name="error_passwords_no_match">Passwords do not match</string>
+    <string name="reset_password_link">Forgot password? Reset here</string>
 </resources>

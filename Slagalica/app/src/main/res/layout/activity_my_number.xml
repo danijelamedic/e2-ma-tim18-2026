@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/my_number"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/timer"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvTargetNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/target_number"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/stop"
+        android:layout_marginBottom="24dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
+
+        <TextView android:id="@+id/tvNum1" android:layout_width="45dp" android:layout_height="45dp" android:gravity="center" android:background="#E0E0E0" android:layout_margin="4dp" android:text="?"/>
+        <TextView android:id="@+id/tvNum2" android:layout_width="45dp" android:layout_height="45dp" android:gravity="center" android:background="#E0E0E0" android:layout_margin="4dp" android:text="?"/>
+        <TextView android:id="@+id/tvNum3" android:layout_width="45dp" android:layout_height="45dp" android:gravity="center" android:background="#E0E0E0" android:layout_margin="4dp" android:text="?"/>
+        <TextView android:id="@+id/tvNum4" android:layout_width="45dp" android:layout_height="45dp" android:gravity="center" android:background="#E0E0E0" android:layout_margin="4dp" android:text="?"/>
+        <TextView android:id="@+id/tvNum5" android:layout_width="45dp" android:layout_height="45dp" android:gravity="center" android:background="#E0E0E0" android:layout_margin="4dp" android:text="?"/>
+        <TextView android:id="@+id/tvNum6" android:layout_width="45dp" android:layout_height="45dp" android:gravity="center" android:background="#E0E0E0" android:layout_margin="4dp" android:text="?"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/etExpression"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_expression"
+        android:inputType="text"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/confirm"/>
+
+</LinearLayout>

@@ -2,29 +2,24 @@ package com.example.slagalica;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.Toast;
+import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class EmailConfirmActivity extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_email_confirm);
+        setContentView(R.layout.activity_splash);
 
-        Button btnResend = findViewById(R.id.btnResend);
-        Button btnNext = findViewById(R.id.btnNext);
-
-        btnResend.setOnClickListener(v -> {
-            Toast.makeText(this, getString(R.string.resend_email), Toast.LENGTH_SHORT).show();
-        });
-
-        btnNext.setOnClickListener(v -> {
-            Intent intent = new Intent(EmailConfirmActivity.this, HomeActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }, 5000);
     }
 
     @Override
