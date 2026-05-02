@@ -59,4 +59,76 @@
     <string name="my_number_icon">🔢</string>
     <string name="my_number_name">MY NUMBER</string>
     <string name="my_number_percent">40%</string>
+
+<!--    QUIZ GAME STAT PAGE  - obrisi kasnije kada bude prava statistika -->
+    <string name="quiz_statistics_title">🧠 QUIZ STATISTICS</string>
+    <string name="average_quiz_success">Average points range</string>
+    <string name="average_quiz_points">73% success</string>
+
+    <string name="quiz_answers_ratio_title">Correct / Wrong Answers</string>
+    <string name="quiz_correct_answers">✅ Correct answers: 38</string>
+    <string name="quiz_wrong_answers">❌ Wrong answers: 14</string>
+
+    <string name="match_statistics_title">Match Statistics</string>
+    <string name="total_played_matches">🎮 Total played matches: 12</string>
+    <string name="win_loss_percentage">🏆 Wins: 58%   Losses: 42%</string>
+
+    <!--    MATCHING GAME STAT PAGE  - obrisi kasnije kada bude prava statistika -->
+    <string name="matching_statistics_title">🔗 MATCHING STATISTICS</string>
+    <string name="average_matching_success">Average points range</string>
+    <string name="average_matching_points">70% success</string>
+
+    <string name="matching_pairs_title">Connected Terms</string>
+    <string name="matching_successful_pairs">✅ Successfully connected terms: 42</string>
+    <string name="matching_failed_pairs">❌ Failed connections: 18</string>
+
+    <!--    ASSOCIATIONS GAME STAT PAGE  - obrisi kasnije kada bude prava statistika -->
+    <string name="associations_statistics_title">🧩 ASSOCIATIONS STATISTICS</string>
+
+    <string name="average_associations_success">Average points range</string>
+    <string name="average_associations_points">62% success</string>
+
+    <string name="associations_ratio_title">Solved / Unsolved</string>
+    <string name="associations_solved">✅ Solved associations: 25</string>
+    <string name="associations_unsolved">❌ Unsolved associations: 10</string>
+
+    <!--    SKOCKO GAME STAT PAGE  - obrisi kasnije kada bude prava statistika -->
+    <string name="skocko_statistics_title">🎲 SKOCKO STATISTICS</string>
+
+    <string name="average_skocko_success">Average points range</string>
+    <string name="average_skocko_points">55% success</string>
+
+    <string name="skocko_attempts_title">Guessed Combination by Attempt</string>
+    <string name="skocko_attempt_1">1st attempt: 12%</string>
+    <string name="skocko_attempt_2">2nd attempt: 18%</string>
+    <string name="skocko_attempt_3">3rd attempt: 22%</string>
+    <string name="skocko_attempt_4">4th attempt: 20%</string>
+    <string name="skocko_attempt_5">5th attempt: 15%</string>
+    <string name="skocko_attempt_6">6th attempt: 13%</string>
+
+    <!--    STEP BY STEP GAME STAT PAGE  - obrisi kasnije kada bude prava statistika -->
+    <string name="step_by_step_statistics_title">👣 STEP BY STEP STATISTICS</string>
+
+    <string name="average_step_by_step_success">Average points range</string>
+    <string name="average_step_by_step_points">48% success</string>
+
+    <string name="step_by_step_steps_title">Guessed Term by Step</string>
+    <string name="step_by_step_step_1">Step 1: 6%</string>
+    <string name="step_by_step_step_2">Step 2: 9%</string>
+    <string name="step_by_step_step_3">Step 3: 13%</string>
+    <string name="step_by_step_step_4">Step 4: 17%</string>
+    <string name="step_by_step_step_5">Step 5: 21%</string>
+    <string name="step_by_step_step_6">Step 6: 18%</string>
+    <string name="step_by_step_step_7">Step 7: 16%</string>
+
+    <!--    MY NUMBER GAME STAT PAGE  - obrisi kasnije kada bude prava statistika -->
+    <string name="my_number_statistics_title">🔢 MY NUMBER STATISTICS</string>
+
+    <string name="average_my_number_success">Average points range</string>
+    <string name="average_my_number_points">40% success</string>
+
+    <string name="my_number_exact_title">Exact Number Result</string>
+    <string name="my_number_exact_found">✅ Exact number found: 40%</string>
+    <string name="my_number_not_exact">❌ Not exact / closer result: 60%</string>
+
 </resources>

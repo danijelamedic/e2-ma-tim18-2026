@@ -9,6 +9,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalica.LoginActivity;
 import com.example.slagalica.R;
+import com.example.slagalica.profile.statistics.QuizStatisticsActivity;
+import com.example.slagalica.profile.statistics.MatchingStatisticsActivity;
+import com.example.slagalica.profile.statistics.AssociationsStatisticsActivity;
+import com.example.slagalica.profile.statistics.SkockoStatisticsActivity;
+import com.example.slagalica.profile.statistics.StepByStepStatisticsActivity;
+import com.example.slagalica.profile.statistics.MyNumberStatisticsActivity;
 
 public class ProfileActivity extends AppCompatActivity {
     @Override
@@ -25,5 +31,23 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         });
+
+        findViewById(R.id.cardQuizStatistics).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, QuizStatisticsActivity.class)));
+
+        findViewById(R.id.cardMatchingStatistics).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, MatchingStatisticsActivity.class)));
+
+        findViewById(R.id.cardAssociationsStatistics).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, AssociationsStatisticsActivity.class)));
+
+        findViewById(R.id.cardSkockoStatistics).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, SkockoStatisticsActivity.class)));
+
+        findViewById(R.id.cardStepByStepStatistics).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, StepByStepStatisticsActivity.class)));
+
+        findViewById(R.id.cardMyNumberStatistics).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, MyNumberStatisticsActivity.class)));
     }
 }
