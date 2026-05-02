@@ -133,4 +133,40 @@
 
     <string name="back_icon">‹</string>
 
+<!--    MATCHING GAME SCREEN-->
+    <string name="matching_game_title">🔗 MATCHING</string>
+    <string name="matching_timer">⏱ 30s</string>
+
+    <string name="matching_left_1">Serbia</string>
+    <string name="matching_left_2">Italy</string>
+    <string name="matching_left_3">France</string>
+    <string name="matching_left_4">Germany</string>
+    <string name="matching_left_5">Spain</string>
+
+    <string name="matching_right_1">Berlin</string>
+    <string name="matching_right_2">Madrid</string>
+    <string name="matching_right_3">Belgrade</string>
+    <string name="matching_right_4">Rome</string>
+    <string name="matching_right_5">Paris</string>
+
+    <string name="matching_submit">SUBMIT</string>
+    <string name="leave_game">LEAVE</string>
+
+    <string name="matching_round_short">🔁 1/2</string>
+    <string name="matching_connected_short">🔗 0/5</string>
+
+    <string name="player_you_score">0 pts</string>
+    <string name="player_opponent_score">0 pts</string>
+
+    <string name="player_you_name">Ana</string>
+    <string name="player_opponent_name">Marko</string>
+    <string name="opponent_avatar_icon">🧑</string>
+
+    <string name="info_icon">ⓘ</string>
+    <string name="matching_rules_title">How to play</string>
+    <string name="matching_rules_message">Connect each term from the left column with the correct term from the right column. Each correct pair gives 2 points.</string>
+    <string name="ok">OK</string>
+    <string name="vs_label">VS</string>
+
+
 </resources>
