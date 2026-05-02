@@ -5,4 +5,58 @@
     <string name="password_hint">Password</string>
     <string name="login_btn">Login</string>
     <string name="register_link">Don\'t have an account? Register</string>
+
+    <!-- PROFILE -->
+    <string name="profile_title">PLAYER PROFILE</string>
+    <string name="logout_icon">↪</string>
+
+    <string name="avatar_icon">🎮</string>
+    <string name="profile_username">player_ana</string>
+    <string name="profile_league">🏆 Silver League</string>
+    <string name="change_avatar">✎ CHANGE AVATAR</string>
+
+    <string name="token_icon">🪙</string>
+    <string name="token_count">5</string>
+    <string name="tokens_label">TOKENS</string>
+    <string name="star_icon">⭐</string>
+    <string name="star_count">120</string>
+    <string name="stars_label">STARS</string>
+
+    <string name="basic_info_title">👤 BASIC INFO</string>
+    <string name="profile_email">✉ Email: ana@example.com</string>
+    <string name="profile_region">📍 Region: Vojvodina</string>
+
+    <string name="qr_title">▦ QR CODE FOR FRIENDS</string>
+    <string name="qr_placeholder">QR</string>
+
+    <!-- STATS -->
+    <string name="statistics_title">▥ STATISTICS</string>
+    <string name="quiz_stat">🧠\nQUIZ\n8 correct\n3 wrong\n73%%</string>
+    <string name="matching_stat">🔗\nMATCHING\n70%%\nsuccess</string>
+    <string name="my_number_stat">🔢\nMY NUMBER\n40%%\ncorrect</string>
+    <string name="games_stat">🏆\nGAMES\n12 total\n58%% win rate</string>
+
+    <string name="quiz_icon">🧠</string>
+    <string name="quiz_name">QUIZ</string>
+    <string name="quiz_percent">73%</string>
+
+    <string name="matching_icon">🔗</string>
+    <string name="matching_name">MATCHING</string>
+    <string name="matching_percent">70%</string>
+
+    <string name="associations_icon">🧩</string>
+    <string name="associations_name">ASSOCIATIONS</string>
+    <string name="associations_percent">62%</string>
+
+    <string name="skocko_icon">🎲</string>
+    <string name="skocko_name">SKOCKO</string>
+    <string name="skocko_percent">55%</string>
+
+    <string name="step_by_step_icon">👣</string>
+    <string name="step_by_step_name">STEP BY STEP</string>
+    <string name="step_by_step_percent">48%</string>
+
+    <string name="my_number_icon">🔢</string>
+    <string name="my_number_name">MY NUMBER</string>
+    <string name="my_number_percent">40%</string>
 </resources>
