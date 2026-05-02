@@ -131,4 +131,6 @@
     <string name="my_number_exact_found">✅ Exact number found: 40%</string>
     <string name="my_number_not_exact">❌ Not exact / closer result: 60%</string>
 
+    <string name="back_icon">‹</string>
+
 </resources>
