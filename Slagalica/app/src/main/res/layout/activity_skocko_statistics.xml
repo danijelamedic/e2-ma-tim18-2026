@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_profile_screen"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/skocko_statistics_title"
+            android:textColor="#2D1B5E"
+            android:textSize="28sp"
+            android:textStyle="bold|italic"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/average_skocko_success"
+                android:textColor="#5B2FC4"
+                android:textSize="20sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/average_skocko_points"
+                android:textColor="#2D1B5E"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginTop="8dp" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:progress="55"
+                android:max="100"
+                android:progressTint="#6A4CAF"
+                android:progressBackgroundTint="#E6D8FF"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/skocko_attempts_title"
+                android:textColor="#5B2FC4"
+                android:textSize="20sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:gravity="center_vertical"
+                android:text="@string/skocko_attempt_1"
+                android:textColor="#2D1B5E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:gravity="center_vertical"
+                android:text="@string/skocko_attempt_2"
+                android:textColor="#2D1B5E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:gravity="center_vertical"
+                android:text="@string/skocko_attempt_3"
+                android:textColor="#2D1B5E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:gravity="center_vertical"
+                android:text="@string/skocko_attempt_4"
+                android:textColor="#2D1B5E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:gravity="center_vertical"
+                android:text="@string/skocko_attempt_5"
+                android:textColor="#2D1B5E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:gravity="center_vertical"
+                android:text="@string/skocko_attempt_6"
+                android:textColor="#2D1B5E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/match_statistics_title"
+                android:textColor="#5B2FC4"
+                android:textSize="20sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="@string/total_played_matches"
+                android:textColor="#2D1B5E"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="@string/win_loss_percentage"
+                android:textColor="#2D1B5E"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
