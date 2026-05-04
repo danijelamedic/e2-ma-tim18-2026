@@ -40,6 +40,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Spojnice"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#6A4CAF"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/btnNotifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notifikacije"
         android:backgroundTint="#6A4CAF"
         android:textColor="@android:color/white" />
 

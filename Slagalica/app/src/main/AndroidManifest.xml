@@ -11,6 +11,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Slagalica">
         <activity
+            android:name=".notifications.OtherNotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notifications.RewardsNotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notifications.RankingNotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notifications.ChatNotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notifications.NotificationCenterActivity"
+            android:exported="false" />
+        <activity
             android:name=".profile.statistics.SkockoStatisticsActivity"
             android:exported="false" />
         <activity
@@ -51,7 +66,7 @@
 <!--            android:exported="true">-->
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->
-
+<!---->
 <!--                <category android:name="android.intent.category.LAUNCHER" />-->
 <!--            </intent-filter>-->
 <!--        </activity>-->
