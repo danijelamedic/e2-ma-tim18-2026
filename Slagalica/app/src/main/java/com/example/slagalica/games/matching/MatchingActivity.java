@@ -14,11 +14,21 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.MainActivity;
 import com.example.slagalica.R;
+import android.os.CountDownTimer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MatchingActivity extends AppCompatActivity {
 
     private TextView selectedLeftItem = null;
     private int connectedPairs = 0;
+    private final Map<Integer, Integer> correctMatches = new HashMap<>();
+    private int playerScore = 0;
+    private CountDownTimer timer;
+    private long timeLeftMillis = 30000;
+    private TextView tvTimer;
+    private TextView[] leftItems;
+    private TextView[] rightItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +44,12 @@ public class MatchingActivity extends AppCompatActivity {
 
         setupLeaveButton();
         setupSubmitButton();
+        setupCorrectMatches();
         setupMatchingClicks();
         setupInfoButton();
+
+        tvTimer = findViewById(R.id.tvTimer);
+        startTimer();
     }
 
     private void setupLeaveButton() {
@@ -58,54 +72,53 @@ public class MatchingActivity extends AppCompatActivity {
             new AlertDialog.Builder(MatchingActivity.this)
                     .setTitle("Submit Answers")
                     .setMessage("Are you sure you want to submit your answers?")
-                    .setPositiveButton("YES", (dialog, which) -> showWinDialog())
+                    .setPositiveButton("YES", (dialog, which) -> showEndDialog())
                     .setNegativeButton("NO", (dialog, which) -> dialog.dismiss())
                     .show();
         });
     }
 
-    private void showWinDialog() {
-        new AlertDialog.Builder(MatchingActivity.this)
-                .setTitle("Yay!")
-                .setMessage("You won the game!")
-                .setPositiveButton("OK", (dialog, which) -> {
-                    Intent intent = new Intent(MatchingActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
-                })
-                .show();
+    private void setupCorrectMatches() {
+        correctMatches.put(R.id.leftItem1, R.id.rightItem3); // Serbia - Belgrade
+        correctMatches.put(R.id.leftItem2, R.id.rightItem4); // Italy - Rome
+        correctMatches.put(R.id.leftItem3, R.id.rightItem5); // France - Paris
+        correctMatches.put(R.id.leftItem4, R.id.rightItem1); // Germany - Berlin
+        correctMatches.put(R.id.leftItem5, R.id.rightItem2); // Spain - Madrid
     }
 
     private void setupMatchingClicks() {
-        TextView leftItem1 = findViewById(R.id.leftItem1);
-        TextView leftItem2 = findViewById(R.id.leftItem2);
-        TextView leftItem3 = findViewById(R.id.leftItem3);
-        TextView leftItem4 = findViewById(R.id.leftItem4);
-        TextView leftItem5 = findViewById(R.id.leftItem5);
+        leftItems = new TextView[]{
+                findViewById(R.id.leftItem1),
+                findViewById(R.id.leftItem2),
+                findViewById(R.id.leftItem3),
+                findViewById(R.id.leftItem4),
+                findViewById(R.id.leftItem5)
+        };
 
-        TextView rightItem1 = findViewById(R.id.rightItem1);
-        TextView rightItem2 = findViewById(R.id.rightItem2);
-        TextView rightItem3 = findViewById(R.id.rightItem3);
-        TextView rightItem4 = findViewById(R.id.rightItem4);
-        TextView rightItem5 = findViewById(R.id.rightItem5);
+        rightItems = new TextView[]{
+                findViewById(R.id.rightItem1),
+                findViewById(R.id.rightItem2),
+                findViewById(R.id.rightItem3),
+                findViewById(R.id.rightItem4),
+                findViewById(R.id.rightItem5)
+        };
 
-        leftItem1.setOnClickListener(v -> selectLeftItem(leftItem1));
-        leftItem2.setOnClickListener(v -> selectLeftItem(leftItem2));
-        leftItem3.setOnClickListener(v -> selectLeftItem(leftItem3));
-        leftItem4.setOnClickListener(v -> selectLeftItem(leftItem4));
-        leftItem5.setOnClickListener(v -> selectLeftItem(leftItem5));
+        for (TextView leftItem : leftItems) {
+            leftItem.setOnClickListener(v -> selectLeftItem((TextView) v));
+        }
 
-        rightItem1.setOnClickListener(v -> connectWithRightItem(rightItem1));
-        rightItem2.setOnClickListener(v -> connectWithRightItem(rightItem2));
-        rightItem3.setOnClickListener(v -> connectWithRightItem(rightItem3));
-        rightItem4.setOnClickListener(v -> connectWithRightItem(rightItem4));
-        rightItem5.setOnClickListener(v -> connectWithRightItem(rightItem5));
+        for (TextView rightItem : rightItems) {
+            rightItem.setOnClickListener(v -> connectWithRightItem((TextView) v));
+        }
     }
 
     private void selectLeftItem(TextView leftItem) {
+        if (!leftItem.isEnabled()) {
+            return;
+        }
+
         if (selectedLeftItem == leftItem) {
-            selectedLeftItem.setBackgroundResource(R.drawable.bg_stat_card);
+            leftItem.setBackgroundResource(R.drawable.bg_stat_card);
             selectedLeftItem = null;
             return;
         }
@@ -119,31 +132,95 @@ public class MatchingActivity extends AppCompatActivity {
     }
 
     private void connectWithRightItem(TextView rightItem) {
-        if (selectedLeftItem == null) {
-            return;
-        }
+        if (selectedLeftItem == null) return;
 
-        selectedLeftItem.setBackgroundResource(R.drawable.bg_matching_connected);
-        rightItem.setBackgroundResource(R.drawable.bg_matching_connected);
+        Integer correctRightId = correctMatches.get(selectedLeftItem.getId());
+        boolean isCorrect = correctRightId != null && correctRightId == rightItem.getId();
+
+        if (isCorrect) {
+            selectedLeftItem.setBackgroundResource(R.drawable.bg_quiz_answer_correct);
+            rightItem.setBackgroundResource(R.drawable.bg_quiz_answer_correct);
+            playerScore += 10;
+        } else {
+            selectedLeftItem.setBackgroundResource(R.drawable.bg_quiz_answer_wrong);
+            rightItem.setBackgroundResource(R.drawable.bg_quiz_answer_wrong);
+            playerScore -= 5;
+        }
 
         selectedLeftItem.setEnabled(false);
         rightItem.setEnabled(false);
 
         connectedPairs++;
+
         TextView tvConnectedCount = findViewById(R.id.tvConnectedCount);
         tvConnectedCount.setText("🔗 " + connectedPairs + " / 5");
 
+        TextView tvScore = findViewById(R.id.tvPlayerScore);
+        tvScore.setText(playerScore + " pts");
+
         selectedLeftItem = null;
+
+        if (connectedPairs == 5) {
+            showEndDialog();
+        }
+    }
+    private void startTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
+
+        timer = new CountDownTimer(timeLeftMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeftMillis = millisUntilFinished;
+                int seconds = (int) (millisUntilFinished / 1000);
+                tvTimer.setText("⏱ " + seconds + "s");
+            }
+
+            @Override
+            public void onFinish() {
+                timeLeftMillis = 0;
+                tvTimer.setText("⏱ 0s");
+                showEndDialog();
+            }
+        }.start();
+    }
+
+    private void pauseTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
+    }
+
+    private void showEndDialog() {
+        if (timer != null) timer.cancel();
+
+        new AlertDialog.Builder(this)
+                .setTitle("Game finished")
+                .setMessage("Your score: " + playerScore + " pts")
+                .setPositiveButton("OK", (d, w) -> {
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                })
+                .show();
     }
 
     private void setupInfoButton() {
         TextView btnInfo = findViewById(R.id.btnMatchingInfo);
 
         btnInfo.setOnClickListener(v -> {
+            pauseTimer();
+
             new AlertDialog.Builder(MatchingActivity.this)
                     .setTitle(R.string.matching_rules_title)
                     .setMessage(R.string.matching_rules_message)
-                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton(R.string.ok, (dialog, which) -> {
+                        dialog.dismiss();
+
+                        if (timeLeftMillis > 0 && connectedPairs < 5) {
+                            startTimer();
+                        }
+                    })
                     .show();
         });
     }
