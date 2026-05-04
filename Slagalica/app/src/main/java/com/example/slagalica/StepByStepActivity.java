@@ -1,23 +1,14 @@
 package com.example.slagalica;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class RegisterActivity extends AppCompatActivity {
+public class StepByStepActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
-
-        Button btnRegister = findViewById(R.id.btnRegister);
-
-        btnRegister.setOnClickListener(v -> {
-            Intent intent = new Intent(RegisterActivity.this, EmailConfirmActivity.class);
-            startActivity(intent);
-        });
+        setContentView(R.layout.activity_step_by_step);
     }
 
     @Override

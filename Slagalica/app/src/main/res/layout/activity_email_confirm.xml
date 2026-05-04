@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Confirm Your Email"
+        android:text="@string/confirm_email_title"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp"/>
@@ -17,7 +17,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="We sent a confirmation link to your email address. Please check your inbox."
+        android:text="@string/confirm_email_message"
         android:textSize="16sp"
         android:gravity="center"
         android:layout_marginBottom="40dp"/>
@@ -26,13 +26,13 @@
         android:id="@+id/btnResend"
         android:layout_width="280dp"
         android:layout_height="48dp"
-        android:text="Resend Email"
+        android:text="@string/resend_email"
         android:layout_marginBottom="16dp"/>
 
     <Button
         android:id="@+id/btnNext"
         android:layout_width="280dp"
         android:layout_height="48dp"
-        android:text="Continue"/>
+        android:text="@string/continue_btn"/>
 
 </LinearLayout>

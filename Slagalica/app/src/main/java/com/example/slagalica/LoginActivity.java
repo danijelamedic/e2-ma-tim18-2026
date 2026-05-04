@@ -15,14 +15,39 @@ public class LoginActivity extends AppCompatActivity {
 
         Button btnLogin = findViewById(R.id.btnLogin);
         TextView tvRegister = findViewById(R.id.tvRegister);
+        TextView tvResetPassword = findViewById(R.id.tvResetPassword);
 
         btnLogin.setOnClickListener(v -> {
-            // TODO: dodati logiku logovanja
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(intent);
         });
 
         tvRegister.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
         });
+
+        tvResetPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+            startActivity(intent);
+        });
     }
+
+    @Override
+    protected void onStart() { super.onStart(); }
+
+    @Override
+    protected void onResume() { super.onResume(); }
+
+    @Override
+    protected void onPause() { super.onPause(); }
+
+    @Override
+    protected void onStop() { super.onStop(); }
+
+    @Override
+    protected void onDestroy() { super.onDestroy(); }
+
+    @Override
+    protected void onRestart() { super.onRestart(); }
 }
