@@ -222,27 +222,37 @@
         <TextView
             android:id="@+id/leftItem1"
             style="@style/MatchingItem"
-            android:text="@string/matching_left_1" />
+            android:text="@string/matching_left_1"
+            android:textSize="16sp"
+            android:padding="14dp"/>
 
         <TextView
             android:id="@+id/leftItem2"
             style="@style/MatchingItem"
-            android:text="@string/matching_left_2" />
+            android:text="@string/matching_left_2"
+            android:textSize="16sp"
+            android:padding="14dp"/>
 
         <TextView
             android:id="@+id/leftItem3"
             style="@style/MatchingItem"
-            android:text="@string/matching_left_3" />
+            android:text="@string/matching_left_3"
+            android:textSize="16sp"
+            android:padding="14dp"/>
 
         <TextView
             android:id="@+id/leftItem4"
             style="@style/MatchingItem"
-            android:text="@string/matching_left_4" />
+            android:text="@string/matching_left_4"
+            android:textSize="16sp"
+            android:padding="14dp"/>
 
         <TextView
             android:id="@+id/leftItem5"
             style="@style/MatchingItem"
-            android:text="@string/matching_left_5" />
+            android:text="@string/matching_left_5"
+            android:textSize="16sp"
+            android:padding="14dp"/>
 
       </LinearLayout>
 
@@ -257,26 +267,36 @@
         <TextView
             android:id="@+id/rightItem2"
             style="@style/MatchingItem"
-            android:text="@string/matching_right_2" />
+            android:text="@string/matching_right_2"
+            android:textSize="16sp"
+            android:padding="14dp"/>
 
         <TextView
             android:id="@+id/rightItem3"
             style="@style/MatchingItem"
-            android:text="@string/matching_right_3" />
+            android:text="@string/matching_right_3"
+            android:textSize="16sp"
+            android:padding="14dp"/>
 
         <TextView
             android:id="@+id/rightItem4"
             style="@style/MatchingItem"
-            android:text="@string/matching_right_4" />
+            android:text="@string/matching_right_4"
+            android:textSize="16sp"
+            android:padding="14dp"/>
 
         <TextView
             android:id="@+id/rightItem5"
             style="@style/MatchingItem"
-            android:text="@string/matching_right_5" />
+            android:text="@string/matching_right_5"
+            android:textSize="16sp"
+            android:padding="14dp"/>
         <TextView
             android:id="@+id/rightItem1"
             style="@style/MatchingItem"
-            android:text="@string/matching_right_1" />
+            android:text="@string/matching_right_1"
+            android:textSize="16sp"
+            android:padding="14dp"/>
       </LinearLayout>
     </LinearLayout>
 

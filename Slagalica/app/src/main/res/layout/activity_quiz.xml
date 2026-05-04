@@ -1,10 +1,274 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".games.quiz.QuizActivity">
+    android:background="@drawable/bg_profile_screen"
+    android:fillViewport="true">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- HEADER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/quiz_game_title"
+                android:textColor="#2D1B5E"
+                android:textSize="30sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black" />
+
+            <TextView
+                android:id="@+id/btnQuizInfo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:text="@string/info_icon"
+                android:textColor="#5B2FC4"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnLeaveQuiz"
+                android:layout_width="96dp"
+                android:layout_height="48dp"
+                android:text="@string/leave_game"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="13sp"
+                android:background="@drawable/bg_purple_button" />
+        </LinearLayout>
+
+        <!-- GAME STATUS CARD -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp">
+
+            <!-- TIMER -->
+            <TextView
+                android:id="@+id/tvQuizTimer"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:gravity="center"
+                android:text="@string/quiz_timer"
+                android:textColor="#5B2FC4"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:layout_marginBottom="14dp" />
+
+            <!-- PLAYERS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:baselineAligned="false"
+                android:layout_marginBottom="12dp">
+
+                <!-- YOU -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvYourAvatar"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:gravity="center"
+                        android:text="@string/avatar_icon"
+                        android:textSize="30sp"
+                        android:background="@drawable/bg_active_player_avatar" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/player_you_name"
+                        android:textColor="#2D1B5E"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="6dp" />
+
+                    <TextView
+                        android:id="@+id/tvPlayerScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/player_you_score"
+                        android:textColor="#5B2FC4"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/vs_label"
+                    android:textColor="#5B2FC4"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- OPPONENT -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvOpponentAvatar"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:gravity="center"
+                        android:text="@string/opponent_avatar_icon"
+                        android:textSize="30sp"
+                        android:background="@drawable/bg_inactive_player_avatar" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/player_opponent_name"
+                        android:textColor="#2D1B5E"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="6dp" />
+
+                    <TextView
+                        android:id="@+id/tvOpponentScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/player_opponent_score"
+                        android:textColor="#5B2FC4"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- QUESTION CARD -->
+        <TextView
+            android:id="@+id/tvQuestionCounter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/quiz_question_counter"
+            android:textColor="#5B2FC4"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/quiz_question_mock"
+            android:textColor="#2D1B5E"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:background="@drawable/bg_profile_card"
+            android:padding="18dp"
+            android:layout_marginBottom="18dp"
+            android:elevation="4dp"/>
+
+        <!-- ANSWERS -->
+        <TextView
+            android:id="@+id/btnAnswer1"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center"
+            android:text="@string/quiz_answer_1"
+            android:textColor="#2D1B5E"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:padding="14dp"
+            android:background="@drawable/bg_quiz_answer"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/btnAnswer2"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center"
+            android:text="@string/quiz_answer_2"
+            android:textColor="#2D1B5E"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:padding="14dp"
+            android:background="@drawable/bg_quiz_answer"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/btnAnswer3"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center"
+            android:text="@string/quiz_answer_3"
+            android:textColor="#2D1B5E"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:padding="14dp"
+            android:background="@drawable/bg_quiz_answer"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/btnAnswer4"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center"
+            android:text="@string/quiz_answer_4"
+            android:textColor="#2D1B5E"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:padding="14dp"
+            android:background="@drawable/bg_quiz_answer"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="10dp" />
+
+        <!-- NEXT BUTTON -->
+        <Button
+            android:id="@+id/btnNextQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/quiz_next"
+            android:textColor="@android:color/white"
+            android:textStyle="bold|italic"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-black"
+            android:background="@drawable/bg_purple_button"
+            android:layout_marginTop="20dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -168,5 +168,22 @@
     <string name="ok">OK</string>
     <string name="vs_label">VS</string>
 
+    <!-- QUIZ GAME SCREEN -->
+    <string name="quiz_game_title">🧠 QUIZ</string>
+    <string name="quiz_timer">⏱ 5s</string>
+    <string name="quiz_question_counter">Question 1/5</string>
+    <string name="quiz_score_limit">Max 50 pts / Min -25 pts</string>
+
+    <string name="quiz_question_mock">Which planet is known as the Red Planet?</string>
+
+    <string name="quiz_answer_1">Earth</string>
+    <string name="quiz_answer_2">Mars</string>
+    <string name="quiz_answer_3">Jupiter</string>
+    <string name="quiz_answer_4">Venus</string>
+
+    <string name="quiz_next">NEXT</string>
+    <string name="quiz_rules_title">How to play</string>
+    <string name="quiz_rules_message">Answer 5 questions. You have 5 seconds for each question. Correct answer gives 10 points, wrong answer gives -5 points. If both players answer correctly, the faster player gets the points.</string>
+
 
 </resources>
