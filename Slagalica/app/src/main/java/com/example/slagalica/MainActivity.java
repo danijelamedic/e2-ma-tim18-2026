@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.games.matching.MatchingActivity;
 import com.example.slagalica.games.quiz.QuizActivity;
+import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.profile.ProfileActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnProfile = findViewById(R.id.btnProfile);
         Button btnQuiz = findViewById(R.id.btnQuiz);
         Button btnMatching = findViewById(R.id.btnMatching);
+        Button btnNotifications = findViewById(R.id.btnNotifications);
 
         btnProfile.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, ProfileActivity.class))
@@ -41,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
 
         btnMatching.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, MatchingActivity.class))
+        );
+
+        btnNotifications.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, NotificationCenterActivity.class))
         );
     }
 }

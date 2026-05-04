@@ -168,5 +168,109 @@
     <string name="ok">OK</string>
     <string name="vs_label">VS</string>
 
+    <!-- NOTIFICATIONS -->
+    <string name="notifications_title">NOTIFICATION CENTER</string>
+    <string name="notifications_subtitle">History, filters, and pending actions</string>
+    <string name="notifications_unread_count">4</string>
+    <string name="notifications_unread_label">UNREAD</string>
+    <string name="notifications_channels_count">4</string>
+    <string name="notifications_channels_label">CHANNELS</string>
+    <string name="notifications_empty_title">No notifications in this filter</string>
+    <string name="notifications_empty_message">Switch the filter to preview other notification types.</string>
+    <string name="notifications_all_filter">All</string>
+    <string name="notifications_unread_filter">Unread</string>
+    <string name="notifications_read_filter">Read</string>
+    <string name="notifications_channels_title">System channels</string>
+    <string name="notifications_history_title">Recent notifications</string>
+    <string name="notifications_open_action">Open</string>
+    <string name="notifications_mark_read_action">Mark read</string>
+    <string name="notifications_status_unread">UNREAD</string>
+    <string name="notifications_status_read">READ</string>
+
+    <string name="channel_chat_icon">💬</string>
+    <string name="channel_chat_title">Chat</string>
+    <string name="channel_chat_desc">Regional chat messages</string>
+    <string name="channel_rank_icon">🏆</string>
+    <string name="channel_rank_title">Ranking</string>
+    <string name="channel_rank_desc">Weekly and monthly placements</string>
+    <string name="channel_rewards_icon">🎁</string>
+    <string name="channel_rewards_title">Rewards</string>
+    <string name="channel_rewards_desc">Tokens, stars, and league bonuses</string>
+    <string name="channel_other_icon">🔔</string>
+    <string name="channel_other_title">Other</string>
+    <string name="channel_other_desc">Invites, league changes, reminders</string>
+
+    <string name="notification_invite_icon">🎮</string>
+    <string name="notification_invite_title">Friendly match invite</string>
+    <string name="notification_invite_time">Today • 18:42</string>
+    <string name="notification_invite_message">Marko invited you to a friendly match. The request expires in 10 seconds.</string>
+
+    <string name="notification_reward_icon">🎁</string>
+    <string name="notification_reward_title">Weekly ranking reward</string>
+    <string name="notification_reward_time">Today • 16:05</string>
+    <string name="notification_reward_message">You finished 2nd on the weekly leaderboard and earned 3 tokens.</string>
+
+    <string name="notification_chat_icon">💬</string>
+    <string name="notification_chat_title">New region chat message</string>
+    <string name="notification_chat_time">Yesterday • 21:14</string>
+    <string name="notification_chat_message">Milica: \"Who wants a rematch tonight?\"</string>
+
+    <string name="notification_league_icon">⭐</string>
+    <string name="notification_league_title">League promotion</string>
+    <string name="notification_league_time">Yesterday • 09:30</string>
+    <string name="notification_league_message">You advanced to Silver League and now receive 1 extra daily token.</string>
+
+    <string name="chat_notifications_title">CHAT NOTIFICATIONS</string>
+    <string name="chat_notifications_subtitle">Messages from players in your region</string>
+    <string name="ranking_notifications_title">RANKING NOTIFICATIONS</string>
+    <string name="ranking_notifications_subtitle">Placements, cycle updates, and leaderboard changes</string>
+    <string name="rewards_notifications_title">REWARDS NOTIFICATIONS</string>
+    <string name="rewards_notifications_subtitle">Tokens, stars, bonuses, and unlocked prizes</string>
+    <string name="other_notifications_title">OTHER NOTIFICATIONS</string>
+    <string name="other_notifications_subtitle">Invites, league changes, and system reminders</string>
+
+    <string name="detail_section_latest">All notifications in this channel</string>
+    <string name="detail_chat_item_1_title">New regional message</string>
+    <string name="detail_chat_item_1_time">Today • 19:04</string>
+    <string name="detail_chat_item_1_message">Nikola: "Join the challenge room in 5 minutes."</string>
+    <string name="detail_chat_item_2_title">Unread regional chat</string>
+    <string name="detail_chat_item_2_time">Today • 14:20</string>
+    <string name="detail_chat_item_2_message">Three new messages arrived while you were offline.</string>
+    <string name="detail_chat_item_3_title">Chat reminder</string>
+    <string name="detail_chat_item_3_time">Yesterday • 18:11</string>
+    <string name="detail_chat_item_3_message">You were mentioned in the Vojvodina regional chat.</string>
+
+    <string name="detail_ranking_item_1_title">Monthly leaderboard update</string>
+    <string name="detail_ranking_item_1_time">Today • 12:00</string>
+    <string name="detail_ranking_item_1_message">You are currently 8th in the monthly ranking for your region.</string>
+    <string name="detail_ranking_item_2_title">Weekly cycle finished</string>
+    <string name="detail_ranking_item_2_time">Yesterday • 23:59</string>
+    <string name="detail_ranking_item_2_message">Weekly leaderboard closed. Tap to review your final placement.</string>
+    <string name="detail_ranking_item_3_title">Ranking refresh</string>
+    <string name="detail_ranking_item_3_time">Yesterday • 12:00</string>
+    <string name="detail_ranking_item_3_message">Leaderboard data was refreshed for the new two-minute cycle.</string>
+
+    <string name="detail_rewards_item_1_title">Reward ready to claim</string>
+    <string name="detail_rewards_item_1_time">Today • 16:05</string>
+    <string name="detail_rewards_item_1_message">You earned 3 tokens for finishing 2nd in the weekly cycle.</string>
+    <string name="detail_rewards_item_2_title">Daily mission bonus</string>
+    <string name="detail_rewards_item_2_time">Yesterday • 20:12</string>
+    <string name="detail_rewards_item_2_message">All daily missions completed. Bonus: 2 tokens and 3 stars.</string>
+    <string name="detail_rewards_item_3_title">League bonus granted</string>
+    <string name="detail_rewards_item_3_time">Yesterday • 09:31</string>
+    <string name="detail_rewards_item_3_message">Silver League bonus applied: 1 extra daily token added.</string>
+
+    <string name="detail_other_item_1_title">Friendly match request</string>
+    <string name="detail_other_item_1_time">Today • 18:42</string>
+    <string name="detail_other_item_1_message">Marko sent a friendly match request that expires in 10 seconds.</string>
+    <string name="detail_other_item_2_title">League status changed</string>
+    <string name="detail_other_item_2_time">Yesterday • 09:30</string>
+    <string name="detail_other_item_2_message">You advanced to Silver League and unlocked an extra daily token.</string>
+    <string name="detail_other_item_3_title">System reminder</string>
+    <string name="detail_other_item_3_time">Yesterday • 08:00</string>
+    <string name="detail_other_item_3_message">You have 5 daily tokens available for new matches.</string>
+
+    <string name="detail_mark_all_read">Mark all as read</string>
+
 
 </resources>
