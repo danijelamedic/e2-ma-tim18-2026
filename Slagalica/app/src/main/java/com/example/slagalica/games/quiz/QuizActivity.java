@@ -42,6 +42,7 @@ public class QuizActivity extends AppCompatActivity {
     private TextView tvQuizTimer;
     private CountDownTimer countDownTimer;
     private boolean questionAnswered = false;
+    private long timeLeftMillis = 5000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,7 @@ public class QuizActivity extends AppCompatActivity {
             answerViews[i].setBackgroundResource(R.drawable.bg_quiz_answer);
         }
 
+        timeLeftMillis = 5000;
         startTimer();
     }
 
@@ -100,15 +102,17 @@ public class QuizActivity extends AppCompatActivity {
             countDownTimer.cancel();
         }
 
-        countDownTimer = new CountDownTimer(5000, 1000) {
+        countDownTimer = new CountDownTimer(timeLeftMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                int secondsLeft = (int) (millisUntilFinished / 1000) + 1;
+                timeLeftMillis = millisUntilFinished;
+                int secondsLeft = (int) Math.ceil(millisUntilFinished / 1000.0);
                 tvQuizTimer.setText("⏱ " + secondsLeft + "s");
             }
 
             @Override
             public void onFinish() {
+                timeLeftMillis = 0;
                 tvQuizTimer.setText("⏱ 0s");
 
                 if (!questionAnswered) {
@@ -118,6 +122,12 @@ public class QuizActivity extends AppCompatActivity {
         };
 
         countDownTimer.start();
+    }
+
+    private void pauseTimer() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
     }
 
     private void selectAnswer(int index) {
@@ -179,10 +189,18 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void showInfoDialog() {
+        pauseTimer();
+
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.quiz_rules_title))
                 .setMessage(getString(R.string.quiz_rules_message))
-                .setPositiveButton(getString(R.string.ok), null)
+                .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+                    dialog.dismiss();
+
+                    if (timeLeftMillis > 0 && !questionAnswered) {
+                        startTimer();
+                    }
+                })
                 .show();
     }
 
