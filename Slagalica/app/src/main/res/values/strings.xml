@@ -60,7 +60,7 @@
     <string name="my_number_name">MY NUMBER</string>
     <string name="my_number_percent">40%</string>
 
-<!--    QUIZ GAME STAT PAGE  - obrisi kasnije kada bude prava statistika -->
+    <!--    QUIZ GAME STAT PAGE  - obrisi kasnije kada bude prava statistika -->
     <string name="quiz_statistics_title">🧠 QUIZ STATISTICS</string>
     <string name="average_quiz_success">Average points range</string>
     <string name="average_quiz_points">73% success</string>
@@ -133,7 +133,7 @@
 
     <string name="back_icon">‹</string>
 
-<!--    MATCHING GAME SCREEN-->
+    <!--    MATCHING GAME SCREEN-->
     <string name="matching_game_title">🔗 MATCHING</string>
     <string name="matching_timer">⏱ 30s</string>
 
@@ -167,6 +167,23 @@
     <string name="matching_rules_message">Connect each term from the left column with the correct term from the right column. Each correct pair gives 2 points.</string>
     <string name="ok">OK</string>
     <string name="vs_label">VS</string>
+  
+    <!-- QUIZ GAME SCREEN -->
+    <string name="quiz_game_title">🧠 QUIZ</string>
+    <string name="quiz_timer">⏱ 5s</string>
+    <string name="quiz_question_counter">Question 1/5</string>
+    <string name="quiz_score_limit">Max 50 pts / Min -25 pts</string>
+
+    <string name="quiz_question_mock">Which planet is known as the Red Planet?</string>
+
+    <string name="quiz_answer_1">Earth</string>
+    <string name="quiz_answer_2">Mars</string>
+    <string name="quiz_answer_3">Jupiter</string>
+    <string name="quiz_answer_4">Venus</string>
+
+    <string name="quiz_next">NEXT</string>
+    <string name="quiz_rules_title">How to play</string>
+    <string name="quiz_rules_message">Answer 5 questions. You have 5 seconds for each question. Correct answer gives 10 points, wrong answer gives -5 points. If both players answer correctly, the faster player gets the points.</string>
 
     <!-- NOTIFICATIONS -->
     <string name="notifications_title">NOTIFICATION CENTER</string>
@@ -271,6 +288,5 @@
     <string name="detail_other_item_3_message">You have 5 daily tokens available for new matches.</string>
 
     <string name="detail_mark_all_read">Mark all as read</string>
-
 
 </resources>

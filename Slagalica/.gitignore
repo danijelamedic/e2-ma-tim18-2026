@@ -13,3 +13,36 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Android Studio / IntelliJ
+.idea/*
+!.idea/.name
+!.idea/codeStyles
+!.idea/runConfigurations
+
+# Gradle
+.gradle/
+**/build/
+
+# Kotlin/Java compiled
+*.class
+
+# Logs
+*.log
+
+# APK / outputs
+*.apk
+*.ap_
+*.aab
+
+# Generated
+/generated/
+app/release/
+app/debug/
+
+# Keystore (BITNO)
+*.jks
+*.keystore
+
+# Google services (ako budete koristili Firebase)
+google-services.json
