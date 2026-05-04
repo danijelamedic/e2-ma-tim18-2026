@@ -6,4 +6,18 @@
     </style>
 
     <style name="Theme.Slagalica" parent="Base.Theme.Slagalica" />
+
+
+    <style name="MatchingItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">58dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#2D1B5E</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/bg_stat_card</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
 </resources>

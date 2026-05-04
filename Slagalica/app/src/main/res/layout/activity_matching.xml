@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_profile_screen"
+    android:fillViewport="true">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:padding="20dp">
+
+    <!-- HEADER -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="14dp">
+
+      <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="@string/matching_game_title"
+          android:textColor="#2D1B5E"
+          android:textSize="30sp"
+          android:textStyle="bold|italic"
+          android:fontFamily="sans-serif-black" />
+
+      <TextView
+          android:id="@+id/btnMatchingInfo"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
+          android:gravity="center"
+          android:text="@string/info_icon"
+          android:textColor="#5B2FC4"
+          android:textSize="22sp"
+          android:textStyle="bold"
+          android:layout_marginEnd="8dp" />
+
+      <Button
+          android:id="@+id/btnLeaveGame"
+          android:layout_width="96dp"
+          android:layout_height="48dp"
+          android:text="@string/leave_game"
+          android:textColor="@android:color/white"
+          android:textStyle="bold"
+          android:textSize="13sp"
+          android:background="@drawable/bg_purple_button" />
+    </LinearLayout>
+
+    <!-- GAME STATUS CARD -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_profile_card"
+        android:elevation="6dp"
+        android:padding="14dp"
+        android:layout_marginBottom="16dp">
+
+      <!-- TIMER -->
+      <TextView
+          android:id="@+id/tvTimer"
+          android:layout_width="match_parent"
+          android:layout_height="54dp"
+          android:gravity="center"
+          android:text="@string/matching_timer"
+          android:textColor="#5B2FC4"
+          android:textSize="28sp"
+          android:textStyle="bold"
+          android:background="@drawable/bg_stat_card"
+          android:layout_marginBottom="14dp" />
+
+      <!-- PLAYERS -->
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center"
+          android:baselineAligned="false"
+          android:layout_marginBottom="12dp">
+
+        <!-- YOU -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+          <TextView
+              android:id="@+id/tvYourAvatar"
+              android:layout_width="64dp"
+              android:layout_height="64dp"
+              android:gravity="center"
+              android:text="@string/avatar_icon"
+              android:textSize="30sp"
+              android:background="@drawable/bg_active_player_avatar" />
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/player_you_name"
+              android:textColor="#2D1B5E"
+              android:textSize="15sp"
+              android:textStyle="bold"
+              android:layout_marginTop="6dp" />
+
+          <TextView
+              android:id="@+id/tvPlayerScore"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/player_you_score"
+              android:textColor="#5B2FC4"
+              android:textSize="20sp"
+              android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/vs_label"
+            android:textColor="#5B2FC4"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <!-- OPPONENT -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+          <TextView
+              android:id="@+id/tvOpponentAvatar"
+              android:layout_width="64dp"
+              android:layout_height="64dp"
+              android:gravity="center"
+              android:text="@string/opponent_avatar_icon"
+              android:textSize="30sp"
+              android:background="@drawable/bg_inactive_player_avatar" />
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/player_opponent_name"
+              android:textColor="#2D1B5E"
+              android:textSize="15sp"
+              android:textStyle="bold"
+              android:layout_marginTop="6dp" />
+
+          <TextView
+              android:id="@+id/tvOpponentScore"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/player_opponent_score"
+              android:textColor="#5B2FC4"
+              android:textSize="20sp"
+              android:textStyle="bold" />
+        </LinearLayout>
+      </LinearLayout>
+
+      <!-- ROUND + CONNECTED -->
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:baselineAligned="false">
+
+        <TextView
+            android:id="@+id/tvRound"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/matching_round_short"
+            android:textColor="#5B2FC4"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_small_pill"
+            android:layout_marginEnd="5dp" />
+
+        <TextView
+            android:id="@+id/tvConnectedCount"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/matching_connected_short"
+            android:textColor="#5B2FC4"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_small_pill"
+            android:layout_marginStart="5dp" />
+      </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:layout_marginBottom="16dp">
+
+      <LinearLayout
+          android:id="@+id/leftColumn"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:orientation="vertical"
+          android:layout_marginEnd="8dp">
+
+        <TextView
+            android:id="@+id/leftItem1"
+            style="@style/MatchingItem"
+            android:text="@string/matching_left_1"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+
+        <TextView
+            android:id="@+id/leftItem2"
+            style="@style/MatchingItem"
+            android:text="@string/matching_left_2"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+
+        <TextView
+            android:id="@+id/leftItem3"
+            style="@style/MatchingItem"
+            android:text="@string/matching_left_3"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+
+        <TextView
+            android:id="@+id/leftItem4"
+            style="@style/MatchingItem"
+            android:text="@string/matching_left_4"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+
+        <TextView
+            android:id="@+id/leftItem5"
+            style="@style/MatchingItem"
+            android:text="@string/matching_left_5"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:id="@+id/rightColumn"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:orientation="vertical"
+          android:layout_marginStart="8dp">
+
+        <TextView
+            android:id="@+id/rightItem2"
+            style="@style/MatchingItem"
+            android:text="@string/matching_right_2"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+
+        <TextView
+            android:id="@+id/rightItem3"
+            style="@style/MatchingItem"
+            android:text="@string/matching_right_3"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+
+        <TextView
+            android:id="@+id/rightItem4"
+            style="@style/MatchingItem"
+            android:text="@string/matching_right_4"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+
+        <TextView
+            android:id="@+id/rightItem5"
+            style="@style/MatchingItem"
+            android:text="@string/matching_right_5"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+        <TextView
+            android:id="@+id/rightItem1"
+            style="@style/MatchingItem"
+            android:text="@string/matching_right_1"
+            android:textSize="16sp"
+            android:padding="14dp"/>
+      </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSubmitMatching"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/matching_submit"
+        android:textColor="@android:color/white"
+        android:textStyle="bold|italic"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-black"
+        android:background="@drawable/bg_purple_button" />
+
+  </LinearLayout>
+</ScrollView>

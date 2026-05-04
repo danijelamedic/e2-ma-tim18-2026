@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_profile_screen"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="18dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/profile_title"
+                android:textColor="#2D1B5E"
+                android:textSize="28sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black" />
+
+            <TextView
+                android:id="@+id/btnLogout"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="@string/logout_icon"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:textColor="#2D1B5E" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="8dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvAvatar"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:gravity="center"
+                android:text="@string/avatar_icon"
+                android:textSize="48sp"
+                android:background="@drawable/bg_avatar_circle"
+                android:layout_marginEnd="18dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_username"
+                    android:textColor="#2D1B5E"
+                    android:textSize="30sp"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_league"
+                    android:textColor="#5B2FC4"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_small_pill"
+                    android:paddingLeft="14dp"
+                    android:paddingRight="14dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="12dp" />
+
+                <Button
+                    android:id="@+id/btnChangeAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/change_avatar"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black"
+                    android:textSize="16sp"
+                    android:background="@drawable/bg_purple_button" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_profile_card"
+                android:elevation="6dp"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/token_icon"
+                    android:textSize="42sp"
+                    android:layout_marginEnd="10dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/token_count"
+                        android:textColor="#5B2FC4"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tokens_label"
+                        android:textColor="#2D1B5E"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-black" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_profile_card"
+                android:elevation="6dp"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/star_icon"
+                    android:textSize="42sp"
+                    android:layout_marginEnd="10dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/star_count"
+                        android:textColor="#5B2FC4"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stars_label"
+                        android:textColor="#2D1B5E"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-black" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/basic_info_title"
+                android:textColor="#5B2FC4"
+                android:textSize="22sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:gravity="center_vertical"
+                android:text="@string/profile_email"
+                android:textColor="#2D1B5E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:gravity="center_vertical"
+                android:text="@string/profile_region"
+                android:textColor="#2D1B5E"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/qr_title"
+                android:textColor="#5B2FC4"
+                android:textSize="22sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="14dp" />
+
+            <TextView
+                android:layout_width="145dp"
+                android:layout_height="145dp"
+                android:gravity="center"
+                android:text="@string/qr_placeholder"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:textColor="#5B2FC4"
+                android:background="@drawable/bg_qr_box" />
+        </LinearLayout>
+
+        <!-- STATISTICS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:padding="14dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/statistics_title"
+                android:textColor="#5B2FC4"
+                android:textSize="22sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="14dp" />
+
+            <!-- ROW 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <!-- QUIZ -->
+                <LinearLayout
+                    android:id="@+id/cardQuizStatistics"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_stat_card"
+                    android:layout_marginEnd="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/quiz_icon"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/quiz_name"
+                        android:textColor="#2D1B5E"
+                        android:textStyle="bold"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/quiz_percent"
+                        android:textColor="#5B2FC4"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:progress="73"
+                        android:max="100"
+                        android:progressTint="#6A4CAF"
+                        android:progressBackgroundTint="#E6D8FF"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+
+                <!-- MATCHING -->
+                <LinearLayout
+                    android:id="@+id/cardMatchingStatistics"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_stat_card"
+                    android:layout_marginStart="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/matching_icon"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/matching_name"
+                        android:textColor="#2D1B5E"
+                        android:textStyle="bold"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/matching_percent"
+                        android:textColor="#5B2FC4"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:progress="70"
+                        android:max="100"
+                        android:progressTint="#6A4CAF"
+                        android:progressBackgroundTint="#E6D8FF"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ROW 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+
+                <!-- ASSOCIATIONS -->
+                <LinearLayout
+                    android:id="@+id/cardAssociationsStatistics"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_stat_card"
+                    android:layout_marginEnd="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/associations_icon"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/associations_name"
+                        android:textColor="#2D1B5E"
+                        android:textStyle="bold"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/associations_percent"
+                        android:textColor="#5B2FC4"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:progress="62"
+                        android:max="100"
+                        android:progressTint="#6A4CAF"
+                        android:progressBackgroundTint="#E6D8FF"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+
+                <!-- SKOCKO -->
+                <LinearLayout
+                    android:id="@+id/cardSkockoStatistics"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_stat_card"
+                    android:layout_marginStart="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/skocko_icon"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/skocko_name"
+                        android:textColor="#2D1B5E"
+                        android:textStyle="bold"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/skocko_percent"
+                        android:textColor="#5B2FC4"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:progress="55"
+                        android:max="100"
+                        android:progressTint="#6A4CAF"
+                        android:progressBackgroundTint="#E6D8FF"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ROW 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- STEP BY STEP -->
+                <LinearLayout
+                    android:id="@+id/cardStepByStepStatistics"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_stat_card"
+                    android:layout_marginEnd="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/step_by_step_icon"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/step_by_step_name"
+                        android:textColor="#2D1B5E"
+                        android:textStyle="bold"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/step_by_step_percent"
+                        android:textColor="#5B2FC4"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:progress="48"
+                        android:max="100"
+                        android:progressTint="#6A4CAF"
+                        android:progressBackgroundTint="#E6D8FF"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+
+                <!-- MY NUMBER -->
+                <LinearLayout
+                    android:id="@+id/cardMyNumberStatistics"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_stat_card"
+                    android:layout_marginStart="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/my_number_icon"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/my_number_name"
+                        android:textColor="#2D1B5E"
+                        android:textStyle="bold"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/my_number_percent"
+                        android:textColor="#5B2FC4"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:progress="40"
+                        android:max="100"
+                        android:progressTint="#6A4CAF"
+                        android:progressBackgroundTint="#E6D8FF"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
