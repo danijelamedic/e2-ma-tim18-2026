@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.slagalica.games.associations.AssociationsActivity;
 import com.example.slagalica.games.matching.MatchingActivity;
 import com.example.slagalica.games.quiz.QuizActivity;
 import com.example.slagalica.games.skocko.SkockoActivity;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnProfile = findViewById(R.id.btnProfile);
         Button btnQuiz = findViewById(R.id.btnQuiz);
         Button btnMatching = findViewById(R.id.btnMatching);
+        Button btnAssociations = findViewById(R.id.btnAssociations);
         Button btnSkocko = findViewById(R.id.btnSkocko);
         Button btnNotifications = findViewById(R.id.btnNotifications);
 
@@ -47,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
         );
         btnMatching.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, MatchingActivity.class))
+        );
+        btnAssociations.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, AssociationsActivity.class))
         );
         btnSkocko.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, SkockoActivity.class))
