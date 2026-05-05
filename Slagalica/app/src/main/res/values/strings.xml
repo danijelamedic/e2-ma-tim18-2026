@@ -161,7 +161,33 @@
     <string name="matching_rules_title">How to play</string>
     <string name="matching_rules_message">Connect each term from the left column with the correct term from the right column. Each correct pair gives 2 points.</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="vs_label">VS</string>
+
+    <string name="associations_game_title">ASSOCIATIONS</string>
+    <string name="associations_timer">02:00</string>
+    <string name="associations_timer_format">%1$02d:%2$02d</string>
+    <string name="associations_round_short">🔁 1/2</string>
+    <string name="associations_points_short">🔓 0/16</string>
+    <string name="associations_progress_format">🔓 %1$d/16</string>
+    <string name="associations_turn_short">Choose a field</string>
+    <string name="associations_board_title">Association Board</string>
+    <string name="associations_final_hint">Solve all columns, then guess the final solution.</string>
+    <string name="associations_final_placeholder">FINAL</string>
+    <string name="associations_rules_title">How to play</string>
+    <string name="associations_rules_message">Reveal fields in columns A, B, C, and D. After each reveal, you can guess a column solution or the final solution. A solved column gives 2 points plus 1 point for each unopened field. Solving the final solution gives 7 points, with extra points for unopened columns.</string>
+    <string name="associations_column_guess_title">Guess column %1$s</string>
+    <string name="associations_final_guess_title">Guess final solution</string>
+    <string name="associations_guess_hint">Enter your guess</string>
+    <string name="associations_guess_action">Submit guess</string>
+    <string name="associations_turn_opened">Field %1$s%2$d opened</string>
+    <string name="associations_turn_wrong">Try again</string>
+    <string name="associations_column_solved_message">Column %1$s solved  +%2$d</string>
+    <string name="associations_final_solved_status">Final solution solved</string>
+    <string name="associations_score_format">%1$d pts</string>
+    <string name="associations_end_title">Game finished</string>
+    <string name="associations_end_message">Final solution solved. Total score: %1$d pts. Final bonus: %2$d pts.</string>
+    <string name="associations_timeout_message">Time is up. Your score: %1$d pts.</string>
 
     <string name="quiz_game_title">🧠 QUIZ</string>
     <string name="quiz_timer">⏱ 5s</string>
@@ -214,7 +240,6 @@
     <string name="skocko_rules_message">Find the hidden combination of 4 symbols in up to 6 attempts and within 30 seconds. Solving it in the first two attempts gives 20 points, in the third or fourth 15 points, and in the fifth or sixth 10 points. If the active player does not solve the code, the opponent gets one 10-second bonus attempt worth 10 points.</string>
     <string name="skocko_end_title">Game finished</string>
     <string name="skocko_end_message_solved">You solved the combination in attempt %1$d and earned %2$d points.</string>
-    <string name="skocko_end_message_timeout">The round ended before the combination was solved.</string>
     <string name="skocko_player_score_format">%1$d pts</string>
     <string name="skocko_opponent_score_bonus">10 pts</string>
     <string name="skocko_bonus_success_message">The opponent used the 10-second bonus turn and solved the combination for 10 points.</string>

@@ -32,6 +32,7 @@
         <activity android:name=".MyNumberActivity" android:exported="false" />
         <activity android:name=".StepByStepActivity" android:exported="false" />
 
+        <activity android:name=".games.associations.AssociationsActivity" android:exported="false" />
         <activity android:name=".games.skocko.SkockoActivity" android:exported="false" />
         <activity android:name=".games.matching.MatchingActivity" android:exported="false" />
         <activity android:name=".games.quiz.QuizActivity" android:exported="false" />
