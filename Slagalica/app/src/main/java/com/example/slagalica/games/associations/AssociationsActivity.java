@@ -15,7 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.slagalica.MainActivity;
+import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
 
 import java.util.Locale;
@@ -327,7 +327,7 @@ public class AssociationsActivity extends AppCompatActivity {
                 .setTitle(R.string.associations_end_title)
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
-                    startActivity(new Intent(this, MainActivity.class));
+                    startActivity(new Intent(this, HomeActivity.class));
                     finish();
                 })
                 .show();

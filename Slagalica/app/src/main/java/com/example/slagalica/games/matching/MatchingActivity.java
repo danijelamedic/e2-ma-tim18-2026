@@ -12,7 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.slagalica.MainActivity;
+import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
 import android.os.CountDownTimer;
 import java.util.HashMap;
@@ -199,7 +199,7 @@ public class MatchingActivity extends AppCompatActivity {
                 .setTitle("Game finished")
                 .setMessage("Your score: " + playerScore + " pts")
                 .setPositiveButton("OK", (d, w) -> {
-                    startActivity(new Intent(this, MainActivity.class));
+                    startActivity(new Intent(this, HomeActivity.class));
                     finish();
                 })
                 .show();

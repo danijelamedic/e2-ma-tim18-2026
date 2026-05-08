@@ -1,36 +1,94 @@
 package com.example.slagalica;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.slagalica.games.associations.AssociationsActivity;
+import com.example.slagalica.games.matching.MatchingActivity;
+import com.example.slagalica.games.quiz.QuizActivity;
+import com.example.slagalica.games.skocko.SkockoActivity;
+import com.example.slagalica.notifications.NotificationCenterActivity;
+import com.example.slagalica.profile.ProfileActivity;
+import android.view.View;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private Button btnPlay;
+    private Button btnProfile;
+    private Button btnLeaderboard;
+    private Button btnNotifications;
+    private View btnQuiz;
+    private View btnMatching;
+    private View btnAssociations;
+    private View btnSkocko;
+    private View btnStepByStep;
+    private View btnMyNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        initializeViews();
+        setupClickListeners();
     }
 
-    @Override
-    protected void onStart() { super.onStart(); }
+    private void initializeViews() {
+        btnPlay = findViewById(R.id.btnPlay);
+        btnProfile = findViewById(R.id.btnProfile);
+        btnLeaderboard = findViewById(R.id.btnLeaderboard);
+        btnQuiz = findViewById(R.id.btnQuiz);
+        btnMatching = findViewById(R.id.btnMatching);
+        btnAssociations = findViewById(R.id.btnAssociations);
+        btnSkocko = findViewById(R.id.btnSkocko);
+        btnStepByStep = findViewById(R.id.btnStepByStep);
+        btnMyNumber = findViewById(R.id.btnMyNumber);
+        btnNotifications = findViewById(R.id.btnNotifications);
+    }
 
-    @Override
-    protected void onResume() { super.onResume(); }
+    private void setupClickListeners() {
+        btnPlay.setOnClickListener(v ->
+                Toast.makeText(this, "Match flow will be added later", Toast.LENGTH_SHORT).show()
+        );
 
-    @Override
-    protected void onPause() { super.onPause(); }
+        btnProfile.setOnClickListener(v ->
+                startActivity(new Intent(this, ProfileActivity.class))
+        );
 
-    @Override
-    protected void onStop() { super.onStop(); }
+        btnLeaderboard.setOnClickListener(v ->
+                Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show()
+        );
 
-    @Override
-    protected void onDestroy() { super.onDestroy(); }
+        btnQuiz.setOnClickListener(v ->
+                startActivity(new Intent(this, QuizActivity.class))
+        );
 
-    @Override
-    protected void onRestart() { super.onRestart(); }
+        btnMatching.setOnClickListener(v ->
+                startActivity(new Intent(this, MatchingActivity.class))
+        );
+
+        btnAssociations.setOnClickListener(v ->
+                startActivity(new Intent(this, AssociationsActivity.class))
+        );
+
+        btnSkocko.setOnClickListener(v ->
+                startActivity(new Intent(this, SkockoActivity.class))
+        );
+
+        btnStepByStep.setOnClickListener(v ->
+                startActivity(new Intent(this, StepByStepActivity.class))
+        );
+
+        btnMyNumber.setOnClickListener(v ->
+                startActivity(new Intent(this, MyNumberActivity.class))
+        );
+
+        btnNotifications.setOnClickListener(v ->
+                startActivity(new Intent(this, NotificationCenterActivity.class))
+        );
+    }
 }

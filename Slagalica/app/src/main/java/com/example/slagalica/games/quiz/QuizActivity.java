@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.slagalica.MainActivity;
+import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
 
 
@@ -209,7 +209,7 @@ public class QuizActivity extends AppCompatActivity {
                 .setTitle("Leave game")
                 .setMessage("Are you sure you want to leave the game?")
                 .setPositiveButton("YES", (dialog, which) -> {
-                    Intent intent = new Intent(QuizActivity.this, MainActivity.class);
+                    Intent intent = new Intent(QuizActivity.this, HomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     if (countDownTimer != null) {
                         countDownTimer.cancel();
@@ -226,7 +226,7 @@ public class QuizActivity extends AppCompatActivity {
                 .setTitle("Quiz finished")
                 .setMessage("Your score: " + playerScore + " pts")
                 .setPositiveButton("OK", (dialog, which) -> {
-                    Intent intent = new Intent(QuizActivity.this, MainActivity.class);
+                    Intent intent = new Intent(QuizActivity.this, HomeActivity.class);
                     if (countDownTimer != null) {
                         countDownTimer.cancel();
                     }
