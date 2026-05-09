@@ -253,7 +253,7 @@
     <string name="skocko_bonus_timeout_message">The opponent ran out of time during the 10-second bonus turn.</string>
 
     <string name="notifications_title">NOTIFICATION CENTER</string>
-    <string name="notifications_subtitle">History, filters, and pending actions</string>
+    <string name="notifications_history_title">All notifications</string>
     <string name="notifications_unread_count">4</string>
     <string name="notifications_unread_label">UNREAD</string>
     <string name="notifications_channels_count">4</string>
@@ -264,23 +264,18 @@
     <string name="notifications_unread_filter">Unread</string>
     <string name="notifications_read_filter">Read</string>
     <string name="notifications_channels_title">System channels</string>
-    <string name="notifications_history_title">Recent notifications</string>
     <string name="notifications_open_action">Open</string>
-    <string name="notifications_mark_read_action">Mark read</string>
+    <string name="notifications_mark_read_action">Mark as read</string>
     <string name="notifications_status_unread">UNREAD</string>
     <string name="notifications_status_read">READ</string>
     <string name="channel_chat_icon">💬</string>
     <string name="channel_chat_title">Chat</string>
-    <string name="channel_chat_desc">Regional chat messages</string>
     <string name="channel_rank_icon">🏆</string>
     <string name="channel_rank_title">Ranking</string>
-    <string name="channel_rank_desc">Weekly and monthly placements</string>
     <string name="channel_rewards_icon">🎁</string>
     <string name="channel_rewards_title">Rewards</string>
-    <string name="channel_rewards_desc">Tokens, stars, and league bonuses</string>
     <string name="channel_other_icon">🔔</string>
     <string name="channel_other_title">Other</string>
-    <string name="channel_other_desc">Invites, league changes, reminders</string>
     <string name="notification_invite_icon">🎮</string>
     <string name="notification_invite_title">Friendly match invite</string>
     <string name="notification_invite_time">Today • 18:42</string>
@@ -348,6 +343,7 @@
     <string name="home_welcome_title">Welcome back, Ana!</string>
     <string name="home_welcome_subtitle">Choose a game, check your profile, or continue your battle.</string>
     <string name="games_menu_title">GAMES</string>
+    <string name="home_notifications_button">Notification center</string>
 
     <string name="target_number_label">Target Number</string>
     <string name="numbers_label">Your Numbers</string>

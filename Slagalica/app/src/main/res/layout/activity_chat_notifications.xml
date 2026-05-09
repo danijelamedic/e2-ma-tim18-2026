@@ -153,7 +153,7 @@
                     android:layout_marginStart="6dp"
                     android:background="@drawable/bg_notification_action_secondary"
                     android:text="@string/notifications_mark_read_action"
-                    android:textColor="#5B2FC4"
+                    android:textColor="@android:color/white"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
@@ -253,7 +253,7 @@
                     android:layout_marginStart="6dp"
                     android:background="@drawable/bg_notification_action_secondary"
                     android:text="@string/notifications_mark_read_action"
-                    android:textColor="#5B2FC4"
+                    android:textColor="@android:color/white"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
@@ -344,7 +344,7 @@
             android:layout_height="48dp"
             android:background="@drawable/bg_notification_action_secondary"
             android:text="@string/detail_mark_all_read"
-            android:textColor="#5B2FC4"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
     </LinearLayout>
 </ScrollView>

@@ -40,14 +40,6 @@
                 android:fontFamily="sans-serif-black" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/notifications_subtitle"
-            android:textColor="#5C4A8D"
-            android:textSize="15sp"
-            android:layout_marginBottom="16dp" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -198,7 +190,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/channel_chat_icon"
-                        android:textSize="22sp" />
+                        android:textSize="28sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -206,15 +198,7 @@
                         android:text="@string/channel_chat_title"
                         android:textColor="#2D1B5E"
                         android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/channel_chat_desc"
-                        android:textColor="#6A5A8F"
-                        android:textSize="11sp"
+                        android:textSize="16sp"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
 
@@ -235,7 +219,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/channel_rank_icon"
-                        android:textSize="22sp" />
+                        android:textSize="28sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -243,15 +227,7 @@
                         android:text="@string/channel_rank_title"
                         android:textColor="#2D1B5E"
                         android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/channel_rank_desc"
-                        android:textColor="#6A5A8F"
-                        android:textSize="11sp"
+                        android:textSize="16sp"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
             </LinearLayout>
@@ -278,7 +254,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/channel_rewards_icon"
-                        android:textSize="22sp" />
+                        android:textSize="28sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -286,15 +262,7 @@
                         android:text="@string/channel_rewards_title"
                         android:textColor="#2D1B5E"
                         android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/channel_rewards_desc"
-                        android:textColor="#6A5A8F"
-                        android:textSize="11sp"
+                        android:textSize="16sp"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
 
@@ -315,7 +283,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/channel_other_icon"
-                        android:textSize="22sp" />
+                        android:textSize="28sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -323,15 +291,7 @@
                         android:text="@string/channel_other_title"
                         android:textColor="#2D1B5E"
                         android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/channel_other_desc"
-                        android:textColor="#6A5A8F"
-                        android:textSize="11sp"
+                        android:textSize="16sp"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
             </LinearLayout>
