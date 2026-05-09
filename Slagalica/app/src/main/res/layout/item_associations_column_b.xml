@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvB1"
+        style="@style/AssociationsCell"
+        android:text="B1" />
+
+    <TextView
+        android:id="@+id/tvB2"
+        style="@style/AssociationsCell"
+        android:text="B2" />
+
+    <TextView
+        android:id="@+id/tvB3"
+        style="@style/AssociationsCell"
+        android:text="B3" />
+
+    <TextView
+        android:id="@+id/tvB4"
+        style="@style/AssociationsCell"
+        android:text="B4" />
+
+    <TextView
+        android:id="@+id/tvBSolution"
+        style="@style/AssociationsSolutionCell"
+        android:text="B" />
+</LinearLayout>

@@ -1,0 +1,48 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Android Studio / IntelliJ
+.idea/*
+!.idea/.name
+!.idea/codeStyles
+!.idea/runConfigurations
+
+# Gradle
+.gradle/
+**/build/
+
+# Kotlin/Java compiled
+*.class
+
+# Logs
+*.log
+
+# APK / outputs
+*.apk
+*.ap_
+*.aab
+
+# Generated
+/generated/
+app/release/
+app/debug/
+
+# Keystore (BITNO)
+*.jks
+*.keystore
+
+# Google services (ako budete koristili Firebase)
+google-services.json

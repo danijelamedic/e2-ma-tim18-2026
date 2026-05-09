@@ -1,0 +1,6 @@
+.idea/
+Slagalica/.idea/
+Slagalica/app/build/
+Slagalica/build/
+*.iml
+.gradle/
