@@ -1,67 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center">
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/step_by_step"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
-
-    <TextView
-        android:id="@+id/tvTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/timer"
-        android:textSize="18sp"
-        android:layout_marginBottom="24dp"/>
-
-    <TextView
-        android:id="@+id/tvCurrentStep"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/step_placeholder"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:background="#E0E0E0"
-        android:padding="16dp"
-        android:layout_marginBottom="16dp"/>
+    android:background="@drawable/bg_profile_screen"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="16dp">
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="32dp">
 
-        <TextView android:id="@+id/tvStep1" android:layout_width="40dp" android:layout_height="40dp" android:gravity="center" android:background="#BDBDBD" android:layout_margin="4dp" android:text="1"/>
-        <TextView android:id="@+id/tvStep2" android:layout_width="40dp" android:layout_height="40dp" android:gravity="center" android:background="#BDBDBD" android:layout_margin="4dp" android:text="2"/>
-        <TextView android:id="@+id/tvStep3" android:layout_width="40dp" android:layout_height="40dp" android:gravity="center" android:background="#BDBDBD" android:layout_margin="4dp" android:text="3"/>
-        <TextView android:id="@+id/tvStep4" android:layout_width="40dp" android:layout_height="40dp" android:gravity="center" android:background="#BDBDBD" android:layout_margin="4dp" android:text="4"/>
-        <TextView android:id="@+id/tvStep5" android:layout_width="40dp" android:layout_height="40dp" android:gravity="center" android:background="#BDBDBD" android:layout_margin="4dp" android:text="5"/>
-        <TextView android:id="@+id/tvStep6" android:layout_width="40dp" android:layout_height="40dp" android:gravity="center" android:background="#BDBDBD" android:layout_margin="4dp" android:text="6"/>
-        <TextView android:id="@+id/tvStep7" android:layout_width="40dp" android:layout_height="40dp" android:gravity="center" android:background="#BDBDBD" android:layout_margin="4dp" android:text="7"/>
+        <!-- HEADER -->
+        <LinearLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/step_by_step"
+                    android:textColor="#2D1B5E"
+                    android:textSize="30sp"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black" />
+
+                <View
+                    android:layout_width="36dp"
+                    android:layout_height="3dp"
+                    android:background="@drawable/bg_accent_line"
+                    android:layout_marginTop="6dp" />
+
+            </LinearLayout>
+
+            <!-- TIMER PILL -->
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="100dp"
+                android:layout_height="44dp"
+                android:gravity="center"
+                android:text="@string/timer_step_by_step"
+                android:textColor="#5B2FC4"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:background="@drawable/bg_timer_pill" />
+
+        </LinearLayout>
+
+        <!-- CURRENT CLUE CARD -->
+        <LinearLayout
+            android:id="@+id/layoutClueCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_premium"
+            android:elevation="12dp"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👣  CURRENT CLUE"
+                android:textColor="#5B2FC4"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.12"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvCurrentStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/step_placeholder"
+                android:textColor="#2D1B5E"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:background="@drawable/bg_tile"
+                android:padding="20dp" />
+
+        </LinearLayout>
+
+        <!-- STEPS PROGRESS CARD -->
+        <LinearLayout
+            android:id="@+id/layoutProgressCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_premium"
+            android:elevation="10dp"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⚡  STEPS REVEALED"
+                    android:textColor="#5B2FC4"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.12" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1 / 7"
+                    android:textColor="#8B6FBF"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView android:id="@+id/tvStep1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile_active" android:layout_margin="3dp" android:text="1" android:textColor="@android:color/white" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="15sp"/>
+                <TextView android:id="@+id/tvStep2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="2" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="15sp"/>
+                <TextView android:id="@+id/tvStep3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="3" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="15sp"/>
+                <TextView android:id="@+id/tvStep4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="4" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="15sp"/>
+                <TextView android:id="@+id/tvStep5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="5" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="15sp"/>
+                <TextView android:id="@+id/tvStep6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="6" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="15sp"/>
+                <TextView android:id="@+id/tvStep7" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="7" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="15sp"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ANSWER CARD -->
+        <LinearLayout
+            android:id="@+id/layoutAnswerCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_premium"
+            android:elevation="10dp"
+            android:padding="20dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💡  YOUR ANSWER"
+                android:textColor="#5B2FC4"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.12"
+                android:layout_marginBottom="10dp" />
+
+            <EditText
+                android:id="@+id/etAnswer"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="@string/hint_answer"
+                android:textColor="#1E0A3C"
+                android:textColorHint="#A89CC8"
+                android:textSize="15sp"
+                android:background="@drawable/bg_input_selector"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/btnConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="@string/confirm"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:textSize="17sp"
+                android:letterSpacing="0.08"
+                android:background="@drawable/bg_button_selector"
+                android:stateListAnimator="@null" />
+
+        </LinearLayout>
 
     </LinearLayout>
-
-    <EditText
-        android:id="@+id/etAnswer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_answer"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnConfirm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/confirm"/>
-
-</LinearLayout>
+</ScrollView>

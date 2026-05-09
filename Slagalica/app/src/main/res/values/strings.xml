@@ -34,6 +34,8 @@
 
     <string name="step_by_step">Step by Step</string>
     <string name="timer">Time: 10s</string>
+    <string name="timer_step_by_step">Time: 70s</string>
+    <string name="timer_my_number">Time: 60s</string>
     <string name="step_placeholder">Step 1</string>
     <string name="hint_answer">Enter your answer</string>
     <string name="confirm">Confirm</string>
@@ -42,6 +44,10 @@
     <string name="target_number">\?\?\?</string>
     <string name="stop">STOP</string>
     <string name="hint_expression">Enter expression</string>
+
+    <string name="game_tokens">🪙 5</string>
+    <string name="game_stars">⭐ 120</string>
+    <string name="game_league">🏆 Silver</string>
 
     <string name="profile_title">PLAYER PROFILE</string>
     <string name="logout_icon">↪</string>
@@ -338,10 +344,14 @@
     <string name="detail_other_item_3_message">You have 5 daily tokens available for new matches.</string>
     <string name="detail_mark_all_read">Mark all as read</string>
 
-
     <string name="home_title">BRAINBATTLE</string>
     <string name="home_welcome_title">Welcome back, Ana!</string>
     <string name="home_welcome_subtitle">Choose a game, check your profile, or continue your battle.</string>
     <string name="games_menu_title">GAMES</string>
+
+    <string name="target_number_label">Target Number</string>
+    <string name="numbers_label">Your Numbers</string>
+    <string name="current_step_label">Current Step</string>
+    <string name="steps_progress_label">Progress</string>
 
 </resources>

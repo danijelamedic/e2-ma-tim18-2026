@@ -1,12 +1,20 @@
 package com.example.slagalica;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.example.slagalica.games.MyNumber.MyNumberActivity;
+import com.example.slagalica.games.StepByStep.StepByStepActivity;
 import com.example.slagalica.games.associations.AssociationsActivity;
 import com.example.slagalica.games.matching.MatchingActivity;
 import com.example.slagalica.games.quiz.QuizActivity;
@@ -16,6 +24,9 @@ import com.example.slagalica.profile.ProfileActivity;
 import android.view.View;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private static final int REQUEST_MICROPHONE = 1;
+    private static final String TAG = "HomeActivity";
 
     private Button btnPlay;
     private Button btnProfile;
@@ -33,8 +44,29 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    REQUEST_MICROPHONE);
+        }
+
         initializeViews();
         setupClickListeners();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_MICROPHONE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Microphone permission granted");
+            } else {
+                Log.d(TAG, "Microphone permission denied");
+            }
+        }
     }
 
     private void initializeViews() {
