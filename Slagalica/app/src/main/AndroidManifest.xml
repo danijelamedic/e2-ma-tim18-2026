@@ -28,9 +28,8 @@
         <activity android:name=".EmailConfirmActivity" android:exported="false" />
         <activity android:name=".ResetPasswordActivity" android:exported="false" />
         <activity android:name=".HomeActivity" android:exported="false" />
-        <activity android:name=".MainActivity" android:exported="false" />
-        <activity android:name=".MyNumberActivity" android:exported="false" />
-        <activity android:name=".StepByStepActivity" android:exported="false" />
+        <activity android:name=".games.MyNumber.MyNumberActivity" android:exported="false" />
+        <activity android:name=".games.StepByStep.StepByStepActivity" android:exported="false" />
 
         <activity android:name=".games.associations.AssociationsActivity" android:exported="false" />
         <activity android:name=".games.skocko.SkockoActivity" android:exported="false" />
