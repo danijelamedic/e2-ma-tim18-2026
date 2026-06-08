@@ -2,8 +2,10 @@ package com.example.slagalica.games.matching;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -14,18 +16,24 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
-import android.os.CountDownTimer;
+import com.example.slagalica.models.MatchingGame;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.HashMap;
 import java.util.Map;
+import com.example.slagalica.data.StatisticsRepository;
 
 public class MatchingActivity extends AppCompatActivity {
 
     private TextView selectedLeftItem = null;
     private int connectedPairs = 0;
-    private final Map<Integer, Integer> correctMatches = new HashMap<>();
+    private final Map<String, String> correctMatches = new HashMap<>();
+
     private int playerScore = 0;
+    private int correctMatchesCount = 0;
     private CountDownTimer timer;
     private long timeLeftMillis = 30000;
+
     private TextView tvTimer;
     private TextView[] leftItems;
     private TextView[] rightItems;
@@ -42,14 +50,66 @@ public class MatchingActivity extends AppCompatActivity {
             return insets;
         });
 
+        tvTimer = findViewById(R.id.tvTimer);
+
         setupLeaveButton();
         setupSubmitButton();
-        setupCorrectMatches();
+        setupMatchingViews();
         setupMatchingClicks();
         setupInfoButton();
 
-        tvTimer = findViewById(R.id.tvTimer);
-        startTimer();
+        loadMatchingGameFromFirebase();
+    }
+
+    private void loadMatchingGameFromFirebase() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("matchingGames")
+                .document("game1")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        Toast.makeText(this, "Matching game not found.", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+
+                    MatchingGame game = documentSnapshot.toObject(MatchingGame.class);
+
+                    if (game == null) {
+                        Toast.makeText(this, "Failed to load matching game.", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+
+                    fillMatchingData(game);
+                    startTimer();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to load matching game.", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
+    }
+
+    private void fillMatchingData(MatchingGame game) {
+        leftItems[0].setText(game.getLeft1());
+        leftItems[1].setText(game.getLeft2());
+        leftItems[2].setText(game.getLeft3());
+        leftItems[3].setText(game.getLeft4());
+        leftItems[4].setText(game.getLeft5());
+
+        rightItems[0].setText(game.getRight1());
+        rightItems[1].setText(game.getRight2());
+        rightItems[2].setText(game.getRight3());
+        rightItems[3].setText(game.getRight4());
+        rightItems[4].setText(game.getRight5());
+
+        correctMatches.clear();
+        correctMatches.put(game.getLeft1(), game.getMatch1());
+        correctMatches.put(game.getLeft2(), game.getMatch2());
+        correctMatches.put(game.getLeft3(), game.getMatch3());
+        correctMatches.put(game.getLeft4(), game.getMatch4());
+        correctMatches.put(game.getLeft5(), game.getMatch5());
     }
 
     private void setupLeaveButton() {
@@ -78,15 +138,7 @@ public class MatchingActivity extends AppCompatActivity {
         });
     }
 
-    private void setupCorrectMatches() {
-        correctMatches.put(R.id.leftItem1, R.id.rightItem3); // Serbia - Belgrade
-        correctMatches.put(R.id.leftItem2, R.id.rightItem4); // Italy - Rome
-        correctMatches.put(R.id.leftItem3, R.id.rightItem5); // France - Paris
-        correctMatches.put(R.id.leftItem4, R.id.rightItem1); // Germany - Berlin
-        correctMatches.put(R.id.leftItem5, R.id.rightItem2); // Spain - Madrid
-    }
-
-    private void setupMatchingClicks() {
+    private void setupMatchingViews() {
         leftItems = new TextView[]{
                 findViewById(R.id.leftItem1),
                 findViewById(R.id.leftItem2),
@@ -102,7 +154,9 @@ public class MatchingActivity extends AppCompatActivity {
                 findViewById(R.id.rightItem4),
                 findViewById(R.id.rightItem5)
         };
+    }
 
+    private void setupMatchingClicks() {
         for (TextView leftItem : leftItems) {
             leftItem.setOnClickListener(v -> selectLeftItem((TextView) v));
         }
@@ -134,17 +188,20 @@ public class MatchingActivity extends AppCompatActivity {
     private void connectWithRightItem(TextView rightItem) {
         if (selectedLeftItem == null) return;
 
-        Integer correctRightId = correctMatches.get(selectedLeftItem.getId());
-        boolean isCorrect = correctRightId != null && correctRightId == rightItem.getId();
+        String selectedLeftText = selectedLeftItem.getText().toString();
+        String selectedRightText = rightItem.getText().toString();
+
+        String correctRightText = correctMatches.get(selectedLeftText);
+        boolean isCorrect = correctRightText != null && correctRightText.equals(selectedRightText);
 
         if (isCorrect) {
             selectedLeftItem.setBackgroundResource(R.drawable.bg_quiz_answer_correct);
             rightItem.setBackgroundResource(R.drawable.bg_quiz_answer_correct);
-            playerScore += 10;
+            playerScore += 2;
+            correctMatchesCount++;
         } else {
             selectedLeftItem.setBackgroundResource(R.drawable.bg_quiz_answer_wrong);
             rightItem.setBackgroundResource(R.drawable.bg_quiz_answer_wrong);
-            playerScore -= 5;
         }
 
         selectedLeftItem.setEnabled(false);
@@ -164,6 +221,7 @@ public class MatchingActivity extends AppCompatActivity {
             showEndDialog();
         }
     }
+
     private void startTimer() {
         if (timer != null) {
             timer.cancel();
@@ -194,6 +252,10 @@ public class MatchingActivity extends AppCompatActivity {
 
     private void showEndDialog() {
         if (timer != null) timer.cancel();
+
+        boolean won = correctMatchesCount >= 3;
+
+        StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, won);
 
         new AlertDialog.Builder(this)
                 .setTitle("Game finished")

@@ -139,14 +139,7 @@
                         android:textStyle="bold"
                         android:fontFamily="sans-serif-black" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tokens_label"
-                        android:textColor="#2D1B5E"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-black" />
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -181,14 +174,7 @@
                         android:textStyle="bold"
                         android:fontFamily="sans-serif-black" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/stars_label"
-                        android:textColor="#2D1B5E"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-black" />
+
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -265,6 +251,64 @@
                 android:background="@drawable/bg_qr_box" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="OVERALL STATISTICS"
+                android:textColor="#5B2FC4"
+                android:textSize="22sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvOverallSuccess"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="Success: 0%"
+                android:textColor="#2D1B5E"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvOverallPlayedGames"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="Played games: 0"
+                android:textColor="#2D1B5E"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvOverallWinLoss"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="Wins: 0% Losses: 0%"
+                android:textColor="#2D1B5E"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp" />
+        </LinearLayout>
+
         <!-- STATISTICS -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -320,6 +364,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvQuizOverviewPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/quiz_percent"
@@ -328,6 +373,7 @@
                         android:textSize="18sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressQuizOverview"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
@@ -367,6 +413,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvMatchingOverviewPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/matching_percent"
@@ -375,6 +422,7 @@
                         android:textSize="18sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressMatchingOverview"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"

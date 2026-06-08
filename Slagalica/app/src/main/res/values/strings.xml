@@ -90,20 +90,12 @@
 
     <string name="quiz_statistics_title">🧠 QUIZ STATISTICS</string>
     <string name="average_quiz_success">Average points range</string>
-    <string name="average_quiz_points">73% success</string>
-    <string name="quiz_answers_ratio_title">Correct / Wrong Answers</string>
-    <string name="quiz_correct_answers">✅ Correct answers: 38</string>
-    <string name="quiz_wrong_answers">❌ Wrong answers: 14</string>
+    <string name="quiz_answers_ratio_title">Answers</string>
     <string name="match_statistics_title">Match Statistics</string>
-    <string name="total_played_matches">🎮 Total played matches: 12</string>
-    <string name="win_loss_percentage">🏆 Wins: 58%   Losses: 42%</string>
 
     <string name="matching_statistics_title">🔗 MATCHING STATISTICS</string>
     <string name="average_matching_success">Average points range</string>
-    <string name="average_matching_points">70% success</string>
     <string name="matching_pairs_title">Connected Terms</string>
-    <string name="matching_successful_pairs">✅ Successfully connected terms: 42</string>
-    <string name="matching_failed_pairs">❌ Failed connections: 18</string>
 
     <string name="associations_statistics_title">🧩 ASSOCIATIONS STATISTICS</string>
     <string name="average_associations_success">Average points range</string>
@@ -349,5 +341,8 @@
     <string name="numbers_label">Your Numbers</string>
     <string name="current_step_label">Current Step</string>
     <string name="steps_progress_label">Progress</string>
+
+    <string name="total_played_matches">🎮 Total played matches: 0</string>
+    <string name="win_loss_percentage">🏆 Wins: 0% Losses: 0%</string>
 
 </resources>
