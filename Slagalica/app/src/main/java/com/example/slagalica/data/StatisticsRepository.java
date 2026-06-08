@@ -1,0 +1,41 @@
+package com.example.slagalica.data;
+
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class StatisticsRepository {
+
+    private static final String COLLECTION = "statistics";
+    private static final String PLAYER_ID = "player1";
+
+    public static void saveQuizResult(int correctAnswers, int totalQuestions, boolean won){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("quizGamesPlayed", FieldValue.increment(1));
+        updates.put("quizCorrectAnswers", FieldValue.increment(correctAnswers));
+        updates.put("quizTotalQuestions", FieldValue.increment(totalQuestions));
+        updates.put(won ? "quizGamesWon" : "quizGamesLost",FieldValue.increment(1));
+
+        db.collection(COLLECTION)
+                .document(PLAYER_ID)
+                .set(updates, com.google.firebase.firestore.SetOptions.merge());
+    }
+
+    public static void saveMatchingResult(int correctMatches, int totalMatches, boolean won) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("matchingGamesPlayed", FieldValue.increment(1));
+        updates.put("matchingCorrectMatches", FieldValue.increment(correctMatches));
+        updates.put("matchingTotalMatches", FieldValue.increment(totalMatches));
+        updates.put(won ? "matchingGamesWon" : "matchingGamesLost", FieldValue.increment(1));
+
+        db.collection(COLLECTION)
+                .document(PLAYER_ID)
+                .set(updates, com.google.firebase.firestore.SetOptions.merge());
+    }
+}

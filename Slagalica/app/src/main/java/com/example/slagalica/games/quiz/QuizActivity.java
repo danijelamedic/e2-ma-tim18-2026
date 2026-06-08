@@ -13,7 +13,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
+import com.example.slagalica.models.QuizQuestion;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
+import com.example.slagalica.data.StatisticsRepository;
 
 public class QuizActivity extends AppCompatActivity {
 
@@ -21,24 +27,14 @@ public class QuizActivity extends AppCompatActivity {
     private TextView tvQuestion;
     private TextView tvPlayerScore;
     private TextView[] answerViews;
+
+    private final List<QuizQuestion> questions = new ArrayList<>();
+
     private int currentQuestionIndex = 0;
     private int selectedAnswerIndex = -1;
     private int playerScore = 0;
-    private final String[] questions = {
-            "Which planet is known as the Red Planet?",
-            "What is the capital of Italy?",
-            "How many days are there in a leap year?",
-            "Which ocean is the largest?",
-            "Who wrote Romeo and Juliet?"
-    };
-    private final String[][] answers = {
-            {"Earth", "Mars", "Jupiter", "Venus"},
-            {"Rome", "Paris", "Berlin", "Madrid"},
-            {"365", "366", "364", "360"},
-            {"Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"},
-            {"William Shakespeare", "Charles Dickens", "Mark Twain", "Dante Alighieri"}
-    };
-    private final int[] correctAnswers = {1, 0, 1, 2, 0};
+    private int correctAnswersCount = 0;
+
     private TextView tvQuizTimer;
     private CountDownTimer countDownTimer;
     private boolean questionAnswered = false;
@@ -76,21 +72,55 @@ public class QuizActivity extends AppCompatActivity {
             answerViews[i].setOnClickListener(v -> selectAnswer(index));
         }
 
-        loadQuestion();
+        loadQuestionsFromFirebase();
+    }
+
+    private void loadQuestionsFromFirebase() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("quizQuestions")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    questions.clear();
+
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        QuizQuestion question = document.toObject(QuizQuestion.class);
+                        questions.add(question);
+                    }
+
+                    if (questions.isEmpty()) {
+                        Toast.makeText(this, "No quiz questions found.", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+
+                    currentQuestionIndex = 0;
+                    loadQuestion();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to load questions.", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
     }
 
     private void loadQuestion() {
         selectedAnswerIndex = -1;
         questionAnswered = false;
 
-        tvQuestionCounter.setText("Question " + (currentQuestionIndex + 1) + "/5");
-        tvQuestion.setText(questions[currentQuestionIndex]);
+        QuizQuestion currentQuestion = questions.get(currentQuestionIndex);
 
-        for (int i = 0; i < answerViews.length; i++) {
-            answerViews[i].setText(answers[currentQuestionIndex][i]);
-            answerViews[i].setSelected(false);
-            answerViews[i].setEnabled(true);
-            answerViews[i].setBackgroundResource(R.drawable.bg_quiz_answer);
+        tvQuestionCounter.setText("Question " + (currentQuestionIndex + 1) + "/" + questions.size());
+        tvQuestion.setText(currentQuestion.getQuestion());
+
+        answerViews[0].setText(currentQuestion.getOptionA());
+        answerViews[1].setText(currentQuestion.getOptionB());
+        answerViews[2].setText(currentQuestion.getOptionC());
+        answerViews[3].setText(currentQuestion.getOptionD());
+
+        for (TextView answerView : answerViews) {
+            answerView.setSelected(false);
+            answerView.setEnabled(true);
+            answerView.setBackgroundResource(R.drawable.bg_quiz_answer);
         }
 
         timeLeftMillis = 5000;
@@ -147,18 +177,30 @@ public class QuizActivity extends AppCompatActivity {
             answerView.setSelected(false);
         }
 
-        int correctIndex = correctAnswers[currentQuestionIndex];
+        QuizQuestion currentQuestion = questions.get(currentQuestionIndex);
+        String selectedAnswer = answerViews[selectedAnswerIndex].getText().toString();
+        String correctAnswer = currentQuestion.getCorrectAnswer();
 
-        if (selectedAnswerIndex == correctIndex) {
+        if (selectedAnswer.equals(correctAnswer)) {
             playerScore += 10;
+            correctAnswersCount++;
             answerViews[selectedAnswerIndex].setBackgroundResource(R.drawable.bg_quiz_answer_correct);
         } else {
             playerScore -= 5;
             answerViews[selectedAnswerIndex].setBackgroundResource(R.drawable.bg_quiz_answer_wrong);
-            answerViews[correctIndex].setBackgroundResource(R.drawable.bg_quiz_answer_correct);
+            showCorrectAnswer(correctAnswer);
         }
 
         tvPlayerScore.setText(playerScore + " pts");
+    }
+
+    private void showCorrectAnswer(String correctAnswer) {
+        for (TextView answerView : answerViews) {
+            if (answerView.getText().toString().equals(correctAnswer)) {
+                answerView.setBackgroundResource(R.drawable.bg_quiz_answer_correct);
+                break;
+            }
+        }
     }
 
     private void goToNextQuestion() {
@@ -180,7 +222,7 @@ public class QuizActivity extends AppCompatActivity {
             countDownTimer.cancel();
         }
 
-        if (currentQuestionIndex < questions.length - 1) {
+        if (currentQuestionIndex < questions.size() - 1) {
             currentQuestionIndex++;
             loadQuestion();
         } else {
@@ -222,6 +264,9 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void showResultDialog() {
+        boolean won = correctAnswersCount >= Math.ceil(questions.size() / 2.0);
+
+        StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), won);
         new AlertDialog.Builder(this)
                 .setTitle("Quiz finished")
                 .setMessage("Your score: " + playerScore + " pts")

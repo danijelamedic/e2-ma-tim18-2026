@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.slagalica.data.FirebaseSeeder;
 import com.example.slagalica.games.MyNumber.MyNumberActivity;
 import com.example.slagalica.games.StepByStep.StepByStepActivity;
 import com.example.slagalica.games.associations.AssociationsActivity;
@@ -43,6 +44,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        FirebaseSeeder.seedQuizQuestions();
+        FirebaseSeeder.seedMatchingGames();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
