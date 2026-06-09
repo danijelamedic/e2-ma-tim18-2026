@@ -49,16 +49,31 @@
             android:elevation="8dp"
             android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/tvAvatar"
+            <FrameLayout
                 android:layout_width="110dp"
                 android:layout_height="110dp"
-                android:gravity="center"
-                android:text="@string/avatar_icon"
-                android:textSize="48sp"
-                android:background="@drawable/bg_avatar_circle"
-                android:layout_marginEnd="18dp" />
+                android:layout_marginEnd="18dp">
 
+                <ImageView
+                    android:id="@+id/imgAvatar"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:src="@drawable/avatar_owl"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg_avatar_circle"
+                    android:padding="6dp"/>
+
+                <TextView
+                    android:id="@+id/btnEditAvatar"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|end"
+                    android:gravity="center"
+                    android:text="✏"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_small_pill"/>
+            </FrameLayout>
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -91,16 +106,6 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="12dp" />
 
-                <Button
-                    android:id="@+id/btnChangeAvatar"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="@string/change_avatar"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="16sp"
-                    android:background="@drawable/bg_purple_button" />
             </LinearLayout>
         </LinearLayout>
 

@@ -44,9 +44,10 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvStars;
     private TextView tvEmail;
     private TextView tvRegion;
-    private TextView tvAvatar;
-
+    private ImageView imgAvatar;
+    private String currentAvatar = "owl";
     private ImageView imgQrCode;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvStars = findViewById(R.id.tvStars);
         tvEmail = findViewById(R.id.tvEmail);
         tvRegion = findViewById(R.id.tvRegion);
-        tvAvatar = findViewById(R.id.tvAvatar);
+        imgAvatar = findViewById(R.id.imgAvatar);
         imgQrCode = findViewById(R.id.imgQrCode);
 
         tvQuizOverviewPercent = findViewById(R.id.tvQuizOverviewPercent);
@@ -103,6 +104,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         findViewById(R.id.cardMyNumberStatistics).setOnClickListener(v ->
                 startActivity(new Intent(ProfileActivity.this, MyNumberStatisticsActivity.class)));
+
+        imgAvatar.setOnClickListener(v -> openChangeAvatar());
+
+        findViewById(R.id.btnEditAvatar).setOnClickListener(v -> openChangeAvatar());
     }
 
     private void loadOverviewStatistics() {
@@ -248,7 +253,8 @@ public class ProfileActivity extends AppCompatActivity {
                     String username = document.getString("username");
                     String email = document.getString("email");
                     String region = document.getString("region");
-                    String avatarUrl = document.getString("avatarUrl");
+                    String avatar = document.getString("avatar");
+                    currentAvatar = avatar != null ? avatar : "owl";
 
                     Long tokens = document.getLong("tokens");
                     Long stars = document.getLong("stars");
@@ -265,12 +271,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     generateQrCode(userId);
 
-                    if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                        tvAvatar.setText("👤");
-                    } else {
-                        tvAvatar.setText("👤");
-                    }
-
+                    imgAvatar.setImageResource(getAvatarResource(avatar));
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to load user profile", Toast.LENGTH_SHORT).show()
@@ -296,5 +297,39 @@ public class ProfileActivity extends AppCompatActivity {
         } catch (WriterException e) {
             Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private int getAvatarResource(String avatar) {
+        if (avatar == null) {
+            return R.drawable.avatar_owl;
+        }
+
+        switch (avatar) {
+            case "fox":
+                return R.drawable.avatar_fox;
+            case "penguin":
+                return R.drawable.avatar_penguin;
+            case "wolf":
+                return R.drawable.avatar_wolf;
+            case "cat":
+                return R.drawable.avatar_cat;
+            case "dog":
+                return R.drawable.avatar_dog;
+            case "owl":
+            default:
+                return R.drawable.avatar_owl;
+        }
+    }
+
+    private void openChangeAvatar() {
+        Intent intent = new Intent(ProfileActivity.this, ChangeAvatarActivity.class);
+        intent.putExtra("currentAvatar", currentAvatar);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadUserProfile();
     }
 }
