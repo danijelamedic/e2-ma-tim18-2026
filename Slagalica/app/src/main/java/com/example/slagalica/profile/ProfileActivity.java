@@ -17,6 +17,15 @@ import com.example.slagalica.profile.statistics.StepByStepStatisticsActivity;
 import com.example.slagalica.profile.statistics.MyNumberStatisticsActivity;
 import android.widget.ProgressBar;
 import com.google.firebase.firestore.FirebaseFirestore;
+import android.widget.ImageView;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.widget.ImageView;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -29,10 +38,29 @@ public class ProfileActivity extends AppCompatActivity {
     private ProgressBar progressQuizOverview;
     private ProgressBar progressMatchingOverview;
 
+    private TextView tvUsername;
+    private TextView tvLeague;
+    private TextView tvTokens;
+    private TextView tvStars;
+    private TextView tvEmail;
+    private TextView tvRegion;
+    private TextView tvAvatar;
+
+    private ImageView imgQrCode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        tvUsername = findViewById(R.id.tvUsername);
+        tvLeague = findViewById(R.id.tvLeague);
+        tvTokens = findViewById(R.id.tvTokens);
+        tvStars = findViewById(R.id.tvStars);
+        tvEmail = findViewById(R.id.tvEmail);
+        tvRegion = findViewById(R.id.tvRegion);
+        tvAvatar = findViewById(R.id.tvAvatar);
+        imgQrCode = findViewById(R.id.imgQrCode);
 
         tvQuizOverviewPercent = findViewById(R.id.tvQuizOverviewPercent);
         tvMatchingOverviewPercent = findViewById(R.id.tvMatchingOverviewPercent);
@@ -46,6 +74,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         loadOverviewStatistics();
         loadOverallStatistics();
+        loadUserProfile();
 
         TextView btnLogout = findViewById(R.id.btnLogout);
 
@@ -199,5 +228,73 @@ public class ProfileActivity extends AppCompatActivity {
                             "Wins: " + winPercent + "% Losses: " + lossPercent + "%"
                     );
                 });
+    }
+
+    private void loadUserProfile() {
+
+        String userId = "jMwwl0MoswM7u5nifYChTng97jj1";
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(document -> {
+
+                    if (!document.exists()) {
+                        Toast.makeText(this, "User profile not found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String username = document.getString("username");
+                    String email = document.getString("email");
+                    String region = document.getString("region");
+                    String avatarUrl = document.getString("avatarUrl");
+
+                    Long tokens = document.getLong("tokens");
+                    Long stars = document.getLong("stars");
+                    Long league = document.getLong("league");
+
+                    tvUsername.setText(username != null ? username : "Unknown user");
+                    tvEmail.setText(email != null ? "Email: " + email : "Email: /");
+                    tvRegion.setText(region != null ? "Region: " + region : "Region: /");
+
+                    tvTokens.setText(String.valueOf(tokens != null ? tokens : 0));
+                    tvStars.setText(String.valueOf(stars != null ? stars : 0));
+
+                    tvLeague.setText("League " + (league != null ? league : 0));
+
+                    generateQrCode(userId);
+
+                    if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                        tvAvatar.setText("👤");
+                    } else {
+                        tvAvatar.setText("👤");
+                    }
+
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to load user profile", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    private void generateQrCode(String text) {
+        QRCodeWriter writer = new QRCodeWriter();
+
+        try {
+            BitMatrix bitMatrix = writer.encode(text, BarcodeFormat.QR_CODE, 300, 300);
+
+            Bitmap bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.RGB_565);
+
+            for (int x = 0; x < 300; x++) {
+                for (int y = 0; y < 300; y++) {
+                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+
+            imgQrCode.setImageBitmap(bitmap);
+
+        } catch (WriterException e) {
+            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
+        }
     }
 }

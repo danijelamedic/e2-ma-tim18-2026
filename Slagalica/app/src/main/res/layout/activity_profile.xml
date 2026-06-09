@@ -66,6 +66,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tvUsername"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/profile_username"
@@ -75,6 +76,7 @@
                     android:fontFamily="sans-serif-black" />
 
                 <TextView
+                    android:id="@+id/tvLeague"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/profile_league"
@@ -131,6 +133,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvTokens"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/token_count"
@@ -166,6 +169,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvStars"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/star_count"
@@ -198,6 +202,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvEmail"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -210,6 +215,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvRegion"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -240,15 +246,13 @@
                 android:fontFamily="sans-serif-black"
                 android:layout_marginBottom="14dp" />
 
-            <TextView
+            <ImageView
+                android:id="@+id/imgQrCode"
                 android:layout_width="145dp"
                 android:layout_height="145dp"
-                android:gravity="center"
-                android:text="@string/qr_placeholder"
-                android:textSize="34sp"
-                android:textStyle="bold"
-                android:textColor="#5B2FC4"
-                android:background="@drawable/bg_qr_box" />
+                android:background="@drawable/bg_qr_box"
+                android:padding="10dp"
+                android:contentDescription="@string/qr_title" />
         </LinearLayout>
 
         <LinearLayout
