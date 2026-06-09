@@ -49,16 +49,31 @@
             android:elevation="8dp"
             android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/tvAvatar"
+            <FrameLayout
                 android:layout_width="110dp"
                 android:layout_height="110dp"
-                android:gravity="center"
-                android:text="@string/avatar_icon"
-                android:textSize="48sp"
-                android:background="@drawable/bg_avatar_circle"
-                android:layout_marginEnd="18dp" />
+                android:layout_marginEnd="18dp">
 
+                <ImageView
+                    android:id="@+id/imgAvatar"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:src="@drawable/avatar_owl"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg_avatar_circle"
+                    android:padding="6dp"/>
+
+                <TextView
+                    android:id="@+id/btnEditAvatar"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|end"
+                    android:gravity="center"
+                    android:text="✏"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_small_pill"/>
+            </FrameLayout>
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -66,6 +81,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tvUsername"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/profile_username"
@@ -75,6 +91,7 @@
                     android:fontFamily="sans-serif-black" />
 
                 <TextView
+                    android:id="@+id/tvLeague"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/profile_league"
@@ -89,16 +106,6 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="12dp" />
 
-                <Button
-                    android:id="@+id/btnChangeAvatar"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="@string/change_avatar"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="16sp"
-                    android:background="@drawable/bg_purple_button" />
             </LinearLayout>
         </LinearLayout>
 
@@ -131,6 +138,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvTokens"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/token_count"
@@ -166,6 +174,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvStars"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/star_count"
@@ -198,6 +207,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvEmail"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -210,6 +220,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvRegion"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -240,15 +251,13 @@
                 android:fontFamily="sans-serif-black"
                 android:layout_marginBottom="14dp" />
 
-            <TextView
+            <ImageView
+                android:id="@+id/imgQrCode"
                 android:layout_width="145dp"
                 android:layout_height="145dp"
-                android:gravity="center"
-                android:text="@string/qr_placeholder"
-                android:textSize="34sp"
-                android:textStyle="bold"
-                android:textColor="#5B2FC4"
-                android:background="@drawable/bg_qr_box" />
+                android:background="@drawable/bg_qr_box"
+                android:padding="10dp"
+                android:contentDescription="@string/qr_title" />
         </LinearLayout>
 
         <LinearLayout
