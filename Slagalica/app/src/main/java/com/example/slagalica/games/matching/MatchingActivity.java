@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 import com.example.slagalica.data.StatisticsRepository;
+import android.widget.ImageView;
 
 public class MatchingActivity extends AppCompatActivity {
 
@@ -37,7 +38,11 @@ public class MatchingActivity extends AppCompatActivity {
     private TextView tvTimer;
     private TextView[] leftItems;
     private TextView[] rightItems;
-
+    private TextView tvPlayerName;
+    private ImageView imgYourAvatar;
+    private TextView tvPlayerInfo;
+    private TextView tvOpponentInfo;
+    private TextView tvPlayerScore;
     private boolean isBattleMode;
 
     @Override
@@ -55,6 +60,17 @@ public class MatchingActivity extends AppCompatActivity {
         });
 
         tvTimer = findViewById(R.id.tvTimer);
+        imgYourAvatar = findViewById(R.id.imgYourAvatar);
+        tvPlayerName = findViewById(R.id.tvPlayerName);
+        tvPlayerInfo = findViewById(R.id.tvPlayerInfo);
+        tvOpponentInfo = findViewById(R.id.tvOpponentInfo);
+        tvOpponentInfo.setText("🪙0 ⭐0 L0");
+
+        tvPlayerScore = findViewById(R.id.tvPlayerScore);
+        playerScore = getIntent().getIntExtra("currentTotalScore", 0);
+        tvPlayerScore.setText(playerScore + " pts");
+
+        loadCurrentUserInfo();
 
         setupLeaveButton();
         setupSubmitButton();
@@ -121,9 +137,22 @@ public class MatchingActivity extends AppCompatActivity {
 
         btnLeave.setOnClickListener(v -> {
             new AlertDialog.Builder(MatchingActivity.this)
-                    .setTitle("Leave Game")
-                    .setMessage("Are you sure you want to leave the game?")
-                    .setPositiveButton("YES", (dialog, which) -> finish())
+                    .setTitle("Leave battle")
+                    .setMessage("If you leave now, you will lose the entire battle. Are you sure?")
+                    .setPositiveButton("YES", (dialog, which) -> {
+                        if (timer != null) {
+                            timer.cancel();
+                        }
+
+                        if (isBattleMode) {
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("battleLost", true);
+                            setResult(RESULT_OK, resultIntent);
+                            finish();
+                        } else {
+                            finish();
+                        }
+                    })
                     .setNegativeButton("NO", (dialog, which) -> dialog.dismiss())
                     .show();
         });
@@ -255,43 +284,28 @@ public class MatchingActivity extends AppCompatActivity {
     }
 
     private void showEndDialog() {
-
         if (timer != null) {
             timer.cancel();
         }
 
-        boolean won = correctMatchesCount >= 3;
+        if (isBattleMode) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("score", playerScore);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+            return;
+        }
 
-        StatisticsRepository.saveMatchingResult(
-                correctMatchesCount,
-                5,
-                won
-        );
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
 
         new AlertDialog.Builder(this)
                 .setTitle("Game finished")
                 .setMessage("Your score: " + playerScore + " pts")
                 .setPositiveButton("OK", (dialog, which) -> {
-
-                    if (isBattleMode) {
-
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("score", playerScore);
-
-                        setResult(RESULT_OK, resultIntent);
-                        finish();
-
-                    } else {
-
-                        startActivity(
-                                new Intent(
-                                        this,
-                                        HomeActivity.class
-                                )
-                        );
-
-                        finish();
-                    }
+                    startActivity(new Intent(this, HomeActivity.class));
+                    finish();
                 })
                 .show();
     }
@@ -314,5 +328,69 @@ public class MatchingActivity extends AppCompatActivity {
                     })
                     .show();
         });
+    }
+
+    private void loadCurrentUserInfo() {
+        String userId = "jMwwl0MoswM7u5nifYChTng97jj1";
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (!document.exists()) {
+                        imgYourAvatar.setImageResource(R.drawable.avatar_owl);
+                        tvPlayerName.setText("Player");
+                        tvPlayerInfo.setText("🪙0 ⭐0 L0");
+                        return;
+                    }
+
+                    String username = document.getString("username");
+                    String avatar = document.getString("avatar");
+
+                    Long tokens = document.getLong("tokens");
+                    Long stars = document.getLong("stars");
+                    Long league = document.getLong("league");
+
+                    long tokensValue = tokens != null ? tokens : 0;
+                    long starsValue = stars != null ? stars : 0;
+                    long leagueValue = league != null ? league : 0;
+
+                    tvPlayerName.setText(username != null ? username : "Player");
+                    imgYourAvatar.setImageResource(getAvatarResource(avatar));
+
+                    tvPlayerInfo.setText(
+                            "🪙" + tokensValue +
+                                    " ⭐" + starsValue +
+                                    " L" + leagueValue
+                    );
+                })
+                .addOnFailureListener(e -> {
+                    imgYourAvatar.setImageResource(R.drawable.avatar_owl);
+                    tvPlayerName.setText("Player");
+                    tvPlayerInfo.setText("🪙0 ⭐0 L0");
+                });
+    }
+
+    private int getAvatarResource(String avatar) {
+        if (avatar == null) {
+            return R.drawable.avatar_owl;
+        }
+
+        switch (avatar) {
+            case "fox":
+                return R.drawable.avatar_fox;
+            case "penguin":
+                return R.drawable.avatar_penguin;
+            case "wolf":
+                return R.drawable.avatar_wolf;
+            case "cat":
+                return R.drawable.avatar_cat;
+            case "dog":
+                return R.drawable.avatar_dog;
+            case "owl":
+            default:
+                return R.drawable.avatar_owl;
+        }
     }
 }

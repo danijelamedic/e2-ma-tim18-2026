@@ -38,4 +38,28 @@ public class StatisticsRepository {
                 .document(PLAYER_ID)
                 .set(updates, com.google.firebase.firestore.SetOptions.merge());
     }
+
+    public static void saveBattleWin() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("totalBattlesPlayed", FieldValue.increment(1));
+        updates.put("battlesWon", FieldValue.increment(1));
+
+        db.collection(COLLECTION)
+                .document(PLAYER_ID)
+                .set(updates, com.google.firebase.firestore.SetOptions.merge());
+    }
+
+    public static void saveBattleLoss() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("totalBattlesPlayed", FieldValue.increment(1));
+        updates.put("battlesLost", FieldValue.increment(1));
+
+        db.collection(COLLECTION)
+                .document(PLAYER_ID)
+                .set(updates, com.google.firebase.firestore.SetOptions.merge());
+    }
 }

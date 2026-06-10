@@ -8,6 +8,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.slagalica.data.StatisticsRepository;
 import com.example.slagalica.games.MyNumber.MyNumberActivity;
 import com.example.slagalica.games.StepByStep.StepByStepActivity;
 import com.example.slagalica.games.associations.AssociationsActivity;
@@ -39,8 +40,15 @@ public class GameSessionActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getData() != null) {
+                        boolean battleLost = result.getData().getBooleanExtra("battleLost", false);
+
+                        if (battleLost) {
+                            finishBattleAsLost();
+                            return;
+                        }
+
                         int gameScore = result.getData().getIntExtra("score", 0);
-                        totalScore += gameScore;
+                        totalScore = gameScore;
                     }
 
                     currentGameIndex++;
@@ -62,13 +70,30 @@ public class GameSessionActivity extends AppCompatActivity {
         intent.putExtra("isBattleMode", true);
         intent.putExtra("currentGameIndex", currentGameIndex);
         intent.putExtra("totalGames", games.length);
+        intent.putExtra("currentTotalScore", totalScore);
 
         gameLauncher.launch(intent);
     }
 
     private void finishBattle() {
+
+        StatisticsRepository.saveBattleWin();
+
         Intent intent = new Intent(this, BattleResultActivity.class);
         intent.putExtra("totalScore", totalScore);
+
+        startActivity(intent);
+        finish();
+    }
+
+    private void finishBattleAsLost() {
+
+        StatisticsRepository.saveBattleLoss();
+
+        Intent intent = new Intent(this, BattleResultActivity.class);
+        intent.putExtra("totalScore", totalScore);
+        intent.putExtra("battleLost", true);
+
         startActivity(intent);
         finish();
     }
