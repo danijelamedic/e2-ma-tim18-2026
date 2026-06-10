@@ -18,9 +18,17 @@ public class BattleResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_battle_result);
 
         int totalScore = getIntent().getIntExtra("totalScore", 0);
+        boolean battleLost = getIntent().getBooleanExtra("battleLost", false);
 
+        TextView tvTitle = findViewById(R.id.tvTitle);
         tvTotalScore = findViewById(R.id.tvTotalScore);
         btnBackHome = findViewById(R.id.btnBackHome);
+
+        if (battleLost) {
+            tvTitle.setText("Battle Lost");
+        } else {
+            tvTitle.setText("Battle Finished!");
+        }
 
         tvTotalScore.setText(totalScore + " pts");
 

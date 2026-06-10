@@ -20,10 +20,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import com.example.slagalica.data.StatisticsRepository;
+import android.widget.ImageView;
 
 public class QuizActivity extends AppCompatActivity {
 
-    private TextView tvQuestionCounter;
     private TextView tvQuestion;
     private TextView tvPlayerScore;
     private TextView[] answerViews;
@@ -40,6 +40,12 @@ public class QuizActivity extends AppCompatActivity {
     private boolean questionAnswered = false;
     private long timeLeftMillis = 5000;
     private boolean isBattleMode;
+    private ImageView imgYourAvatar;
+    private TextView tvPlayerName;
+    private TextView tvOpponentInfo;
+    private TextView tvPlayerInfo;
+    private TextView tvQuestionProgress;
+    private TextView tvBattleRound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +59,30 @@ public class QuizActivity extends AppCompatActivity {
             return insets;
         });
 
-        tvQuestionCounter = findViewById(R.id.tvQuestionCounter);
         tvQuestion = findViewById(R.id.tvQuestion);
         tvPlayerScore = findViewById(R.id.tvPlayerScore);
         tvQuizTimer = findViewById(R.id.tvQuizTimer);
+        imgYourAvatar = findViewById(R.id.imgYourAvatar);
+        tvPlayerInfo = findViewById(R.id.tvPlayerInfo);
+        tvPlayerName = findViewById(R.id.tvPlayerName);
+
+        tvOpponentInfo = findViewById(R.id.tvOpponentInfo);
+        tvOpponentInfo.setText("🪙0 ⭐0 L0");
+
+        tvQuestionProgress = findViewById(R.id.tvQuestionProgress);
+
+
+        playerScore = getIntent().getIntExtra("currentTotalScore", 0);
+        tvPlayerScore.setText(playerScore + " pts");
+
+        tvBattleRound = findViewById(R.id.tvBattleRound);
+
+        int currentGameIndex = getIntent().getIntExtra("currentGameIndex", 0);
+        int totalGames = getIntent().getIntExtra("totalGames", 6);
+
+        tvBattleRound.setText("Round " + (currentGameIndex + 1) + " / " + totalGames);
+
+        loadCurrentUserInfo();
 
         answerViews = new TextView[]{
                 findViewById(R.id.btnAnswer1),
@@ -111,7 +137,11 @@ public class QuizActivity extends AppCompatActivity {
 
         QuizQuestion currentQuestion = questions.get(currentQuestionIndex);
 
-        tvQuestionCounter.setText("Question " + (currentQuestionIndex + 1) + "/" + questions.size());
+        String questionProgress =
+                "Question " + (currentQuestionIndex + 1) + "/" + questions.size();
+
+        tvQuestionProgress.setText(questionProgress);
+
         tvQuestion.setText(currentQuestion.getQuestion());
 
         answerViews[0].setText(currentQuestion.getOptionA());
@@ -250,16 +280,24 @@ public class QuizActivity extends AppCompatActivity {
 
     private void showLeaveDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Leave game")
-                .setMessage("Are you sure you want to leave the game?")
+                .setTitle("Leave battle")
+                .setMessage("If you leave now, you will lose the entire battle. Are you sure?")
                 .setPositiveButton("YES", (dialog, which) -> {
-                    Intent intent = new Intent(QuizActivity.this, HomeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     if (countDownTimer != null) {
                         countDownTimer.cancel();
                     }
-                    startActivity(intent);
-                    finish();
+
+                    if (isBattleMode) {
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("battleLost", true);
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+                    } else {
+                        Intent intent = new Intent(QuizActivity.this, HomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
                 })
                 .setNegativeButton("NO", null)
                 .show();
@@ -270,34 +308,91 @@ public class QuizActivity extends AppCompatActivity {
 
         StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), won);
 
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
+        if (isBattleMode) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("score", playerScore);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+            return;
+        }
+
         new AlertDialog.Builder(this)
                 .setTitle("Quiz finished")
                 .setMessage("Your score: " + playerScore + " pts")
                 .setPositiveButton("OK", (dialog, which) -> {
-
-                    if (countDownTimer != null) {
-                        countDownTimer.cancel();
-                    }
-
-                    if (isBattleMode) {
-
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("score", playerScore);
-
-                        setResult(RESULT_OK, resultIntent);
-                        finish();
-
-                    } else {
-
-                        Intent intent = new Intent(
-                                QuizActivity.this,
-                                HomeActivity.class
-                        );
-
-                        startActivity(intent);
-                        finish();
-                    }
+                    Intent intent = new Intent(QuizActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
                 })
                 .show();
     }
+
+    private void loadCurrentUserInfo() {
+        String userId = "jMwwl0MoswM7u5nifYChTng97jj1";
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (!document.exists()) {
+                        imgYourAvatar.setImageResource(R.drawable.avatar_owl);
+                        tvPlayerName.setText("Player");
+                        tvPlayerInfo.setText("🪙0 ⭐0 L0");
+                        return;
+                    }
+
+                    String username = document.getString("username");
+                    String avatar = document.getString("avatar");
+
+                    Long tokens = document.getLong("tokens");
+                    Long stars = document.getLong("stars");
+                    Long league = document.getLong("league");
+
+                    long tokensValue = tokens != null ? tokens : 0;
+                    long starsValue = stars != null ? stars : 0;
+                    long leagueValue = league != null ? league : 0;
+
+                    tvPlayerName.setText(username != null ? username : "Player");
+                    imgYourAvatar.setImageResource(getAvatarResource(avatar));
+
+                    tvPlayerInfo.setText(
+                            "🪙" + tokensValue +
+                                    " ⭐" + starsValue +
+                                    " L" + leagueValue
+                    );
+                })
+                .addOnFailureListener(e -> {
+                    imgYourAvatar.setImageResource(R.drawable.avatar_owl);
+                    tvPlayerName.setText("Player");
+                    tvPlayerInfo.setText("🪙0 ⭐0 L0");
+                });
+    }
+
+    private int getAvatarResource(String avatar) {
+        if (avatar == null) {
+            return R.drawable.avatar_owl;
+        }
+
+        switch (avatar) {
+            case "fox":
+                return R.drawable.avatar_fox;
+            case "penguin":
+                return R.drawable.avatar_penguin;
+            case "wolf":
+                return R.drawable.avatar_wolf;
+            case "cat":
+                return R.drawable.avatar_cat;
+            case "dog":
+                return R.drawable.avatar_dog;
+            case "owl":
+            default:
+                return R.drawable.avatar_owl;
+        }
+    }
+
 }

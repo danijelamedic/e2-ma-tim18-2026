@@ -18,9 +18,10 @@
         android:elevation="8dp">
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Battle finished!"
+            android:text="Battle Finished!"
             android:textColor="#2D1B5E"
             android:textSize="30sp"
             android:textStyle="bold|italic"

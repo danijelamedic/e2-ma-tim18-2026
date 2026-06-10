@@ -198,23 +198,20 @@ public class ProfileActivity extends AppCompatActivity {
                                 (int) Math.round((totalCorrect * 100.0) / totalQuestions);
                     }
 
-                    long quizPlayed = document.getLong("quizGamesPlayed") == null
-                            ? 0 : document.getLong("quizGamesPlayed");
-
-                    long matchingPlayed = document.getLong("matchingGamesPlayed") == null
-                            ? 0 : document.getLong("matchingGamesPlayed");
-
-                    long totalPlayed = quizPlayed + matchingPlayed;
+                    long totalPlayed =
+                            document.getLong("totalBattlesPlayed") == null
+                                    ? 0
+                                    : document.getLong("totalBattlesPlayed");
 
                     long wins =
-                            (document.getLong("quizGamesWon") == null ? 0 : document.getLong("quizGamesWon"))
-                                    +
-                                    (document.getLong("matchingGamesWon") == null ? 0 : document.getLong("matchingGamesWon"));
+                            document.getLong("battlesWon") == null
+                                    ? 0
+                                    : document.getLong("battlesWon");
 
                     long losses =
-                            (document.getLong("quizGamesLost") == null ? 0 : document.getLong("quizGamesLost"))
-                                    +
-                                    (document.getLong("matchingGamesLost") == null ? 0 : document.getLong("matchingGamesLost"));
+                            document.getLong("battlesLost") == null
+                                    ? 0
+                                    : document.getLong("battlesLost");
 
                     long totalFinished = wins + losses;
 
