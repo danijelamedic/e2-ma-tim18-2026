@@ -48,6 +48,8 @@
         <activity android:name=".profile.statistics.MatchingStatisticsActivity" android:exported="false" />
         <activity android:name=".profile.statistics.QuizStatisticsActivity" android:exported="false" />
         <activity android:name=".profile.ChangeAvatarActivity" android:exported="false"/>
+        <activity android:name=".GameSessionActivity" android:exported="false"/>
+        <activity android:name=".BattleResultActivity" android:exported="false" />
 
     </application>
 

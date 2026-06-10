@@ -1,5 +1,6 @@
 package com.example.slagalica.games.MyNumber;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.animation.Animation;
@@ -8,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalica.R;
@@ -30,6 +33,7 @@ public class MyNumberActivity extends AppCompatActivity {
     private TextView[] numberTiles;
     private Button btnStopTarget, btnStopNumbers, btnConfirm;
     private EditText etExpression;
+    private boolean isBattleMode;
     private final Random random = new Random();
 
     private static final int[] MEDIUM_NUMBERS = {10, 15, 20};
@@ -39,6 +43,8 @@ public class MyNumberActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_number);
+
+        isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         tvTimer        = findViewById(R.id.tvTimer);
         tvTargetNumber = findViewById(R.id.tvTargetNumber);
@@ -246,7 +252,26 @@ public class MyNumberActivity extends AppCompatActivity {
         return 0;
     }
     private void handleResult(int playerResult, String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+        new AlertDialog.Builder(this)
+                .setTitle("My Number finished")
+                .setMessage(message)
+                .setPositiveButton("OK", (dialog, which) -> {
+
+                    if (isBattleMode) {
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("score", playerResult);
+
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+
+                    } else {
+
+                        finish();
+                    }
+                })
+                .show();
     }
 
     @Override
