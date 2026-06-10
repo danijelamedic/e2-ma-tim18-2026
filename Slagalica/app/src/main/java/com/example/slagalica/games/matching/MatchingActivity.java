@@ -38,11 +38,15 @@ public class MatchingActivity extends AppCompatActivity {
     private TextView[] leftItems;
     private TextView[] rightItems;
 
+    private boolean isBattleMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_matching);
+
+        isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -251,18 +255,43 @@ public class MatchingActivity extends AppCompatActivity {
     }
 
     private void showEndDialog() {
-        if (timer != null) timer.cancel();
+
+        if (timer != null) {
+            timer.cancel();
+        }
 
         boolean won = correctMatchesCount >= 3;
 
-        StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, won);
+        StatisticsRepository.saveMatchingResult(
+                correctMatchesCount,
+                5,
+                won
+        );
 
         new AlertDialog.Builder(this)
                 .setTitle("Game finished")
                 .setMessage("Your score: " + playerScore + " pts")
-                .setPositiveButton("OK", (d, w) -> {
-                    startActivity(new Intent(this, HomeActivity.class));
-                    finish();
+                .setPositiveButton("OK", (dialog, which) -> {
+
+                    if (isBattleMode) {
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("score", playerScore);
+
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+
+                    } else {
+
+                        startActivity(
+                                new Intent(
+                                        this,
+                                        HomeActivity.class
+                                )
+                        );
+
+                        finish();
+                    }
                 })
                 .show();
     }

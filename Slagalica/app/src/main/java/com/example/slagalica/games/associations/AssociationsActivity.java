@@ -46,12 +46,15 @@ public class AssociationsActivity extends AppCompatActivity {
     private int playerScore = 0;
     private int openedFieldsCount = 0;
     private boolean finalSolved = false;
+    private boolean isBattleMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_associations);
+
+        isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -327,8 +330,20 @@ public class AssociationsActivity extends AppCompatActivity {
                 .setTitle(R.string.associations_end_title)
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
-                    startActivity(new Intent(this, HomeActivity.class));
-                    finish();
+
+                    if (isBattleMode) {
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("score", playerScore);
+
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+
+                    } else {
+
+                        startActivity(new Intent(this, HomeActivity.class));
+                        finish();
+                    }
                 })
                 .show();
     }

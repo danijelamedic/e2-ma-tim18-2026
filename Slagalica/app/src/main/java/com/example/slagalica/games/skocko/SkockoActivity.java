@@ -47,12 +47,15 @@ public class SkockoActivity extends AppCompatActivity {
     private boolean opponentBonusTurn = false;
     private boolean roundFinished = false;
     private int earnedScore = 0;
+    private boolean isBattleMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_skocko);
+
+        isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -399,8 +402,19 @@ public class SkockoActivity extends AppCompatActivity {
                 .setTitle(R.string.skocko_end_title)
                 .setMessage(message)
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
-                    startActivity(new Intent(this, HomeActivity.class));
-                    finish();
+                    if (isBattleMode) {
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("score", earnedScore);
+
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+
+                    } else {
+
+                        startActivity(new Intent(this, HomeActivity.class));
+                        finish();
+                    }
                 })
                 .show();
     }

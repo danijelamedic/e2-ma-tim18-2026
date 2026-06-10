@@ -39,11 +39,13 @@ public class QuizActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private boolean questionAnswered = false;
     private long timeLeftMillis = 5000;
+    private boolean isBattleMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+        isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             var systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -267,16 +269,34 @@ public class QuizActivity extends AppCompatActivity {
         boolean won = correctAnswersCount >= Math.ceil(questions.size() / 2.0);
 
         StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), won);
+
         new AlertDialog.Builder(this)
                 .setTitle("Quiz finished")
                 .setMessage("Your score: " + playerScore + " pts")
                 .setPositiveButton("OK", (dialog, which) -> {
-                    Intent intent = new Intent(QuizActivity.this, HomeActivity.class);
+
                     if (countDownTimer != null) {
                         countDownTimer.cancel();
                     }
-                    startActivity(intent);
-                    finish();
+
+                    if (isBattleMode) {
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("score", playerScore);
+
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+
+                    } else {
+
+                        Intent intent = new Intent(
+                                QuizActivity.this,
+                                HomeActivity.class
+                        );
+
+                        startActivity(intent);
+                        finish();
+                    }
                 })
                 .show();
     }

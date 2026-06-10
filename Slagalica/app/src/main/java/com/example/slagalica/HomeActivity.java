@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -14,15 +15,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.slagalica.data.FirebaseSeeder;
-import com.example.slagalica.games.MyNumber.MyNumberActivity;
-import com.example.slagalica.games.StepByStep.StepByStepActivity;
-import com.example.slagalica.games.associations.AssociationsActivity;
-import com.example.slagalica.games.matching.MatchingActivity;
-import com.example.slagalica.games.quiz.QuizActivity;
-import com.example.slagalica.games.skocko.SkockoActivity;
 import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.profile.ProfileActivity;
-import android.view.View;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -30,20 +25,17 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
 
     private Button btnPlay;
-    private Button btnProfile;
-    private Button btnLeaderboard;
-    private Button btnNotifications;
-    private View btnQuiz;
-    private View btnMatching;
-    private View btnAssociations;
-    private View btnSkocko;
-    private View btnStepByStep;
-    private View btnMyNumber;
+    private View btnLogout;
+    private View navHome;
+    private View navLeaderboard;
+    private View navNotifications;
+    private View navProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         FirebaseSeeder.seedQuizQuestions();
         FirebaseSeeder.seedMatchingGames();
 
@@ -58,11 +50,52 @@ public class HomeActivity extends AppCompatActivity {
         setupClickListeners();
     }
 
+    private void initializeViews() {
+        btnPlay = findViewById(R.id.btnPlay);
+        btnLogout = findViewById(R.id.btnLogout);
+
+        navHome = findViewById(R.id.navHome);
+        navLeaderboard = findViewById(R.id.navLeaderboard);
+        navNotifications = findViewById(R.id.navNotifications);
+        navProfile = findViewById(R.id.navProfile);
+    }
+
+    private void setupClickListeners() {
+        btnPlay.setOnClickListener(v ->
+                startActivity(new Intent(this, GameSessionActivity.class))
+        );
+
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+
+        navHome.setOnClickListener(v ->
+                Toast.makeText(this, "You are already on Home", Toast.LENGTH_SHORT).show()
+        );
+
+        navLeaderboard.setOnClickListener(v ->
+                Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show()
+        );
+
+        navNotifications.setOnClickListener(v ->
+                startActivity(new Intent(this, NotificationCenterActivity.class))
+        );
+
+        navProfile.setOnClickListener(v ->
+                startActivity(new Intent(this, ProfileActivity.class))
+        );
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == REQUEST_MICROPHONE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "Microphone permission granted");
@@ -70,60 +103,5 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d(TAG, "Microphone permission denied");
             }
         }
-    }
-
-    private void initializeViews() {
-        btnPlay = findViewById(R.id.btnPlay);
-        btnProfile = findViewById(R.id.btnProfile);
-        btnLeaderboard = findViewById(R.id.btnLeaderboard);
-        btnQuiz = findViewById(R.id.btnQuiz);
-        btnMatching = findViewById(R.id.btnMatching);
-        btnAssociations = findViewById(R.id.btnAssociations);
-        btnSkocko = findViewById(R.id.btnSkocko);
-        btnStepByStep = findViewById(R.id.btnStepByStep);
-        btnMyNumber = findViewById(R.id.btnMyNumber);
-        btnNotifications = findViewById(R.id.btnNotifications);
-    }
-
-    private void setupClickListeners() {
-        btnPlay.setOnClickListener(v ->
-                Toast.makeText(this, "Match flow will be added later", Toast.LENGTH_SHORT).show()
-        );
-
-        btnProfile.setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class))
-        );
-
-        btnLeaderboard.setOnClickListener(v ->
-                Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show()
-        );
-
-        btnQuiz.setOnClickListener(v ->
-                startActivity(new Intent(this, QuizActivity.class))
-        );
-
-        btnMatching.setOnClickListener(v ->
-                startActivity(new Intent(this, MatchingActivity.class))
-        );
-
-        btnAssociations.setOnClickListener(v ->
-                startActivity(new Intent(this, AssociationsActivity.class))
-        );
-
-        btnSkocko.setOnClickListener(v ->
-                startActivity(new Intent(this, SkockoActivity.class))
-        );
-
-        btnStepByStep.setOnClickListener(v ->
-                startActivity(new Intent(this, StepByStepActivity.class))
-        );
-
-        btnMyNumber.setOnClickListener(v ->
-                startActivity(new Intent(this, MyNumberActivity.class))
-        );
-
-        btnNotifications.setOnClickListener(v ->
-                startActivity(new Intent(this, NotificationCenterActivity.class))
-        );
     }
 }

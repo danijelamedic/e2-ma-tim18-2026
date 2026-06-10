@@ -1,5 +1,6 @@
 package com.example.slagalica.games.StepByStep;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.animation.AnimationUtils;
@@ -7,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -27,6 +30,7 @@ public class StepByStepActivity extends AppCompatActivity {
 
     private CountDownTimer stepTimer;
     private int currentStep = 0;
+    private boolean isBattleMode;
 
     private final String[] clues = {
             "Clue 1 (hardest)", "Clue 2", "Clue 3", "Clue 4",
@@ -131,9 +135,26 @@ public class StepByStepActivity extends AppCompatActivity {
         }.start();
     }
     private void handleResult(int points, String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        btnConfirm.setEnabled(false);
-        etAnswer.setEnabled(false);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Step by Step finished")
+                .setMessage(message)
+                .setPositiveButton("OK", (dialog, which) -> {
+
+                    if (isBattleMode) {
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("score", points);
+
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+
+                    } else {
+
+                        finish();
+                    }
+                })
+                .show();
     }
 
     @Override
