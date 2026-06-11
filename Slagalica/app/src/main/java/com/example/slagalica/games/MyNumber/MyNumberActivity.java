@@ -1,9 +1,15 @@
 package com.example.slagalica.games.MyNumber;
 
 import android.content.Intent;
+<<<<<<< Updated upstream
+=======
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+>>>>>>> Stashed changes
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,17 +20,22 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalica.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MyNumberActivity extends AppCompatActivity {
+public class MyNumberActivity extends AppCompatActivity implements SensorEventListener {
 
-    private CountDownTimer targetTimer, numbersTimer, gameTimer;
+    private CountDownTimer targetTimer, numbersTimer, gameTimer, waitTimer;
     private int targetNumber = 0;
     private int[] numbers = new int[6];
     private boolean targetStopped = false;
@@ -36,6 +47,19 @@ public class MyNumberActivity extends AppCompatActivity {
     private boolean isBattleMode;
     private final Random random = new Random();
 
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private long lastShakeTime = 0;
+    private static final int SHAKE_THRESHOLD = 800;
+
+    private boolean isMultiplayer = false;
+    private String gameId;
+    private String currentUid;
+    private boolean isPlayer1 = false;
+    private FirebaseFirestore db;
+    private ListenerRegistration gameListener;
+
+    private int myResult = -1;
     private static final int[] MEDIUM_NUMBERS = {10, 15, 20};
     private static final int[] LARGE_NUMBERS  = {25, 50, 75, 100};
 
@@ -44,7 +68,17 @@ public class MyNumberActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_number);
 
+<<<<<<< Updated upstream
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
+=======
+        db = FirebaseFirestore.getInstance();
+        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        gameId = getIntent().getStringExtra("gameId");
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+>>>>>>> Stashed changes
 
         tvTimer        = findViewById(R.id.tvTimer);
         tvTargetNumber = findViewById(R.id.tvTargetNumber);
@@ -67,11 +101,49 @@ public class MyNumberActivity extends AppCompatActivity {
         btnStopNumbers.setEnabled(false);
         btnConfirm.setEnabled(false);
 
-        startTargetAnimation();
+        if (isMultiplayer) {
+            db.collection("games").document(gameId).get()
+                    .addOnSuccessListener(snapshot -> {
+                        String player1 = snapshot.getString("player1");
+                        isPlayer1 = currentUid.equals(player1);
+                        startTargetAnimation();
+                    });
+        } else {
+            startTargetAnimation();
+        }
 
         btnStopTarget.setOnClickListener(v -> stopTarget());
         btnStopNumbers.setOnClickListener(v -> stopNumbers());
         btnConfirm.setOnClickListener(v -> confirmExpression());
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
+        float x = event.values[0], y = event.values[1], z = event.values[2];
+        long now = System.currentTimeMillis();
+        float acceleration = (x * x + y * y + z * z) /
+                (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+        if (acceleration > SHAKE_THRESHOLD / 100f && now - lastShakeTime > 1000) {
+            lastShakeTime = now;
+            if (!targetStopped) stopTarget();
+            else if (!numbersStopped) stopNumbers();
+        }
+    }
+
+    @Override public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (accelerometer != null)
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
     }
 
     private void startTargetAnimation() {
@@ -107,6 +179,7 @@ public class MyNumberActivity extends AppCompatActivity {
             @Override public void onFinish() { stopNumbers(); }
         }.start();
     }
+
     private int[] generateNumbers() {
         int[] result = new int[6];
         for (int i = 0; i < 4; i++) result[i] = 1 + random.nextInt(9);
@@ -121,15 +194,12 @@ public class MyNumberActivity extends AppCompatActivity {
         numbersTimer.cancel();
         btnStopNumbers.setEnabled(false);
         btnConfirm.setEnabled(true);
-
         for (int i = 0; i < numberTiles.length; i++) {
             final int index = i;
             numberTiles[i].postDelayed(() ->
-                            numberTiles[index].startAnimation(
-                                    AnimationUtils.loadAnimation(this, R.anim.bounce_in)),
-                    i * 100L);
+                    numberTiles[index].startAnimation(
+                            AnimationUtils.loadAnimation(this, R.anim.bounce_in)), i * 100L);
         }
-
         startGameTimer();
     }
 
@@ -139,8 +209,7 @@ public class MyNumberActivity extends AppCompatActivity {
                 int seconds = (int) (ms / 1000);
                 tvTimer.setText("⏱ " + seconds + "s");
                 if (seconds <= 10) {
-                    tvTimer.startAnimation(
-                            AnimationUtils.loadAnimation(MyNumberActivity.this, R.anim.pulse));
+                    tvTimer.startAnimation(AnimationUtils.loadAnimation(MyNumberActivity.this, R.anim.pulse));
                     tvTimer.setTextColor(0xFFE53935);
                 }
             }
@@ -159,13 +228,13 @@ public class MyNumberActivity extends AppCompatActivity {
         String expr = etExpression.getText().toString().trim();
 
         if (expr.isEmpty()) {
-            handleResult(0, "No expression entered. 0 points.");
+            myResult = 0;
+            handleMyResult(0);
             return;
         }
 
         if (!expressionUsesOnlyAllowedNumbers(expr, numbers)) {
-            Toast.makeText(this, "Expression contains numbers not in the given set!",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Expression contains numbers not in the given set!", Toast.LENGTH_LONG).show();
             btnConfirm.setEnabled(true);
             startGameTimer();
             return;
@@ -175,43 +244,139 @@ public class MyNumberActivity extends AppCompatActivity {
         try {
             result = evaluate(expr);
         } catch (Exception e) {
-            Toast.makeText(this, "Invalid expression: " + e.getMessage(),
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Invalid expression: " + e.getMessage(), Toast.LENGTH_LONG).show();
             btnConfirm.setEnabled(true);
             return;
         }
 
-        int roundedResult = (int) Math.round(result);
-        int diff = Math.abs(roundedResult - targetNumber);
+        myResult = (int) Math.round(result);
+        int diff = Math.abs(myResult - targetNumber);
 
         if (diff == 0) {
-            handleResult(10, "Correct! You earned 10 points.");
+            handleMyResult(10);
         } else {
-            handleResult(roundedResult, "Your result: " + roundedResult + " (difference: " + diff + ")");
+            handleMyResult(myResult);
         }
     }
+
+    private void handleMyResult(int resultValue) {
+        int diff = Math.abs(resultValue == 10 ? 0 : Math.abs(resultValue - targetNumber));
+        boolean exact = (resultValue == 10 && Math.abs(myResult - targetNumber) == 0);
+
+        if (!isMultiplayer) {
+            int points = exact ? 10 : 0;
+            Toast.makeText(this, exact ? "Correct! 10 points." : "Result: " + myResult + " (diff: " + Math.abs(myResult - targetNumber) + ")", Toast.LENGTH_LONG).show();
+            Intent res = new Intent();
+            res.putExtra("points", points);
+            setResult(RESULT_OK, res);
+            finish();
+            return;
+        }
+
+        saveMyResultAndCompare(myResult);
+    }
+
+    private void saveMyResultAndCompare(int myRes) {
+        String myResultField = isPlayer1 ? "myNumberResult1" : "myNumberResult2";
+        String opponentResultField = isPlayer1 ? "myNumberResult2" : "myNumberResult1";
+        String myStatusField = isPlayer1 ? "myNumberStatus1" : "myNumberStatus2";
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(myResultField, (long) myRes);
+        updates.put(myStatusField, "done");
+
+        db.collection("games").document(gameId).update(updates)
+                .addOnSuccessListener(unused -> waitForOpponentResult(opponentResultField));
+    }
+
+    private void waitForOpponentResult(String opponentResultField) {
+        tvTimer.setText("Waiting for opponent...");
+        btnConfirm.setEnabled(false);
+
+        gameListener = db.collection("games").document(gameId)
+                .addSnapshotListener((snapshot, e) -> {
+                    if (snapshot == null) return;
+
+                    Object oppResultObj = snapshot.get(opponentResultField);
+                    if (oppResultObj == null) return;
+
+                    int oppResult = ((Number) oppResultObj).intValue();
+                    if (gameListener != null) gameListener.remove();
+
+                    calculateFinalPoints(myResult, oppResult);
+                });
+    }
+
+    private void calculateFinalPoints(int myRes, int oppRes) {
+        int myDiff    = Math.abs(myRes  - targetNumber);
+        int oppDiff   = Math.abs(oppRes - targetNumber);
+
+        int points;
+
+        if (myDiff == 0 && oppDiff != 0) {
+            points = 10;
+            Toast.makeText(this, "You got the exact number! 10 points.", Toast.LENGTH_LONG).show();
+        } else if (oppDiff == 0 && myDiff != 0) {
+            points = 0;
+            Toast.makeText(this, "Opponent got the exact number. 0 points.", Toast.LENGTH_LONG).show();
+        } else if (myDiff == 0 && oppDiff == 0) {
+            points = isPlayer1 ? 5 : 0;
+            Toast.makeText(this, isPlayer1 ? "Both exact! You get 5 pts (your round)." : "Both exact! Opponent's round, 0 pts.", Toast.LENGTH_LONG).show();
+        } else if (myDiff < oppDiff) {
+            points = 5;
+            Toast.makeText(this, "You're closer! 5 points.", Toast.LENGTH_LONG).show();
+        } else if (oppDiff < myDiff) {
+            points = 0;
+            Toast.makeText(this, "Opponent is closer. 0 points.", Toast.LENGTH_LONG).show();
+        } else {
+            points = isPlayer1 ? 5 : 0;
+            Toast.makeText(this, isPlayer1 ? "Tie! You get 5 pts (your round)." : "Tie! Opponent's round, 0 pts.", Toast.LENGTH_LONG).show();
+        }
+
+        savePointsAndReturn(points);
+    }
+
+    private void savePointsAndReturn(int points) {
+        db.collection("games").document(gameId).get()
+                .addOnSuccessListener(snapshot -> {
+                    String player1 = snapshot.getString("player1");
+                    String scoreField = currentUid.equals(player1) ? "score1" : "score2";
+                    long currentScore = snapshot.getLong(scoreField) != null ?
+                            snapshot.getLong(scoreField) : 0;
+
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put(scoreField, currentScore + points);
+                    updates.put("myNumberStatus", currentUid.equals(player1) ? "player1done" : "done");
+
+                    db.collection("games").document(gameId).update(updates)
+                            .addOnSuccessListener(unused -> {
+                                Intent result = new Intent();
+                                result.putExtra("points", points);
+                                setResult(RESULT_OK, result);
+                                finish();
+                            });
+                });
+    }
+
     private boolean expressionUsesOnlyAllowedNumbers(String expr, int[] allowed) {
         List<Integer> used = new ArrayList<>();
         Matcher m = Pattern.compile("\\d+").matcher(expr);
         while (m.find()) used.add(Integer.parseInt(m.group()));
-
         List<Integer> available = new ArrayList<>();
         for (int n : allowed) available.add(n);
-
         for (int n : used) {
             if (!available.remove(Integer.valueOf(n))) return false;
         }
         return true;
     }
+
     private double evaluate(String expression) {
         expression = expression.replaceAll("\\s+", "");
         char[] tokens = expression.toCharArray();
         Stack<Double> values = new Stack<>();
         Stack<Character> ops = new Stack<>();
-
         for (int i = 0; i < tokens.length; i++) {
             char c = tokens[i];
-
             if (Character.isDigit(c)) {
                 StringBuilder sb = new StringBuilder();
                 while (i < tokens.length && Character.isDigit(tokens[i])) sb.append(tokens[i++]);
@@ -230,7 +395,6 @@ public class MyNumberActivity extends AppCompatActivity {
                 throw new IllegalArgumentException("Illegal character: " + c);
             }
         }
-
         while (!ops.isEmpty()) values.push(applyOp(ops.pop(), values.pop(), values.pop()));
         return values.pop();
     }
@@ -251,6 +415,7 @@ public class MyNumberActivity extends AppCompatActivity {
         }
         return 0;
     }
+<<<<<<< Updated upstream
     private void handleResult(int playerResult, String message) {
 
         new AlertDialog.Builder(this)
@@ -273,6 +438,8 @@ public class MyNumberActivity extends AppCompatActivity {
                 })
                 .show();
     }
+=======
+>>>>>>> Stashed changes
 
     @Override
     protected void onDestroy() {
@@ -280,5 +447,7 @@ public class MyNumberActivity extends AppCompatActivity {
         if (targetTimer  != null) targetTimer.cancel();
         if (numbersTimer != null) numbersTimer.cancel();
         if (gameTimer    != null) gameTimer.cancel();
+        if (waitTimer    != null) waitTimer.cancel();
+        if (gameListener != null) gameListener.remove();
     }
 }

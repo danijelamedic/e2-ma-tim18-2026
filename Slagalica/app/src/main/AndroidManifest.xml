@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -47,9 +48,19 @@
         <activity android:name=".profile.statistics.MyNumberStatisticsActivity" android:exported="false" />
         <activity android:name=".profile.statistics.MatchingStatisticsActivity" android:exported="false" />
         <activity android:name=".profile.statistics.QuizStatisticsActivity" android:exported="false" />
+<<<<<<< Updated upstream
         <activity android:name=".profile.ChangeAvatarActivity" android:exported="false"/>
         <activity android:name=".GameSessionActivity" android:exported="false"/>
         <activity android:name=".BattleResultActivity" android:exported="false" />
+=======
+        <activity android:name=".MatchmakingActivity"/>
+        <activity android:name=".GameActivity"/>
+        <activity android:name=".GameResultActivity"/>
+        <activity android:name=".ChatActivity"/>
+        <activity android:name=".ChallengeActivity"/>
+        <activity android:name=".ChallengeGameActivity"/>
+        <activity android:name=".ChallengeResultActivity"/>
+>>>>>>> Stashed changes
 
     </application>
 
