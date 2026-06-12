@@ -14,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
 import com.example.slagalica.models.QuizQuestion;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -332,7 +334,16 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void loadCurrentUserInfo() {
-        String userId = "jMwwl0MoswM7u5nifYChTng97jj1";
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            imgYourAvatar.setImageResource(R.drawable.avatar_owl);
+            tvPlayerName.setText("Player");
+            tvPlayerInfo.setText("🪙0 ⭐0 L0");
+            return;
+        }
+
+        String userId = user.getUid();
 
         FirebaseFirestore.getInstance()
                 .collection("users")
