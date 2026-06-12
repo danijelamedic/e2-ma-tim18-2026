@@ -108,9 +108,9 @@
                     android:layout_height="18dp"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:text="5 TOKENS   120 STARS   SILVER"
+                    android:text="🪙0 ⭐0 L0"
                     android:textColor="#5B2FC4"
-                    android:textSize="9sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -196,9 +196,9 @@
                     android:layout_height="18dp"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:text="5 TOKENS   120 STARS   SILVER"
+                    android:text="🪙0 ⭐0 L0"
                     android:textColor="#5B2FC4"
-                    android:textSize="9sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
@@ -217,83 +217,88 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="204dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="144dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/bg_profile_card"
             android:elevation="4dp"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:paddingStart="10dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="7dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
+                android:layout_height="26dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/tvCurrentGuessTitle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="@string/skocko_current_guess_title"
                     android:textColor="#5B2FC4"
-                    android:textSize="18sp"
+                    android:textSize="15sp"
                     android:textStyle="bold|italic" />
 
                 <Button
                     android:id="@+id/btnClearGuess"
-                    android:layout_width="88dp"
-                    android:layout_height="36dp"
+                    android:layout_width="74dp"
+                    android:layout_height="28dp"
                     android:background="@drawable/bg_notification_action_secondary"
                     android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:padding="0dp"
                     android:text="@string/skocko_clear_action"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="4dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <TextView android:id="@+id/slotGuess1" android:layout_width="52dp" android:layout_height="52dp" android:layout_marginEnd="8dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="24sp" android:textStyle="bold" />
-                <TextView android:id="@+id/slotGuess2" android:layout_width="52dp" android:layout_height="52dp" android:layout_marginEnd="8dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="24sp" android:textStyle="bold" />
-                <TextView android:id="@+id/slotGuess3" android:layout_width="52dp" android:layout_height="52dp" android:layout_marginEnd="8dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="24sp" android:textStyle="bold" />
-                <TextView android:id="@+id/slotGuess4" android:layout_width="52dp" android:layout_height="52dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="24sp" android:textStyle="bold" />
+                <TextView android:id="@+id/slotGuess1" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginEnd="6dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/slotGuess2" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginEnd="6dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/slotGuess3" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginEnd="6dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/slotGuess4" android:layout_width="30dp" android:layout_height="30dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="15sp" android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="26dp"
+                android:layout_marginTop="5dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal">
 
-                <TextView android:id="@+id/paletteSymbol1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_1" android:textColor="#2D1B5E" android:textSize="21sp" android:textStyle="bold" />
-                <TextView android:id="@+id/paletteSymbol2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_2" android:textColor="#2D1B5E" android:textSize="21sp" android:textStyle="bold" />
-                <TextView android:id="@+id/paletteSymbol3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_3" android:textColor="#2D1B5E" android:textSize="21sp" android:textStyle="bold" />
-                <TextView android:id="@+id/paletteSymbol4" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_4" android:textColor="#2D1B5E" android:textSize="21sp" android:textStyle="bold" />
-                <TextView android:id="@+id/paletteSymbol5" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_5" android:textColor="#2D1B5E" android:textSize="21sp" android:textStyle="bold" />
-                <TextView android:id="@+id/paletteSymbol6" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_6" android:textColor="#2D1B5E" android:textSize="21sp" android:textStyle="bold" />
+                <TextView android:id="@+id/paletteSymbol1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_1" android:textColor="#2D1B5E" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/paletteSymbol2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_2" android:textColor="#2D1B5E" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/paletteSymbol3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_3" android:textColor="#2D1B5E" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/paletteSymbol4" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_4" android:textColor="#2D1B5E" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/paletteSymbol5" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_marginEnd="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_5" android:textColor="#2D1B5E" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/paletteSymbol6" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="3dp" android:layout_weight="1" android:background="@drawable/bg_skocko_palette_item" android:gravity="center" android:text="@string/skocko_symbol_6" android:textColor="#2D1B5E" android:textSize="15sp" android:textStyle="bold" />
             </LinearLayout>
 
-            <Button
+            <TextView
                 android:id="@+id/btnSubmitSkocko"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/bg_purple_button"
                 android:fontFamily="sans-serif-black"
-                android:minHeight="0dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
                 android:padding="0dp"
                 android:text="@string/skocko_submit"
                 android:textColor="@android:color/white"
-                android:textSize="15sp"
+                android:textSize="12sp"
                 android:textStyle="bold|italic" />
         </LinearLayout>
 

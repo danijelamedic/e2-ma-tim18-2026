@@ -115,9 +115,9 @@
                     android:layout_height="18dp"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:text="5 TOKENS   120 STARS   SILVER"
+                    android:text="🪙0 ⭐0 L0"
                     android:textColor="#5B2FC4"
-                    android:textSize="9sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -202,9 +202,9 @@
                     android:layout_height="18dp"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:text="5 TOKENS   120 STARS   SILVER"
+                    android:text="🪙0 ⭐0 L0"
                     android:textColor="#5B2FC4"
-                    android:textSize="9sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>

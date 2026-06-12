@@ -3,11 +3,12 @@
     android:id="@+id/rowBonusAttempt"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="3dp"
     android:layout_marginBottom="3dp"
     android:background="@drawable/bg_stat_card"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="3dp">
+    android:padding="4dp">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -16,10 +17,10 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <TextView android:id="@+id/bonusSlot1" android:layout_width="25dp" android:layout_height="25dp" android:layout_marginEnd="3dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textStyle="bold" />
-        <TextView android:id="@+id/bonusSlot2" android:layout_width="25dp" android:layout_height="25dp" android:layout_marginEnd="3dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textStyle="bold" />
-        <TextView android:id="@+id/bonusSlot3" android:layout_width="25dp" android:layout_height="25dp" android:layout_marginEnd="3dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textStyle="bold" />
-        <TextView android:id="@+id/bonusSlot4" android:layout_width="25dp" android:layout_height="25dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textStyle="bold" />
+        <TextView android:id="@+id/bonusSlot1" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginEnd="4dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:id="@+id/bonusSlot2" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginEnd="4dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:id="@+id/bonusSlot3" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginEnd="4dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:id="@+id/bonusSlot4" android:layout_width="30dp" android:layout_height="30dp" android:background="@drawable/bg_skocko_slot_empty" android:gravity="center" android:text="?" android:textColor="#5B2FC4" android:textSize="15sp" android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout

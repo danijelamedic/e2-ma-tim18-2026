@@ -35,6 +35,7 @@ public class SkockoActivity extends AppCompatActivity {
     private TextView tvTimer;
     private TextView tvAttempts;
     private TextView tvMode;
+    private TextView tvCurrentGuessTitle;
     private TextView tvCurrentGuessHint;
     private TextView tvPlayerScore;
     private TextView tvOpponentScore;
@@ -42,7 +43,7 @@ public class SkockoActivity extends AppCompatActivity {
     private TextView tvOpponentAvatar;
     private TextView tvBonusLabel;
     private TextView tvSolutionLabel;
-    private Button btnSubmit;
+    private TextView btnSubmit;
     private CountDownTimer timer;
     private long timeLeftMillis = 30000;
     private int attemptIndex = 0;
@@ -70,6 +71,7 @@ public class SkockoActivity extends AppCompatActivity {
         tvTimer = findViewById(R.id.tvSkockoTimer);
         tvAttempts = findViewById(R.id.tvSkockoAttempts);
         tvMode = findViewById(R.id.tvSkockoMode);
+        tvCurrentGuessTitle = findViewById(R.id.tvCurrentGuessTitle);
         tvCurrentGuessHint = findViewById(R.id.tvCurrentGuessHint);
         tvPlayerScore = findViewById(R.id.tvSkockoPlayerScore);
         tvOpponentScore = findViewById(R.id.tvSkockoOpponentScore);
@@ -317,6 +319,8 @@ public class SkockoActivity extends AppCompatActivity {
             bonusSlots[i].setText(SYMBOLS[currentGuess[i]]);
             bonusSlots[i].setBackgroundResource(R.drawable.bg_skocko_slot_filled);
         }
+        tvBonusLabel.setVisibility(View.VISIBLE);
+        findViewById(R.id.rowBonusAttempt).setVisibility(View.VISIBLE);
 
         roundFinished = true;
         btnSubmit.setEnabled(false);
@@ -485,6 +489,7 @@ public class SkockoActivity extends AppCompatActivity {
 
         tvMode.setText(R.string.skocko_mode_opponent_bonus);
         tvAttempts.setText(R.string.skocko_bonus_attempt_label);
+        tvCurrentGuessTitle.setText("Opponent guess");
         tvCurrentGuessHint.setText(R.string.skocko_bonus_hint);
         btnSubmit.setText(R.string.skocko_submit_bonus);
         tvBonusLabel.setVisibility(View.GONE);
