@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.slagalica.data.FirebaseSeeder;
 import com.example.slagalica.games.MyNumber.MyNumberActivity;
 import com.example.slagalica.games.StepByStep.StepByStepActivity;
 import com.example.slagalica.games.associations.AssociationsActivity;
@@ -51,14 +53,12 @@ public class HomeActivity extends AppCompatActivity {
     private View btnMyNumber;
     private FirebaseFirestore db;
     private String currentUid;
+    private TextView tvWelcomeUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-        //FirebaseSeeder.seedQuizQuestions();
-        //FirebaseSeeder.seedMatchingGames();
 
         db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -68,6 +68,11 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         currentUid = currentUser.getUid();
+
+        //FirebaseSeeder.seedQuizQuestions();
+        //FirebaseSeeder.seedMatchingGames();
+        FirebaseSeeder.seedAssociationGames();
+        FirebaseSeeder.seedSkockoGames();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -88,6 +93,26 @@ public class HomeActivity extends AppCompatActivity {
         initializeViews();
         setupClickListeners();
         checkDailyTokens();
+        loadCurrentUserName();
+    }
+
+    private void loadCurrentUserName() {
+        db.collection("users").document(currentUid)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (!document.exists()) {
+                        return;
+                    }
+
+                    String username = document.getString("username");
+
+                    if (username != null && tvWelcomeUsername != null) {
+                        tvWelcomeUsername.setText("Welcome, " + username + "!");
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to load user data", Toast.LENGTH_SHORT).show()
+                );
     }
 
     private void checkDailyTokens() {
@@ -147,6 +172,7 @@ public class HomeActivity extends AppCompatActivity {
         navLeaderboard = findViewById(R.id.navLeaderboard);
         navNotifications = findViewById(R.id.navNotifications);
         navProfile = findViewById(R.id.navProfile);
+        tvWelcomeUsername = findViewById(R.id.tvWelcomeUsername);
     }
 
     private void setupClickListeners() {
