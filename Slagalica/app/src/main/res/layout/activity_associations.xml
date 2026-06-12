@@ -83,15 +83,19 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
+                <ImageView
+                    android:id="@+id/tvAssociationsPlayerAvatar"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:background="@drawable/bg_active_player_avatar"
+                    android:contentDescription="Player avatar"
                     android:gravity="center"
-                    android:text="@string/avatar_icon"
-                    android:textSize="27sp" />
+                    android:padding="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/avatar_owl" />
 
                 <TextView
+                    android:id="@+id/tvAssociationsPlayerName"
                     android:layout_width="wrap_content"
                     android:layout_height="22dp"
                     android:gravity="center"
@@ -111,6 +115,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvAssociationsPlayerInfo"
                     android:layout_width="match_parent"
                     android:layout_height="18dp"
                     android:gravity="center"
@@ -170,15 +175,19 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
+                <ImageView
+                    android:id="@+id/tvAssociationsOpponentAvatar"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:background="@drawable/bg_inactive_player_avatar"
+                    android:contentDescription="Opponent avatar"
                     android:gravity="center"
-                    android:text="@string/opponent_avatar_icon"
-                    android:textSize="27sp" />
+                    android:padding="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/avatar_owl" />
 
                 <TextView
+                    android:id="@+id/tvAssociationsOpponentName"
                     android:layout_width="wrap_content"
                     android:layout_height="22dp"
                     android:gravity="center"
@@ -198,6 +207,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvAssociationsOpponentInfo"
                     android:layout_width="match_parent"
                     android:layout_height="18dp"
                     android:gravity="center"
@@ -225,14 +235,36 @@
             android:orientation="vertical"
             android:padding="10dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="24dp"
                 android:gravity="center_vertical"
-                android:text="@string/associations_board_title"
-                android:textColor="#5B2FC4"
-                android:textSize="16sp"
-                android:textStyle="bold|italic" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/associations_board_title"
+                    android:textColor="#5B2FC4"
+                    android:textSize="16sp"
+                    android:textStyle="bold|italic" />
+
+                <Button
+                    android:id="@+id/btnPassAssociations"
+                    android:layout_width="76dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/bg_purple_button"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:padding="0dp"
+                    android:text="PASS"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

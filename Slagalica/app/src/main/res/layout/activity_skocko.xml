@@ -75,16 +75,19 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
+                <ImageView
                     android:id="@+id/tvSkockoYourAvatar"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:background="@drawable/bg_active_player_avatar"
+                    android:contentDescription="Player avatar"
                     android:gravity="center"
-                    android:text="@string/avatar_icon"
-                    android:textSize="27sp" />
+                    android:padding="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/avatar_owl" />
 
                 <TextView
+                    android:id="@+id/tvSkockoPlayerName"
                     android:layout_width="wrap_content"
                     android:layout_height="22dp"
                     android:gravity="center"
@@ -104,6 +107,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvSkockoPlayerInfo"
                     android:layout_width="match_parent"
                     android:layout_height="18dp"
                     android:gravity="center"
@@ -163,16 +167,19 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
+                <ImageView
                     android:id="@+id/tvSkockoOpponentAvatar"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:background="@drawable/bg_inactive_player_avatar"
+                    android:contentDescription="Opponent avatar"
                     android:gravity="center"
-                    android:text="@string/opponent_avatar_icon"
-                    android:textSize="27sp" />
+                    android:padding="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/avatar_owl" />
 
                 <TextView
+                    android:id="@+id/tvSkockoOpponentName"
                     android:layout_width="wrap_content"
                     android:layout_height="22dp"
                     android:gravity="center"
@@ -192,6 +199,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvSkockoOpponentInfo"
                     android:layout_width="match_parent"
                     android:layout_height="18dp"
                     android:gravity="center"

@@ -125,7 +125,7 @@ public class MatchmakingActivity extends AppCompatActivity {
         game.put("player1", currentUid);
         game.put("player2", opponentUid);
         game.put("status", "active");
-        game.put("currentGame", 1);
+        game.put("currentGame", 3);
         game.put("currentTurnUid", currentUid); // player1 ide prvi
         game.put("score1", 0);
         game.put("score2", 0);
