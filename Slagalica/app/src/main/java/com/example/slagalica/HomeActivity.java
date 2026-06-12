@@ -23,14 +23,24 @@ import com.example.slagalica.games.associations.AssociationsActivity;
 import com.example.slagalica.games.matching.MatchingActivity;
 import com.example.slagalica.games.quiz.QuizActivity;
 import com.example.slagalica.games.skocko.SkockoActivity;
+import com.example.slagalica.notifications.AppNotification;
+import com.example.slagalica.notifications.LocalNotificationSender;
 import com.example.slagalica.notifications.NotificationCenterActivity;
+import com.example.slagalica.notifications.NotificationChannelManager;
+import com.example.slagalica.notifications.NotificationRepository;
 import com.example.slagalica.profile.ProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -54,6 +64,10 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String currentUid;
     private TextView tvWelcomeUsername;
+    private NotificationRepository notificationRepository;
+    private ListenerRegistration notificationListener;
+    private final Set<String> seenNotificationIds = new HashSet<>();
+    private boolean notificationFirstLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +75,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         db = FirebaseFirestore.getInstance();
+        notificationRepository = new NotificationRepository();
+        NotificationChannelManager.createChannels(this);
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
             startActivity(new Intent(this, LoginActivity.class));
@@ -94,6 +110,8 @@ public class HomeActivity extends AppCompatActivity {
         setupClickListeners();
         checkDailyTokens();
         loadCurrentUserName();
+        saveFcmToken();
+        ensureTestNotifications();
     }
 
     private void loadCurrentUserName() {
@@ -142,6 +160,82 @@ public class HomeActivity extends AppCompatActivity {
                                     Toast.makeText(this,
                                             "Daily tokens received: +" + dailyTokens,
                                             Toast.LENGTH_LONG).show());
+                });
+    }
+
+    private void saveFcmToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(token -> db.collection("users")
+                        .document(currentUid)
+                        .update("fcmToken", token));
+    }
+
+    private void ensureTestNotifications() {
+        ensureTestNotification("test_chat",
+                new AppNotification(currentUid, AppNotification.TYPE_CHAT,
+                        "Test chat message", "This is a test chat notification.",
+                        AppNotification.ACTION_OPEN_CHAT, null),
+                () -> ensureTestNotification("test_reward",
+                        new AppNotification(currentUid, AppNotification.TYPE_REWARD,
+                                "Test reward", "You earned 3 test tokens.",
+                                AppNotification.ACTION_OPEN_REWARDS, null),
+                        () -> ensureTestNotification("test_other",
+                                new AppNotification(currentUid, AppNotification.TYPE_OTHER,
+                                        "Test league update", "You advanced to League 1.",
+                                        AppNotification.ACTION_OPEN_PROFILE, null),
+                                this::startNotificationListener)));
+    }
+
+    private void ensureTestNotification(String documentId, AppNotification notification, Runnable onComplete) {
+        com.google.firebase.firestore.DocumentReference ref = db.collection("users")
+                .document(currentUid)
+                .collection("notifications")
+                .document(documentId);
+
+        ref.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                java.util.Map<String, Object> data = notification.toMap();
+                data.remove("read");
+                data.remove("createdAt");
+                ref.set(data, SetOptions.merge()).addOnCompleteListener(updateTask -> onComplete.run());
+            } else {
+                ref.set(notification.toMap()).addOnCompleteListener(createTask -> onComplete.run());
+            }
+        });
+    }
+
+    private void startNotificationListener() {
+        if (notificationListener != null) {
+            notificationListener.remove();
+        }
+
+        notificationListener = notificationRepository.listen(currentUid, null,
+                new NotificationRepository.NotificationsCallback() {
+                    @Override
+                    public void onNotificationsLoaded(List<AppNotification> notifications) {
+                        if (notificationFirstLoad) {
+                            for (AppNotification notification : notifications) {
+                                seenNotificationIds.add(notification.id);
+                            }
+                            notificationFirstLoad = false;
+                            return;
+                        }
+
+                        for (AppNotification notification : notifications) {
+                            if (notification.read || notification.id == null) {
+                                continue;
+                            }
+                            if (seenNotificationIds.add(notification.id)) {
+                                Intent intent = new Intent(HomeActivity.this, NotificationCenterActivity.class);
+                                LocalNotificationSender.show(HomeActivity.this, notification, intent);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Exception exception) {
+                        Log.w(TAG, "Failed to listen for notifications", exception);
+                    }
                 });
     }
 
@@ -229,5 +323,13 @@ public class HomeActivity extends AppCompatActivity {
         navProfile.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class))
         );
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (notificationListener != null) {
+            notificationListener.remove();
+        }
+        super.onDestroy();
     }
 }
