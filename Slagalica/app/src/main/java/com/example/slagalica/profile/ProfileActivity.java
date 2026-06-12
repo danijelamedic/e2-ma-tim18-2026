@@ -20,12 +20,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.widget.ImageView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -80,11 +81,14 @@ public class ProfileActivity extends AppCompatActivity {
         TextView btnLogout = findViewById(R.id.btnLogout);
 
         btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+
             Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            finish();
         });
 
         findViewById(R.id.cardQuizStatistics).setOnClickListener(v ->
@@ -112,9 +116,15 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadOverviewStatistics() {
 
+        String userId = getCurrentUserId();
+
+        if (userId == null) {
+            return;
+        }
+
         FirebaseFirestore.getInstance()
                 .collection("statistics")
-                .document("player1")
+                .document(userId)
                 .get()
                 .addOnSuccessListener(document -> {
 
@@ -166,9 +176,15 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadOverallStatistics() {
 
+        String userId = getCurrentUserId();
+
+        if (userId == null) {
+            return;
+        }
+
         FirebaseFirestore.getInstance()
                 .collection("statistics")
-                .document("player1")
+                .document(userId)
                 .get()
                 .addOnSuccessListener(document -> {
 
@@ -234,7 +250,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadUserProfile() {
 
-        String userId = "jMwwl0MoswM7u5nifYChTng97jj1";
+        String userId = getCurrentUserId();
+
+        if (userId == null) {
+            return;
+        }
 
         FirebaseFirestore.getInstance()
                 .collection("users")
@@ -328,5 +348,21 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadUserProfile();
+        loadOverviewStatistics();
+        loadOverallStatistics();
+    }
+
+    private String getCurrentUserId() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return null;
+        }
+
+        return user.getUid();
     }
 }

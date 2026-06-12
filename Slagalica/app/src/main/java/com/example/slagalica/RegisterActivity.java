@@ -69,6 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
                             user.put("stars", 0);
                             user.put("league", 0);
                             user.put("avatarUrl", "");
+                            user.put("avatar", "owl");
                             user.put("createdAt", System.currentTimeMillis());
 
                             db.collection("users").document(uid).set(user)
