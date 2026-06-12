@@ -3,8 +3,10 @@ package com.example.slagalica.games.skocko;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -15,12 +17,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
+import com.example.slagalica.data.SkockoRepository;
+import com.example.slagalica.models.SkockoGame;
 
 public class SkockoActivity extends AppCompatActivity {
 
     private static final String[] SYMBOLS = {"🤡", "🟪", "🔵", "❤️", "🔺", "⭐"};
-    private static final int[] SECRET_CODE = {0, 3, 5, 1};
-
     private final TextView[] guessSlots = new TextView[4];
     private final TextView[][] attemptSlots = new TextView[6][4];
     private final TextView[][] feedbackDots = new TextView[6][4];
@@ -28,6 +30,7 @@ public class SkockoActivity extends AppCompatActivity {
     private final TextView[] bonusFeedbackDots = new TextView[4];
     private final TextView[] solutionSlots = new TextView[4];
     private final int[] currentGuess = {-1, -1, -1, -1};
+    private final int[] secretCode = {-1, -1, -1, -1};
 
     private TextView tvTimer;
     private TextView tvAttempts;
@@ -46,6 +49,7 @@ public class SkockoActivity extends AppCompatActivity {
     private boolean solved = false;
     private boolean opponentBonusTurn = false;
     private boolean roundFinished = false;
+    private boolean gameLoaded = false;
     private int earnedScore = 0;
     private boolean isBattleMode;
 
@@ -83,7 +87,9 @@ public class SkockoActivity extends AppCompatActivity {
         setupActionButtons();
         updateCurrentGuess();
         hideBonusAndSolutionRows();
-        startTimer();
+        setControlsEnabled(false);
+        tvMode.setText("Loading Skocko...");
+        loadSkockoGame();
     }
 
     private void setupLeaveButton() {
@@ -187,7 +193,53 @@ public class SkockoActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(v -> submitGuess());
     }
 
+    private void loadSkockoGame() {
+        new SkockoRepository().loadRandomSkockoGame(new SkockoRepository.SkockoCallback() {
+            @Override
+            public void onSuccess(SkockoGame game) {
+                for (int i = 0; i < secretCode.length; i++) {
+                    secretCode[i] = game.getSecretCode().get(i).intValue();
+                }
+
+                gameLoaded = true;
+                setControlsEnabled(true);
+                tvMode.setText(R.string.skocko_mode_your_turn);
+                startTimer();
+            }
+
+            @Override
+            public void onError(Exception exception) {
+                Toast.makeText(SkockoActivity.this,
+                        "Failed to load Skocko game.",
+                        Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+    }
+
+    private void setControlsEnabled(boolean enabled) {
+        int[] paletteIds = {
+                R.id.paletteSymbol1,
+                R.id.paletteSymbol2,
+                R.id.paletteSymbol3,
+                R.id.paletteSymbol4,
+                R.id.paletteSymbol5,
+                R.id.paletteSymbol6
+        };
+
+        for (int id : paletteIds) {
+            findViewById(id).setEnabled(enabled);
+        }
+
+        findViewById(R.id.btnClearGuess).setEnabled(enabled);
+        btnSubmit.setEnabled(enabled);
+    }
+
     private void addSymbolToGuess(int symbolIndex) {
+        if (!gameLoaded) {
+            return;
+        }
+
         for (int i = 0; i < currentGuess.length; i++) {
             if (currentGuess[i] == -1) {
                 currentGuess[i] = symbolIndex;
@@ -217,7 +269,7 @@ public class SkockoActivity extends AppCompatActivity {
     }
 
     private void submitGuess() {
-        if (roundFinished || !isGuessComplete()) {
+        if (!gameLoaded || roundFinished || !isGuessComplete()) {
             return;
         }
 
@@ -294,7 +346,7 @@ public class SkockoActivity extends AppCompatActivity {
         boolean[] guessUsed = new boolean[4];
 
         for (int i = 0; i < 4; i++) {
-            if (currentGuess[i] == SECRET_CODE[i]) {
+            if (currentGuess[i] == secretCode[i]) {
                 exact++;
                 secretUsed[i] = true;
                 guessUsed[i] = true;
@@ -306,7 +358,7 @@ public class SkockoActivity extends AppCompatActivity {
                 continue;
             }
             for (int j = 0; j < 4; j++) {
-                if (!secretUsed[j] && currentGuess[i] == SECRET_CODE[j]) {
+                if (!secretUsed[j] && currentGuess[i] == secretCode[j]) {
                     partial++;
                     secretUsed[j] = true;
                     break;
@@ -398,6 +450,11 @@ public class SkockoActivity extends AppCompatActivity {
             timer.cancel();
         }
 
+        if (isFinishing() || isDestroyed() || getWindow() == null
+                || getWindow().getDecorView().getWindowToken() == null) {
+            return;
+        }
+
         new AlertDialog.Builder(this)
                 .setTitle(R.string.skocko_end_title)
                 .setMessage(message)
@@ -406,6 +463,7 @@ public class SkockoActivity extends AppCompatActivity {
 
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("score", earnedScore);
+                        resultIntent.putExtra("points", earnedScore);
 
                         setResult(RESULT_OK, resultIntent);
                         finish();
@@ -429,8 +487,8 @@ public class SkockoActivity extends AppCompatActivity {
         tvAttempts.setText(R.string.skocko_bonus_attempt_label);
         tvCurrentGuessHint.setText(R.string.skocko_bonus_hint);
         btnSubmit.setText(R.string.skocko_submit_bonus);
-        tvBonusLabel.setVisibility(TextView.VISIBLE);
-        findViewById(R.id.rowBonusAttempt).setVisibility(TextView.VISIBLE);
+        tvBonusLabel.setVisibility(View.GONE);
+        findViewById(R.id.rowBonusAttempt).setVisibility(View.GONE);
 
         tvYourAvatar.setBackgroundResource(R.drawable.bg_inactive_player_avatar);
         tvOpponentAvatar.setBackgroundResource(R.drawable.bg_active_player_avatar);
@@ -439,20 +497,28 @@ public class SkockoActivity extends AppCompatActivity {
     }
 
     private void revealSolution() {
-        tvSolutionLabel.setVisibility(TextView.VISIBLE);
-        findViewById(R.id.rowSolution).setVisibility(TextView.VISIBLE);
+        tvSolutionLabel.setVisibility(View.VISIBLE);
+        findViewById(R.id.rowSolution).setVisibility(View.VISIBLE);
 
         for (int i = 0; i < 4; i++) {
-            solutionSlots[i].setText(SYMBOLS[SECRET_CODE[i]]);
+            solutionSlots[i].setText(SYMBOLS[secretCode[i]]);
             solutionSlots[i].setBackgroundResource(R.drawable.bg_skocko_slot_filled);
         }
     }
 
     private void hideBonusAndSolutionRows() {
-        tvBonusLabel.setVisibility(TextView.GONE);
-        tvSolutionLabel.setVisibility(TextView.GONE);
-        findViewById(R.id.rowBonusAttempt).setVisibility(TextView.GONE);
-        findViewById(R.id.rowSolution).setVisibility(TextView.GONE);
+        tvBonusLabel.setVisibility(View.GONE);
+        tvSolutionLabel.setVisibility(View.GONE);
+        findViewById(R.id.rowBonusAttempt).setVisibility(View.GONE);
+        findViewById(R.id.rowSolution).setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        super.onDestroy();
     }
 
     private int getScoreForSolvedAttempt(int solvedAttempt) {

@@ -7,6 +7,7 @@ import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -17,24 +18,20 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
+import com.example.slagalica.data.AssociationRepository;
+import com.example.slagalica.models.AssociationGame;
 
 import java.util.Locale;
 
 public class AssociationsActivity extends AppCompatActivity {
 
-    private static final String[][] COLUMN_DATA = {
-            {"JAVA", "PYTHON", "C++", "KOTLIN", "LANGUAGE"},
-            {"ARRAY", "STACK", "QUEUE", "LIST", "STRUCTURE"},
-            {"REACT", "ANGULAR", "VUE", "SPRING", "FRAMEWORK"},
-            {"GIT", "COMMIT", "BRANCH", "MERGE", "VERSION"}
-    };
-    private static final String FINAL_SOLUTION = "PROGRAMMING";
     private static final String[] COLUMN_KEYS = {"A", "B", "C", "D"};
 
     private final TextView[][] clueViews = new TextView[4][4];
     private final TextView[] solutionViews = new TextView[4];
     private final boolean[][] openedClues = new boolean[4][4];
     private final boolean[] solvedColumns = new boolean[4];
+    private final String[][] columnData = new String[4][5];
 
     private TextView tvTimer;
     private TextView tvPlayerScore;
@@ -42,10 +39,12 @@ public class AssociationsActivity extends AppCompatActivity {
     private TextView tvTurn;
     private TextView tvFinalSolution;
     private CountDownTimer timer;
+    private String finalSolution = "";
     private long timeLeftMillis = 120000;
     private int playerScore = 0;
     private int openedFieldsCount = 0;
     private boolean finalSolved = false;
+    private boolean gameLoaded = false;
     private boolean isBattleMode;
 
     @Override
@@ -67,7 +66,9 @@ public class AssociationsActivity extends AppCompatActivity {
         setupInfoButton();
         setupBoard();
         setupFinalButton();
-        startTimer();
+        setBoardEnabled(false);
+        tvTurn.setText("Loading association...");
+        loadAssociationGame();
     }
 
     private void bindViews() {
@@ -132,26 +133,83 @@ public class AssociationsActivity extends AppCompatActivity {
         tvFinalSolution.setOnClickListener(v -> promptFinalGuess());
     }
 
+    private void loadAssociationGame() {
+        new AssociationRepository().loadRandomAssociation(new AssociationRepository.AssociationCallback() {
+            @Override
+            public void onSuccess(AssociationGame game) {
+                bindAssociationGame(game);
+                gameLoaded = true;
+                setBoardEnabled(true);
+                tvTurn.setText(R.string.associations_turn_short);
+                startTimer();
+            }
+
+            @Override
+            public void onError(Exception exception) {
+                Toast.makeText(AssociationsActivity.this,
+                        "Failed to load association game.",
+                        Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+    }
+
+    private void bindAssociationGame(AssociationGame game) {
+        String[][] loadedColumns = {
+                game.getColumnA().toArray(new String[0]),
+                game.getColumnB().toArray(new String[0]),
+                game.getColumnC().toArray(new String[0]),
+                game.getColumnD().toArray(new String[0])
+        };
+
+        for (int column = 0; column < 4; column++) {
+            for (int row = 0; row < 4; row++) {
+                columnData[column][row] = loadedColumns[column][row];
+            }
+            columnData[column][4] = game.getColumnSolutions().get(column);
+        }
+
+        finalSolution = game.getFinalSolution();
+    }
+
+    private void setBoardEnabled(boolean enabled) {
+        for (int column = 0; column < 4; column++) {
+            for (int row = 0; row < 4; row++) {
+                if (clueViews[column][row] != null) {
+                    clueViews[column][row].setEnabled(enabled);
+                }
+            }
+
+            if (solutionViews[column] != null) {
+                solutionViews[column].setEnabled(enabled);
+            }
+        }
+
+        if (tvFinalSolution != null) {
+            tvFinalSolution.setEnabled(enabled);
+        }
+    }
+
     private void revealClue(int column, int row) {
-        if (finalSolved || solvedColumns[column] || openedClues[column][row]) {
+        if (!gameLoaded || finalSolved || solvedColumns[column] || openedClues[column][row]) {
             return;
         }
 
         openedClues[column][row] = true;
         openedFieldsCount++;
-        clueViews[column][row].setText(COLUMN_DATA[column][row]);
+        clueViews[column][row].setText(columnData[column][row]);
         clueViews[column][row].setBackgroundResource(R.drawable.bg_associations_opened);
         updateOpenedFieldsStatus();
         tvTurn.setText(getString(R.string.associations_turn_opened, COLUMN_KEYS[column], row + 1));
     }
 
     private void promptColumnGuess(int column) {
-        if (finalSolved || solvedColumns[column]) {
+        if (!gameLoaded || finalSolved || solvedColumns[column]) {
             return;
         }
 
         showGuessDialog(getString(R.string.associations_column_guess_title, COLUMN_KEYS[column]), guess -> {
-            if (normalize(guess).equals(normalize(COLUMN_DATA[column][4]))) {
+            if (normalize(guess).equals(normalize(columnData[column][4]))) {
                 solveColumn(column, true);
             } else {
                 tvTurn.setText(R.string.associations_turn_wrong);
@@ -160,12 +218,12 @@ public class AssociationsActivity extends AppCompatActivity {
     }
 
     private void promptFinalGuess() {
-        if (finalSolved) {
+        if (!gameLoaded || finalSolved) {
             return;
         }
 
         showGuessDialog(getString(R.string.associations_final_guess_title), guess -> {
-            if (normalize(guess).equals(normalize(FINAL_SOLUTION))) {
+            if (normalize(guess).equals(normalize(finalSolution))) {
                 solveFinal();
             } else {
                 tvTurn.setText(R.string.associations_turn_wrong);
@@ -207,12 +265,12 @@ public class AssociationsActivity extends AppCompatActivity {
                 openedClues[column][row] = true;
                 openedFieldsCount++;
             }
-            clueViews[column][row].setText(COLUMN_DATA[column][row]);
+            clueViews[column][row].setText(columnData[column][row]);
             clueViews[column][row].setBackgroundResource(R.drawable.bg_associations_opened);
             clueViews[column][row].setEnabled(false);
         }
 
-        solutionViews[column].setText(COLUMN_DATA[column][4]);
+        solutionViews[column].setText(columnData[column][4]);
         solutionViews[column].setBackgroundResource(R.drawable.bg_associations_solved);
         solutionViews[column].setEnabled(false);
         updateOpenedFieldsStatus();
@@ -236,7 +294,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
         playerScore += bonus;
         updatePlayerScore();
-        tvFinalSolution.setText(FINAL_SOLUTION);
+        tvFinalSolution.setText(finalSolution);
         tvFinalSolution.setBackgroundResource(R.drawable.bg_associations_solved);
         tvFinalSolution.setEnabled(false);
         tvTurn.setText(R.string.associations_final_solved_status);
@@ -318,7 +376,7 @@ public class AssociationsActivity extends AppCompatActivity {
                 solveColumn(column, false);
             }
         }
-        tvFinalSolution.setText(FINAL_SOLUTION);
+        tvFinalSolution.setText(finalSolution);
         tvFinalSolution.setBackgroundResource(R.drawable.bg_associations_opened);
         tvFinalSolution.setEnabled(false);
     }
@@ -335,6 +393,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("score", playerScore);
+                        resultIntent.putExtra("points", playerScore);
 
                         setResult(RESULT_OK, resultIntent);
                         finish();

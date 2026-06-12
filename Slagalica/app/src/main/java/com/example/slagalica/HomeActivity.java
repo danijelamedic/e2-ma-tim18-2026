@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.slagalica.data.FirebaseSeeder;
 import com.example.slagalica.games.MyNumber.MyNumberActivity;
 import com.example.slagalica.games.StepByStep.StepByStepActivity;
 import com.example.slagalica.games.associations.AssociationsActivity;
@@ -57,9 +58,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        //FirebaseSeeder.seedQuizQuestions();
-        //FirebaseSeeder.seedMatchingGames();
-
         db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
@@ -68,6 +66,11 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         currentUid = currentUser.getUid();
+
+        //FirebaseSeeder.seedQuizQuestions();
+        //FirebaseSeeder.seedMatchingGames();
+        FirebaseSeeder.seedAssociationGames();
+        FirebaseSeeder.seedSkockoGames();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
