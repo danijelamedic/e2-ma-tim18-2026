@@ -3,6 +3,7 @@ package com.example.slagalica;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
@@ -15,6 +16,7 @@ import com.example.slagalica.games.matching.MatchingActivity;
 import com.example.slagalica.games.associations.AssociationsActivity;
 import com.example.slagalica.games.skocko.SkockoActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
@@ -36,8 +38,14 @@ public class GameActivity extends AppCompatActivity {
     private String currentUid;
     private ListenerRegistration gameListener;
     private TextView tvGameInfo;
+    private TextView tvGameName;
+    private TextView tvMyScore;
+    private TextView tvOpponentScore;
+    private CountDownTimer interGameTimer;
     private boolean gameAlreadyLaunched = false;
     private boolean isFinishing = false;
+    private int pendingLaunchGame = -1;
+    private int lastCompletedGame = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,9 @@ public class GameActivity extends AppCompatActivity {
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         gameId = getIntent().getStringExtra("gameId");
 
+        tvGameName = findViewById(R.id.tvGameName);
+        tvMyScore = findViewById(R.id.tvMyScore);
+        tvOpponentScore = findViewById(R.id.tvOpponentScore);
         tvGameInfo = findViewById(R.id.tvGameInfo);
         tvGameInfo.setText("Loading game...");
 
@@ -55,6 +66,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void listenForGameUpdates() {
+        if (gameListener != null) {
+            gameListener.remove();
+            gameListener = null;
+        }
+
         gameListener = db.collection("games").document(gameId)
                 .addSnapshotListener((snapshot, e) -> {
                     if (snapshot == null || !snapshot.exists()) return;
@@ -75,18 +91,90 @@ public class GameActivity extends AppCompatActivity {
                     Long currentGameLong = snapshot.getLong("currentGame");
                     int currentGame = currentGameLong != null ? currentGameLong.intValue() : 1;
                     String currentTurnUid = snapshot.getString("currentTurnUid");
+                    String player1 = snapshot.getString("player1");
+                    boolean isPlayer1 = currentUid.equals(player1);
+                    String myDoneField = isPlayer1 ? "player1done_game" + currentGame
+                            : "player2done_game" + currentGame;
+                    Boolean myDone = snapshot.getBoolean(myDoneField);
+                    long score1 = snapshot.getLong("score1") != null ? snapshot.getLong("score1") : 0;
+                    long score2 = snapshot.getLong("score2") != null ? snapshot.getLong("score2") : 0;
+                    long myScore = isPlayer1 ? score1 : score2;
+                    long opponentScore = isPlayer1 ? score2 : score1;
 
-                    tvGameInfo.setText("Game " + currentGame + " of " + TOTAL_GAMES);
+                    tvGameName.setText("Next game: " + getGameName(currentGame));
+                    tvMyScore.setText("Your score: " + myScore);
+                    tvOpponentScore.setText("Opponent score: " + opponentScore);
+
+                    if (currentGame <= lastCompletedGame) {
+                        tvGameInfo.setText("Waiting for next game...");
+                        return;
+                    }
+
+                    if (Boolean.TRUE.equals(myDone)) {
+                        tvGameInfo.setText("Waiting for opponent...");
+                        return;
+                    }
 
                     if (!gameAlreadyLaunched && shouldLaunchForCurrentPlayer(currentGame, currentTurnUid)) {
-                        gameAlreadyLaunched = true;
-                        launchGame(currentGame);
+                        startInterGameCountdown(currentGame);
                     }
                 });
     }
 
+    private void startInterGameCountdown(int gameNumber) {
+        if (gameAlreadyLaunched || pendingLaunchGame == gameNumber) {
+            return;
+        }
+
+        gameAlreadyLaunched = true;
+        pendingLaunchGame = gameNumber;
+
+        if (interGameTimer != null) {
+            interGameTimer.cancel();
+        }
+
+        tvGameName.setText("Next game: " + getGameName(gameNumber));
+
+        interGameTimer = new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                int seconds = (int) Math.ceil(millisUntilFinished / 1000.0);
+                tvGameInfo.setText("Starting in " + seconds + "s");
+            }
+
+            @Override
+            public void onFinish() {
+                interGameTimer = null;
+                tvGameInfo.setText("Starting...");
+                launchGame(gameNumber);
+            }
+        }.start();
+    }
+
+    private String getGameName(int gameNumber) {
+        switch (gameNumber) {
+            case GAME_QUIZ:
+                return "Ko zna zna";
+            case GAME_MATCHING:
+                return "Spojnice";
+            case GAME_ASSOCIATIONS:
+                return "Asocijacije";
+            case GAME_SKOCKO:
+                return "Skočko";
+            case GAME_STEP_BY_STEP:
+                return "Korak po korak";
+            case GAME_MY_NUMBER:
+                return "Moj broj";
+            default:
+                return "Game";
+        }
+    }
+
     private boolean shouldLaunchForCurrentPlayer(int currentGame, String currentTurnUid) {
-        if (currentGame == GAME_MY_NUMBER || currentGame == GAME_STEP_BY_STEP) {
+        if (currentGame == GAME_MY_NUMBER
+                || currentGame == GAME_STEP_BY_STEP
+                || currentGame == GAME_ASSOCIATIONS
+                || currentGame == GAME_SKOCKO) {
             return true;
         }
 
@@ -94,7 +182,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void launchGame(int gameNumber) {
-        if (gameListener != null) gameListener.remove();
+        if (gameListener != null) {
+            gameListener.remove();
+            gameListener = null;
+        }
+        pendingLaunchGame = -1;
 
         Intent intent;
         switch (gameNumber) {
@@ -129,6 +221,12 @@ public class GameActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         gameAlreadyLaunched = false;
+        pendingLaunchGame = -1;
+        if (interGameTimer != null) {
+            interGameTimer.cancel();
+            interGameTimer = null;
+        }
+        lastCompletedGame = Math.max(lastCompletedGame, requestCode);
 
         int points = 0;
         if (resultCode == RESULT_OK && data != null) {
@@ -139,9 +237,17 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void saveScoreAndAdvance(int points, int gameNumber) {
-        db.collection("games").document(gameId).get()
-                .addOnSuccessListener(snapshot -> {
-                    if (snapshot == null || !snapshot.exists()) return;
+        DocumentReference gameRef = db.collection("games").document(gameId);
+
+        db.runTransaction(transaction -> {
+                    com.google.firebase.firestore.DocumentSnapshot snapshot = transaction.get(gameRef);
+                    if (snapshot == null || !snapshot.exists()) return null;
+
+                    Long currentGameValue = snapshot.getLong("currentGame");
+                    long currentGame = currentGameValue != null ? currentGameValue : 1;
+                    if (currentGame != gameNumber) {
+                        return null;
+                    }
 
                     String player1 = snapshot.getString("player1");
                     String player2 = snapshot.getString("player2");
@@ -152,8 +258,6 @@ public class GameActivity extends AppCompatActivity {
                             snapshot.getLong(scoreField) : 0;
 
                     String currentTurnUid = snapshot.getString("currentTurnUid");
-                    long currentGame = snapshot.getLong("currentGame") != null ?
-                            snapshot.getLong("currentGame") : 1;
 
                     Map<String, Object> updates = new HashMap<>();
                     updates.put(scoreField, currentScore + points);
@@ -183,17 +287,19 @@ public class GameActivity extends AppCompatActivity {
                         }
                     }
 
-                    db.collection("games").document(gameId).update(updates)
-                            .addOnSuccessListener(unused -> {
-                                listenForGameUpdates();
-                            });
-                });
+                    transaction.update(gameRef, updates);
+                    return null;
+                })
+                .addOnSuccessListener(unused -> listenForGameUpdates());
     }
 
     private void handleOpponentAbandoned() {
         if (isFinishing) return;
         isFinishing = true;
-        if (gameListener != null) gameListener.remove();
+        if (gameListener != null) {
+            gameListener.remove();
+            gameListener = null;
+        }
 
         Toast.makeText(this, "Opponent left the game. You win!", Toast.LENGTH_LONG).show();
 
@@ -230,7 +336,10 @@ public class GameActivity extends AppCompatActivity {
 
     private void abandonGame() {
         isFinishing = true;
-        if (gameListener != null) gameListener.remove();
+        if (gameListener != null) {
+            gameListener.remove();
+            gameListener = null;
+        }
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", "abandoned");
@@ -250,7 +359,10 @@ public class GameActivity extends AppCompatActivity {
     private void showResults(com.google.firebase.firestore.DocumentSnapshot snapshot) {
         if (isFinishing) return;
         isFinishing = true;
-        if (gameListener != null) gameListener.remove();
+        if (gameListener != null) {
+            gameListener.remove();
+            gameListener = null;
+        }
 
         long score1 = snapshot.getLong("score1") != null ? snapshot.getLong("score1") : 0;
         long score2 = snapshot.getLong("score2") != null ? snapshot.getLong("score2") : 0;
@@ -272,6 +384,13 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (gameListener != null) gameListener.remove();
+        if (gameListener != null) {
+            gameListener.remove();
+            gameListener = null;
+        }
+        if (interGameTimer != null) {
+            interGameTimer.cancel();
+            interGameTimer = null;
+        }
     }
 }

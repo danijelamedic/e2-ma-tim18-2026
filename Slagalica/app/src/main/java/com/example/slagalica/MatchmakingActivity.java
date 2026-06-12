@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.slagalica.notifications.NotificationFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FieldValue;
@@ -25,6 +26,7 @@ public class MatchmakingActivity extends AppCompatActivity {
     private Button btnCancel;
     private boolean isFriendly;
     private String friendUid;
+    private NotificationFactory notificationFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class MatchmakingActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        notificationFactory = new NotificationFactory();
         currentUid = mAuth.getCurrentUser().getUid();
 
         isFriendly = getIntent().getBooleanExtra("isFriendly", false);
@@ -143,9 +146,24 @@ public class MatchmakingActivity extends AppCompatActivity {
                     db.collection("matchmaking").document(currentUid).update(update);
                     if (!friendly) {
                         db.collection("matchmaking").document(opponentUid).update(update);
+                    } else {
+                        sendFriendlyNotification(opponentUid, gameId);
                     }
 
                     openGame(gameId);
+                });
+    }
+
+    private void sendFriendlyNotification(String opponentUid, String gameId) {
+        db.collection("users").document(currentUid).get()
+                .addOnSuccessListener(snapshot -> {
+                    String username = snapshot.getString("username");
+                    notificationFactory.sendFriendInvite(
+                            this,
+                            opponentUid,
+                            username != null ? username : "A player",
+                            gameId
+                    );
                 });
     }
 

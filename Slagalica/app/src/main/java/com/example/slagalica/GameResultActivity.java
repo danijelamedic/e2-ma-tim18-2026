@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.slagalica.notifications.NotificationFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FieldValue;
@@ -13,6 +14,7 @@ public class GameResultActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private String currentUid;
+    private NotificationFactory notificationFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +22,7 @@ public class GameResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_result);
 
         db = FirebaseFirestore.getInstance();
+        notificationFactory = new NotificationFactory();
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         long myScore = getIntent().getLongExtra("myScore", 0);
@@ -74,35 +77,38 @@ public class GameResultActivity extends AppCompatActivity {
                 .addOnSuccessListener(snapshot -> {
                     long currentStars = snapshot.getLong("stars") != null ?
                             snapshot.getLong("stars") : 0;
+                    long oldLeague = snapshot.getLong("league") != null ?
+                            snapshot.getLong("league") : 0;
 
                     long newStars = Math.max(0, currentStars + starsDelta);
 
                     long tokensEarned = newStars / 50 - currentStars / 50;
+                    int newLeague = calculateLeague(newStars);
 
                     db.collection("users").document(currentUid)
                             .update("stars", newStars,
                                     "tokens", FieldValue.increment(tokensEarned),
-                                    "gamesPlayed", FieldValue.increment(1))
+                                    "gamesPlayed", FieldValue.increment(1),
+                                    "league", newLeague)
                             .addOnSuccessListener(unused -> {
                                 if (tokensEarned > 0) {
                                     tvStars.append("\n+" + tokensEarned + " token(s) earned!");
                                 }
-                                updateLeague(newStars);
+                                notificationFactory.sendReward(this, currentUid, starsDelta, tokensEarned);
+                                if (newLeague != oldLeague) {
+                                    notificationFactory.sendLeagueChange(this, currentUid, oldLeague, newLeague);
+                                }
                             });
                 });
     }
 
-    private void updateLeague(long stars) {
+    private int calculateLeague(long stars) {
         int[] leagueThresholds = {0, 100, 200, 400, 800, 1600};
-        int newLeague = 0;
         for (int i = leagueThresholds.length - 1; i >= 0; i--) {
             if (stars >= leagueThresholds[i]) {
-                newLeague = i;
-                break;
+                return i;
             }
         }
-
-        db.collection("users").document(currentUid)
-                .update("league", newLeague);
+        return 0;
     }
 }

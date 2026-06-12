@@ -1,10 +1,6 @@
 package com.example.slagalica;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,8 +8,11 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 
+import com.example.slagalica.notifications.AppNotification;
+import com.example.slagalica.notifications.LocalNotificationSender;
+import com.example.slagalica.notifications.NotificationChannelManager;
+import com.example.slagalica.notifications.NotificationRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,11 +29,9 @@ import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private static final String CHANNEL_ID = "chat_notifications";
-    private static final int NOTIF_ID = 1001;
-
     private DatabaseReference chatRef;
     private FirebaseFirestore db;
+    private NotificationRepository notificationRepository;
     private String currentUid;
     private String currentUsername;
     private String currentRegion;
@@ -51,9 +48,10 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        createNotificationChannel();
+        NotificationChannelManager.createChannels(this);
 
         db = FirebaseFirestore.getInstance();
+        notificationRepository = new NotificationRepository();
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         messagesContainer = findViewById(R.id.messagesContainer);
@@ -89,18 +87,6 @@ public class ChatActivity extends AppCompatActivity {
         isInForeground = false;
     }
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Chat Notifications",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("Notifications for new chat messages");
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) manager.createNotificationChannel(channel);
-        }
-    }
-
     private void sendMessage() {
         String text = etMessage.getText().toString().trim();
         if (text.isEmpty()) return;
@@ -116,7 +102,31 @@ public class ChatActivity extends AppCompatActivity {
         message.put("timeMillis", System.currentTimeMillis());
 
         chatRef.push().setValue(message);
+        createChatNotificationsForRegion(text);
         etMessage.setText("");
+    }
+
+    private void createChatNotificationsForRegion(String text) {
+        db.collection("users")
+                .whereEqualTo("region", currentRegion)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    for (com.google.firebase.firestore.DocumentSnapshot user : snapshot.getDocuments()) {
+                        String uid = user.getId();
+                        if (uid.equals(currentUid)) {
+                            continue;
+                        }
+                        AppNotification notification = new AppNotification(
+                                uid,
+                                AppNotification.TYPE_CHAT,
+                                "New message from " + currentUsername,
+                                text,
+                                AppNotification.ACTION_OPEN_CHAT,
+                                null
+                        );
+                        notificationRepository.create(uid, notification);
+                    }
+                });
     }
 
     private void listenForMessages() {
@@ -153,7 +163,7 @@ public class ChatActivity extends AppCompatActivity {
                                 && latestSenderUid != null
                                 && !latestSenderUid.equals(currentUid)
                                 && !isInForeground) {
-                            sendChatNotification(latestSenderName, latestText);
+                            showLocalChatNotification(latestSenderName, latestText);
                         }
 
                         if (latestTime > 0) lastMessageTime = latestTime;
@@ -165,24 +175,16 @@ public class ChatActivity extends AppCompatActivity {
                 });
     }
 
-    private void sendChatNotification(String senderName, String text) {
-        Intent intent = new Intent(this, ChatActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("New message from " + senderName)
-                .setContentText(text)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        NotificationManager manager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (manager != null) manager.notify(NOTIF_ID, builder.build());
+    private void showLocalChatNotification(String senderName, String text) {
+        AppNotification notification = new AppNotification(
+                currentUid,
+                AppNotification.TYPE_CHAT,
+                "New message from " + senderName,
+                text,
+                AppNotification.ACTION_OPEN_CHAT,
+                null
+        );
+        LocalNotificationSender.show(this, notification, new Intent(this, ChatActivity.class));
     }
 
     private void addMessageView(String uid, String username,
