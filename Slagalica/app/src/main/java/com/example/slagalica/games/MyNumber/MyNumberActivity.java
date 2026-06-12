@@ -1,13 +1,10 @@
 package com.example.slagalica.games.MyNumber;
 
 import android.content.Intent;
-<<<<<<< Updated upstream
-=======
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
->>>>>>> Stashed changes
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.animation.AnimationUtils;
@@ -68,9 +65,8 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_number);
 
-<<<<<<< Updated upstream
-        isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
-=======
+        //isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
+
         db = FirebaseFirestore.getInstance();
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
@@ -78,7 +74,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
->>>>>>> Stashed changes
 
         tvTimer        = findViewById(R.id.tvTimer);
         tvTargetNumber = findViewById(R.id.tvTargetNumber);
@@ -415,7 +410,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         }
         return 0;
     }
-<<<<<<< Updated upstream
+
     private void handleResult(int playerResult, String message) {
 
         new AlertDialog.Builder(this)
@@ -438,8 +433,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                 })
                 .show();
     }
-=======
->>>>>>> Stashed changes
 
     @Override
     protected void onDestroy() {

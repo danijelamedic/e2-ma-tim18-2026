@@ -37,16 +37,13 @@ public class StepByStepActivity extends AppCompatActivity {
 
     private CountDownTimer stepTimer;
     private int currentStep = 0;
-<<<<<<< Updated upstream
     private boolean isBattleMode;
-=======
     private boolean isMultiplayer = false;
     private String gameId;
     private String currentUid;
     private boolean isPlayer1 = false;
     private FirebaseFirestore db;
     private ListenerRegistration gameListener;
->>>>>>> Stashed changes
 
     private String[] clues;
     private String answer;
@@ -228,7 +225,6 @@ public class StepByStepActivity extends AppCompatActivity {
     }
 
     private void handleResult(int points, String message) {
-<<<<<<< Updated upstream
 
         new AlertDialog.Builder(this)
                 .setTitle("Step by Step finished")
@@ -249,7 +245,7 @@ public class StepByStepActivity extends AppCompatActivity {
                     }
                 })
                 .show();
-=======
+
         if (stepTimer != null) stepTimer.cancel();
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         btnConfirm.setEnabled(false);
@@ -292,7 +288,6 @@ public class StepByStepActivity extends AppCompatActivity {
                                 finish();
                             });
                 });
->>>>>>> Stashed changes
     }
 
     @Override

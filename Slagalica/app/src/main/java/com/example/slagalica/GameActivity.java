@@ -78,13 +78,19 @@ public class GameActivity extends AppCompatActivity {
 
                     tvGameInfo.setText("Game " + currentGame + " of " + TOTAL_GAMES);
 
-                    if (!gameAlreadyLaunched &&
-                            currentTurnUid != null &&
-                            currentTurnUid.equals(currentUid)) {
+                    if (!gameAlreadyLaunched && shouldLaunchForCurrentPlayer(currentGame, currentTurnUid)) {
                         gameAlreadyLaunched = true;
                         launchGame(currentGame);
                     }
                 });
+    }
+
+    private boolean shouldLaunchForCurrentPlayer(int currentGame, String currentTurnUid) {
+        if (currentGame == GAME_MY_NUMBER || currentGame == GAME_STEP_BY_STEP) {
+            return true;
+        }
+
+        return currentTurnUid != null && currentTurnUid.equals(currentUid);
     }
 
     private void launchGame(int gameNumber) {

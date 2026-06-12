@@ -15,12 +15,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.slagalica.data.FirebaseSeeder;
+import com.example.slagalica.games.MyNumber.MyNumberActivity;
+import com.example.slagalica.games.StepByStep.StepByStepActivity;
+import com.example.slagalica.games.associations.AssociationsActivity;
+import com.example.slagalica.games.matching.MatchingActivity;
+import com.example.slagalica.games.quiz.QuizActivity;
+import com.example.slagalica.games.skocko.SkockoActivity;
 import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.profile.ProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
-
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -32,33 +36,38 @@ public class HomeActivity extends AppCompatActivity {
     private static final int REQUEST_NOTIFICATIONS = 2;
     private static final String TAG = "HomeActivity";
 
-<<<<<<< Updated upstream
     private Button btnPlay;
     private View btnLogout;
     private View navHome;
     private View navLeaderboard;
     private View navNotifications;
     private View navProfile;
-=======
-    private Button btnPlay, btnProfile, btnLeaderboard, btnNotifications;
-    private View btnQuiz, btnMatching, btnAssociations, btnSkocko, btnStepByStep, btnMyNumber;
     private View btnChallenge;
+    private View btnQuiz;
+    private View btnMatching;
+    private View btnAssociations;
+    private View btnSkocko;
+    private View btnStepByStep;
+    private View btnMyNumber;
     private FirebaseFirestore db;
     private String currentUid;
->>>>>>> Stashed changes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-<<<<<<< Updated upstream
-        FirebaseSeeder.seedQuizQuestions();
-        FirebaseSeeder.seedMatchingGames();
-=======
+        //FirebaseSeeder.seedQuizQuestions();
+        //FirebaseSeeder.seedMatchingGames();
+
         db = FirebaseFirestore.getInstance();
-        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
->>>>>>> Stashed changes
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+        currentUid = currentUser.getUid();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -111,10 +120,29 @@ public class HomeActivity extends AppCompatActivity {
                 });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_MICROPHONE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Microphone permission granted");
+            }
+        }
+    }
+
     private void initializeViews() {
         btnPlay = findViewById(R.id.btnPlay);
+        btnChallenge = findViewById(R.id.btnChallenge);
+        btnQuiz = findViewById(R.id.btnQuiz);
+        btnMatching = findViewById(R.id.btnMatching);
+        btnAssociations = findViewById(R.id.btnAssociations);
+        btnSkocko = findViewById(R.id.btnSkocko);
+        btnStepByStep = findViewById(R.id.btnStepByStep);
+        btnMyNumber = findViewById(R.id.btnMyNumber);
         btnLogout = findViewById(R.id.btnLogout);
-
         navHome = findViewById(R.id.navHome);
         navLeaderboard = findViewById(R.id.navLeaderboard);
         navNotifications = findViewById(R.id.navNotifications);
@@ -123,8 +151,34 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         btnPlay.setOnClickListener(v ->
-                startActivity(new Intent(this, GameSessionActivity.class))
-        );
+                startActivity(new Intent(this, MatchmakingActivity.class)));
+
+        //btnPlay.setOnClickListener(v ->
+        //        startActivity(new Intent(this, GameSessionActivity.class))
+        //);
+
+        if (btnChallenge != null) {
+            btnChallenge.setOnClickListener(v ->
+                    startActivity(new Intent(this, ChallengeActivity.class)));
+        }
+
+        btnQuiz.setOnClickListener(v ->
+                startActivity(new Intent(this, QuizActivity.class)));
+
+        btnMatching.setOnClickListener(v ->
+                startActivity(new Intent(this, MatchingActivity.class)));
+
+        btnAssociations.setOnClickListener(v ->
+                startActivity(new Intent(this, AssociationsActivity.class)));
+
+        btnSkocko.setOnClickListener(v ->
+                startActivity(new Intent(this, SkockoActivity.class)));
+
+        btnStepByStep.setOnClickListener(v ->
+                startActivity(new Intent(this, StepByStepActivity.class)));
+
+        btnMyNumber.setOnClickListener(v ->
+                startActivity(new Intent(this, MyNumberActivity.class)));
 
         btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
@@ -150,71 +204,4 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ProfileActivity.class))
         );
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == REQUEST_MICROPHONE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "Microphone permission granted");
-            }
-        }
-    }
-<<<<<<< Updated upstream
-=======
-
-    private void initializeViews() {
-        btnPlay = findViewById(R.id.btnPlay);
-        btnProfile = findViewById(R.id.btnProfile);
-        btnLeaderboard = findViewById(R.id.btnLeaderboard);
-        btnQuiz = findViewById(R.id.btnQuiz);
-        btnMatching = findViewById(R.id.btnMatching);
-        btnAssociations = findViewById(R.id.btnAssociations);
-        btnSkocko = findViewById(R.id.btnSkocko);
-        btnStepByStep = findViewById(R.id.btnStepByStep);
-        btnMyNumber = findViewById(R.id.btnMyNumber);
-        btnNotifications = findViewById(R.id.btnNotifications);
-        btnChallenge = findViewById(R.id.btnChallenge);
-    }
-
-    private void setupClickListeners() {
-        btnPlay.setOnClickListener(v ->
-                startActivity(new Intent(this, MatchmakingActivity.class)));
-
-        btnProfile.setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class)));
-
-        btnLeaderboard.setOnClickListener(v ->
-                startActivity(new Intent(this, ChatActivity.class)));
-
-        btnNotifications.setOnClickListener(v ->
-                startActivity(new Intent(this, NotificationCenterActivity.class)));
-
-        btnQuiz.setOnClickListener(v ->
-                startActivity(new Intent(this, QuizActivity.class)));
-
-        btnMatching.setOnClickListener(v ->
-                startActivity(new Intent(this, MatchingActivity.class)));
-
-        btnAssociations.setOnClickListener(v ->
-                startActivity(new Intent(this, AssociationsActivity.class)));
-
-        btnSkocko.setOnClickListener(v ->
-                startActivity(new Intent(this, SkockoActivity.class)));
-
-        btnStepByStep.setOnClickListener(v ->
-                startActivity(new Intent(this, StepByStepActivity.class)));
-
-        btnMyNumber.setOnClickListener(v ->
-                startActivity(new Intent(this, MyNumberActivity.class)));
-
-        if (btnChallenge != null) {
-            btnChallenge.setOnClickListener(v ->
-                    startActivity(new Intent(this, ChallengeActivity.class)));
-        }
-    }
->>>>>>> Stashed changes
 }
