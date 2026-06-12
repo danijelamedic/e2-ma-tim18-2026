@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalica.R;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ChangeAvatarActivity extends AppCompatActivity {
 
@@ -20,7 +22,6 @@ public class ChangeAvatarActivity extends AppCompatActivity {
     private ImageView avatarCat;
     private ImageView avatarDog;
 
-    private final String userId = "jMwwl0MoswM7u5nifYChTng97jj1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,17 @@ public class ChangeAvatarActivity extends AppCompatActivity {
     }
 
     private void saveAvatar() {
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        String userId = user.getUid();
+
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(userId)
