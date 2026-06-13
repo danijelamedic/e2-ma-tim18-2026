@@ -62,6 +62,10 @@ public class QuizActivity extends AppCompatActivity {
     private boolean hasAnsweredCurrentQuestion = false;
     private long questionStartTime = 0;
     private boolean questionFinished = false;
+    private boolean resultShown = false;
+
+    private ImageView imgOpponentAvatar;
+    private TextView tvOpponentName;
 
     private FirebaseFirestore db;
 
@@ -90,8 +94,11 @@ public class QuizActivity extends AppCompatActivity {
         tvPlayerInfo = findViewById(R.id.tvPlayerInfo);
         tvPlayerName = findViewById(R.id.tvPlayerName);
 
+
         tvOpponentInfo = findViewById(R.id.tvOpponentInfo);
         tvOpponentInfo.setText("🪙0 ⭐0 L0");
+        imgOpponentAvatar = findViewById(R.id.imgOpponentAvatar);
+        tvOpponentName = findViewById(R.id.tvOpponentName);
 
         tvQuestionProgress = findViewById(R.id.tvQuestionProgress);
 
@@ -107,6 +114,7 @@ public class QuizActivity extends AppCompatActivity {
         tvBattleRound.setText("Round " + (currentGameIndex + 1) + " / " + totalGames);
 
         loadCurrentUserInfo();
+        loadOpponentInfo();
 
         answerViews = new TextView[]{
                 findViewById(R.id.btnAnswer1),
@@ -429,6 +437,12 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void showResultDialog() {
+
+        if (resultShown) {
+            return;
+        }
+
+        resultShown = true;
         boolean won = correctAnswersCount >= Math.ceil(questions.size() / 2.0);
 
         StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), won);
@@ -589,6 +603,11 @@ public class QuizActivity extends AppCompatActivity {
                     int firestoreQuestion =
                             questionIndex.intValue();
 
+                    if (firestoreQuestion >= questions.size()) {
+                        showResultDialog();
+                        return;
+                    }
+
                     if (firestoreQuestion != currentQuestionIndex) {
 
                         currentQuestionIndex = firestoreQuestion;
@@ -654,6 +673,8 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void scoreQuestionTransaction(String player1, String player2, boolean allowMissingAnswers) {
+        final boolean[] didScore = {false};
+
         db.runTransaction(transaction -> {
             com.google.firebase.firestore.DocumentReference gameRef =
                     db.collection("games").document(gameId);
@@ -666,6 +687,7 @@ public class QuizActivity extends AppCompatActivity {
             );
 
             if (Boolean.TRUE.equals(alreadyScored)) {
+                didScore[0] = false;
                 return null;
             }
 
@@ -680,6 +702,7 @@ public class QuizActivity extends AppCompatActivity {
                     );
 
             if (!allowMissingAnswers && (answer1 == null || answer2 == null)) {
+                didScore[0] = false;
                 return null;
             }
 
@@ -719,11 +742,17 @@ public class QuizActivity extends AppCompatActivity {
             updates.put("score1", FieldValue.increment(p1Delta));
             updates.put("score2", FieldValue.increment(p2Delta));
             updates.put("quizScored.question_" + currentQuestionIndex, true);
+            updates.put("quizScoredBy.question_" + currentQuestionIndex, currentUid);
 
             transaction.update(gameRef, updates);
 
+            didScore[0] = true;
             return null;
         }).addOnSuccessListener(unused -> {
+            if (!didScore[0]) {
+                return;
+            }
+
             questionFinished = true;
 
             db.collection("games").document(gameId)
@@ -744,10 +773,63 @@ public class QuizActivity extends AppCompatActivity {
                         if (currentQuestionIndex < questions.size() - 1) {
                             advanceQuizQuestionSafely();
                         } else {
-                            showResultDialog();
+                            db.collection("games")
+                                    .document(gameId)
+                                    .update("quizQuestionIndex", questions.size())
+                                    .addOnSuccessListener(done -> showResultDialog());
                         }
                     });
         });
+    }
+
+    private void loadOpponentInfo() {
+        if (!isMultiplayer || gameId == null || currentUid == null) {
+            return;
+        }
+
+        db.collection("games")
+                .document(gameId)
+                .get()
+                .addOnSuccessListener(gameSnapshot -> {
+
+                    String player1 = gameSnapshot.getString("player1");
+                    String player2 = gameSnapshot.getString("player2");
+
+                    if (player1 == null || player2 == null) {
+                        return;
+                    }
+
+                    String opponentUid = currentUid.equals(player1) ? player2 : player1;
+
+                    db.collection("users")
+                            .document(opponentUid)
+                            .get()
+                            .addOnSuccessListener(userSnapshot -> {
+                                if (!userSnapshot.exists()) {
+                                    Toast.makeText(this, "Opponent user document not found", Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                String username = userSnapshot.getString("username");
+                                String avatar = userSnapshot.getString("avatar");
+
+                                tvOpponentName.setText(username != null ? username : "Opponent");
+                                imgOpponentAvatar.setImageResource(getAvatarResource(avatar));
+
+                                Long tokens = userSnapshot.getLong("tokens");
+                                Long stars = userSnapshot.getLong("stars");
+                                Long league = userSnapshot.getLong("league");
+
+                                long tokensValue = tokens != null ? tokens : 0;
+                                long starsValue = stars != null ? stars : 0;
+                                long leagueValue = league != null ? league : 0;
+
+                                tvOpponentInfo.setText(
+                                        "🪙" + tokensValue +
+                                                " ⭐" + starsValue +
+                                                " L" + leagueValue
+                                );
+                            });
+                });
     }
 
 }
