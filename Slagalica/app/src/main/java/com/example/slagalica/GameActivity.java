@@ -154,32 +154,21 @@ public class GameActivity extends AppCompatActivity {
     private String getGameName(int gameNumber) {
         switch (gameNumber) {
             case GAME_QUIZ:
-                return "Ko zna zna";
+                return "Quiz";
             case GAME_MATCHING:
-                return "Spojnice";
+                return "Matchmaking";
             case GAME_ASSOCIATIONS:
-                return "Asocijacije";
+                return "Associations";
             case GAME_SKOCKO:
                 return "Skočko";
             case GAME_STEP_BY_STEP:
-                return "Korak po korak";
+                return "Step by step";
             case GAME_MY_NUMBER:
-                return "Moj broj";
+                return "My number";
             default:
                 return "Game";
         }
     }
-
-//    private boolean shouldLaunchForCurrentPlayer(int currentGame, String currentTurnUid) {
-//        if (currentGame == GAME_MY_NUMBER
-//                || currentGame == GAME_STEP_BY_STEP
-//                || currentGame == GAME_ASSOCIATIONS
-//                || currentGame == GAME_SKOCKO) {
-//            return true;
-//        }
-//
-//        return currentTurnUid != null && currentTurnUid.equals(currentUid);
-//    }
 
     private boolean shouldLaunchForCurrentPlayer(int currentGame, String currentTurnUid) {
         return true;
@@ -230,14 +219,78 @@ public class GameActivity extends AppCompatActivity {
             interGameTimer.cancel();
             interGameTimer = null;
         }
-        lastCompletedGame = Math.max(lastCompletedGame, requestCode);
 
         int points = 0;
+        int completedRound = 1;
         if (resultCode == RESULT_OK && data != null) {
             points = data.getIntExtra("points", 0);
+            completedRound = data.getIntExtra("myNumberRound",
+                    data.getIntExtra("stepByStepRound", 1));
         }
 
+        if (requestCode == GAME_MY_NUMBER) {
+            if (completedRound == 1) {
+                saveRound1ScoreAndLaunchRound2(points, GAME_MY_NUMBER);
+            } else {
+                lastCompletedGame = Math.max(lastCompletedGame, requestCode);
+                saveScoreAndAdvance(points, requestCode);
+            }
+            return;
+        }
+
+        if (requestCode == GAME_STEP_BY_STEP) {
+            if (completedRound == 1) {
+                saveRound1ScoreAndLaunchRound2(points, GAME_STEP_BY_STEP);
+            } else {
+                lastCompletedGame = Math.max(lastCompletedGame, requestCode);
+                saveScoreAndAdvance(points, requestCode);
+            }
+            return;
+        }
+
+        lastCompletedGame = Math.max(lastCompletedGame, requestCode);
         saveScoreAndAdvance(points, requestCode);
+    }
+
+    private void saveRound1ScoreAndLaunchRound2(int points, int gameType) {
+        DocumentReference gameRef = db.collection("games").document(gameId);
+
+        db.runTransaction(transaction -> {
+            com.google.firebase.firestore.DocumentSnapshot snapshot = transaction.get(gameRef);
+            if (snapshot == null || !snapshot.exists()) return null;
+
+            String player1 = snapshot.getString("player1");
+            boolean isPlayer1 = currentUid.equals(player1);
+            String scoreField = isPlayer1 ? "score1" : "score2";
+            long currentScore = snapshot.getLong(scoreField) != null ?
+                    snapshot.getLong(scoreField) : 0;
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put(scoreField, currentScore + points);
+
+            if (gameType == GAME_MY_NUMBER) {
+                updates.put("myNumberRound", 2L);
+            } else if (gameType == GAME_STEP_BY_STEP) {
+                updates.put("stepByStepRound", 2L);
+                updates.put("stepByStepStatus", "");
+            }
+
+            transaction.update(gameRef, updates);
+            return null;
+        }).addOnSuccessListener(unused -> {
+            gameAlreadyLaunched = false;
+            pendingLaunchGame = -1;
+
+            Intent intent;
+            if (gameType == GAME_MY_NUMBER) {
+                intent = new Intent(this, MyNumberActivity.class);
+            } else {
+                intent = new Intent(this, StepByStepActivity.class);
+            }
+            intent.putExtra("gameId", gameId);
+            intent.putExtra("isMultiplayer", true);
+            startActivityForResult(intent, gameType);
+        });
     }
 
     private void saveScoreAndAdvance(int points, int gameNumber) {
@@ -288,6 +341,13 @@ public class GameActivity extends AppCompatActivity {
                             updates.put("currentTurnUid", player1);
                             updates.put("player1done_game" + nextGame, false);
                             updates.put("player2done_game" + nextGame, false);
+                            if (gameNumber == GAME_MY_NUMBER) {
+                                updates.put("myNumberRound", 1L);
+                            }
+                            if (gameNumber == GAME_STEP_BY_STEP) {
+                                updates.put("stepByStepRound", 1L);
+                                updates.put("stepByStepStatus", "");
+                            }
                         }
                     }
 
@@ -320,7 +380,7 @@ public class GameActivity extends AppCompatActivity {
                     boolean isFriendly = Boolean.TRUE.equals(snapshot.getBoolean("isFriendly"));
 
                     Intent intent = new Intent(this, GameResultActivity.class);
-                    intent.putExtra("myScore", myScore + 1); // +1 da bi pobedio
+                    intent.putExtra("myScore", myScore + 1);
                     intent.putExtra("opponentScore", opponentScore);
                     intent.putExtra("isFriendly", isFriendly);
                     startActivity(intent);
