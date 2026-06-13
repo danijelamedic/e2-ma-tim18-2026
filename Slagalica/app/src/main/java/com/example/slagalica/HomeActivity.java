@@ -88,8 +88,8 @@ public class HomeActivity extends AppCompatActivity {
         }
         currentUid = currentUser.getUid();
 
-        //FirebaseSeeder.seedQuizQuestions();
-        //FirebaseSeeder.seedMatchingGames();
+        FirebaseSeeder.seedQuizQuestions();
+        FirebaseSeeder.seedMatchingGames();
         FirebaseSeeder.seedAssociationGames();
         FirebaseSeeder.seedSkockoGames();
 

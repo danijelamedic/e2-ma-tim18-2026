@@ -170,15 +170,19 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private boolean shouldLaunchForCurrentPlayer(int currentGame, String currentTurnUid) {
-        if (currentGame == GAME_MY_NUMBER
-                || currentGame == GAME_STEP_BY_STEP
-                || currentGame == GAME_ASSOCIATIONS
-                || currentGame == GAME_SKOCKO) {
-            return true;
-        }
+//    private boolean shouldLaunchForCurrentPlayer(int currentGame, String currentTurnUid) {
+//        if (currentGame == GAME_MY_NUMBER
+//                || currentGame == GAME_STEP_BY_STEP
+//                || currentGame == GAME_ASSOCIATIONS
+//                || currentGame == GAME_SKOCKO) {
+//            return true;
+//        }
+//
+//        return currentTurnUid != null && currentTurnUid.equals(currentUid);
+//    }
 
-        return currentTurnUid != null && currentTurnUid.equals(currentUid);
+    private boolean shouldLaunchForCurrentPlayer(int currentGame, String currentTurnUid) {
+        return true;
     }
 
     private void launchGame(int gameNumber) {

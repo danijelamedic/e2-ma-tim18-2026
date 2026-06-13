@@ -3,6 +3,7 @@ package com.example.slagalica.games.quiz;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,12 +18,16 @@ import com.example.slagalica.models.QuizQuestion;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import com.example.slagalica.data.StatisticsRepository;
 import android.widget.ImageView;
+import com.google.firebase.firestore.FieldValue;
+import java.util.HashMap;
+import java.util.Map;
 
 public class QuizActivity extends AppCompatActivity {
 
@@ -48,11 +53,28 @@ public class QuizActivity extends AppCompatActivity {
     private TextView tvPlayerInfo;
     private TextView tvQuestionProgress;
     private TextView tvBattleRound;
+    private String gameId;
+    private boolean isMultiplayer;
+    private ListenerRegistration quizListener;
+    private String currentUid;
+    private String currentTurnUid;
+    private boolean isMyTurn = false;
+    private boolean hasAnsweredCurrentQuestion = false;
+    private long questionStartTime = 0;
+    private boolean questionFinished = false;
+
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+        db = FirebaseFirestore.getInstance();
+
+        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        gameId = getIntent().getStringExtra("gameId");
+        isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -95,7 +117,13 @@ public class QuizActivity extends AppCompatActivity {
 
         findViewById(R.id.btnQuizInfo).setOnClickListener(v -> showInfoDialog());
         findViewById(R.id.btnLeaveQuiz).setOnClickListener(v -> showLeaveDialog());
-        findViewById(R.id.btnNextQuestion).setOnClickListener(v -> goToNextQuestion());
+        android.view.View btnNextQuestion = findViewById(R.id.btnNextQuestion);
+        btnNextQuestion.setOnClickListener(v -> goToNextQuestion());
+
+        if (isMultiplayer) {
+            btnNextQuestion.setVisibility(android.view.View.GONE);
+        }
+
 
         for (int i = 0; i < answerViews.length; i++) {
             final int index = i;
@@ -125,6 +153,8 @@ public class QuizActivity extends AppCompatActivity {
                     }
 
                     currentQuestionIndex = 0;
+                    initializeQuizState();
+                    listenForQuizUpdates();
                     loadQuestion();
                 })
                 .addOnFailureListener(e -> {
@@ -157,6 +187,20 @@ public class QuizActivity extends AppCompatActivity {
             answerView.setBackgroundResource(R.drawable.bg_quiz_answer);
         }
 
+        hasAnsweredCurrentQuestion = false;
+        questionFinished = false;
+        questionStartTime = System.currentTimeMillis();
+
+        for (TextView answerView : answerViews) {
+            answerView.setEnabled(true);
+        }
+
+        if (isMultiplayer) {
+            tvQuestionProgress.setText("Question " + (currentQuestionIndex + 1) + "/" + questions.size() + " - both players answer");
+        } else {
+            tvQuestionProgress.setText("Question " + (currentQuestionIndex + 1) + "/" + questions.size());
+        }
+
         timeLeftMillis = 5000;
         startTimer();
     }
@@ -179,13 +223,22 @@ public class QuizActivity extends AppCompatActivity {
                 timeLeftMillis = 0;
                 tvQuizTimer.setText("⏱ 0s");
 
-                if (!questionAnswered) {
+                if (isMultiplayer && gameId != null) {
+                    finishMultiplayerQuestionByTimeout();
+                } else if (!questionAnswered) {
                     goToNextQuestionWithoutAnswer();
                 }
             }
         };
 
         countDownTimer.start();
+    }
+    private void finishMultiplayerQuestionByTimeout() {
+        if (questionFinished) {
+            return;
+        }
+
+        checkAndScoreCurrentQuestion(true);
     }
 
     private void pauseTimer() {
@@ -199,7 +252,12 @@ public class QuizActivity extends AppCompatActivity {
             return;
         }
 
+        if (isMultiplayer && hasAnsweredCurrentQuestion) {
+            return;
+        }
+
         questionAnswered = true;
+        hasAnsweredCurrentQuestion = true;
         selectedAnswerIndex = index;
 
         if (countDownTimer != null) {
@@ -214,18 +272,44 @@ public class QuizActivity extends AppCompatActivity {
         QuizQuestion currentQuestion = questions.get(currentQuestionIndex);
         String selectedAnswer = answerViews[selectedAnswerIndex].getText().toString();
         String correctAnswer = currentQuestion.getCorrectAnswer();
+        boolean isCorrect = selectedAnswer.equals(correctAnswer);
 
-        if (selectedAnswer.equals(correctAnswer)) {
-            playerScore += 10;
-            correctAnswersCount++;
+        if (isCorrect) {
             answerViews[selectedAnswerIndex].setBackgroundResource(R.drawable.bg_quiz_answer_correct);
         } else {
-            playerScore -= 5;
             answerViews[selectedAnswerIndex].setBackgroundResource(R.drawable.bg_quiz_answer_wrong);
             showCorrectAnswer(correctAnswer);
         }
 
+        if (isMultiplayer && gameId != null) {
+            saveMultiplayerAnswer(index, selectedAnswer, isCorrect);
+            return;
+        }
+
+        if (isCorrect) {
+            playerScore += 10;
+            correctAnswersCount++;
+        } else {
+            playerScore -= 5;
+        }
+
         tvPlayerScore.setText(playerScore + " pts");
+    }
+
+    private void saveMultiplayerAnswer(int index, String selectedAnswer, boolean isCorrect) {
+        long answeredAt = System.currentTimeMillis();
+
+        Map<String, Object> answerData = new HashMap<>();
+        answerData.put("answerIndex", index);
+        answerData.put("answerText", selectedAnswer);
+        answerData.put("correct", isCorrect);
+        answerData.put("answeredAt", answeredAt);
+
+        String answerPath = "quizAnswers.question_" + currentQuestionIndex + "." + currentUid;
+
+        db.collection("games")
+                .document(gameId)
+                .update(answerPath, answerData);
     }
 
     private void showCorrectAnswer(String correctAnswer) {
@@ -252,6 +336,17 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void moveToNextQuestion() {
+
+        if (isMultiplayer && gameId != null) {
+            if (!questionFinished) {
+                checkAndScoreCurrentQuestion(false);
+                return;
+            }
+
+            advanceQuizQuestionSafely();
+            return;
+        }
+
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
@@ -262,6 +357,34 @@ public class QuizActivity extends AppCompatActivity {
         } else {
             showResultDialog();
         }
+    }
+
+    private void advanceQuizQuestionSafely() {
+        db.runTransaction(transaction -> {
+            com.google.firebase.firestore.DocumentReference gameRef =
+                    db.collection("games").document(gameId);
+
+            com.google.firebase.firestore.DocumentSnapshot snapshot =
+                    transaction.get(gameRef);
+
+            Long firestoreQuestion = snapshot.getLong("quizQuestionIndex");
+
+            if (firestoreQuestion == null ||
+                    firestoreQuestion.intValue() != currentQuestionIndex) {
+                return null;
+            }
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("quizQuestionIndex", currentQuestionIndex + 1);
+            updates.put("quizSelectedAnswerIndex", null);
+            updates.put("quizSelectedAnswerText", null);
+            updates.put("quizAnswerByUid", null);
+            updates.put("quizAnsweredQuestionIndex", null);
+
+            transaction.update(gameRef, updates);
+
+            return null;
+        });
     }
 
     private void showInfoDialog() {
@@ -314,9 +437,9 @@ public class QuizActivity extends AppCompatActivity {
             countDownTimer.cancel();
         }
 
-        if (isBattleMode) {
+        if (isBattleMode || isMultiplayer) {
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("score", playerScore);
+            resultIntent.putExtra("points", playerScore);
             setResult(RESULT_OK, resultIntent);
             finish();
             return;
@@ -404,6 +527,227 @@ public class QuizActivity extends AppCompatActivity {
             default:
                 return R.drawable.avatar_owl;
         }
+    }
+
+    private void initializeQuizState() {
+
+        if (!isMultiplayer || gameId == null) {
+            return;
+        }
+
+        db.collection("games")
+                .document(gameId)
+                .update(
+                        "quizQuestionIndex", 0,
+                        "quizPlayer1Score", 0,
+                        "quizPlayer2Score", 0
+                );
+    }
+
+    private void listenForQuizUpdates() {
+
+        if (!isMultiplayer || gameId == null) {
+            return;
+        }
+
+        quizListener = db.collection("games")
+                .document(gameId)
+                .addSnapshotListener((snapshot, e) -> {
+
+                    if (snapshot == null || !snapshot.exists()) {
+                        return;
+                    }
+
+                    Long questionIndex =
+                            snapshot.getLong("quizQuestionIndex");
+                    currentTurnUid = snapshot.getString("currentTurnUid");
+                    isMyTurn = currentUid != null && currentUid.equals(currentTurnUid);
+
+                    Long answeredQuestionIndex = snapshot.getLong("quizAnsweredQuestionIndex");
+                    Long selectedAnswerIndexFromDb = snapshot.getLong("quizSelectedAnswerIndex");
+
+                    if (!isMyTurn
+                            && answeredQuestionIndex != null
+                            && selectedAnswerIndexFromDb != null
+                            && answeredQuestionIndex.intValue() == currentQuestionIndex) {
+
+                        int selectedIndex = selectedAnswerIndexFromDb.intValue();
+
+                        if (selectedIndex >= 0 && selectedIndex < answerViews.length) {
+                            for (TextView answerView : answerViews) {
+                                answerView.setEnabled(false);
+                            }
+
+                            answerViews[selectedIndex].setBackgroundResource(R.drawable.bg_matching_selected);
+                        }
+                    }
+
+                    if (questionIndex == null) {
+                        return;
+                    }
+
+                    int firestoreQuestion =
+                            questionIndex.intValue();
+
+                    if (firestoreQuestion != currentQuestionIndex) {
+
+                        currentQuestionIndex = firestoreQuestion;
+
+                        if (currentQuestionIndex < questions.size()) {
+                            loadQuestion();
+                        }
+                    }
+
+                    if (isMultiplayer && !questionFinished) {
+                        checkAndScoreCurrentQuestion(false);
+                    }
+                });
+    }
+
+    private void checkAndScoreCurrentQuestion(boolean allowMissingAnswers){
+        if (gameId == null || currentUid == null) {
+            return;
+        }
+
+        db.collection("games").document(gameId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (!snapshot.exists()) {
+                        return;
+                    }
+
+                    Long currentGameQuestion = snapshot.getLong("quizQuestionIndex");
+                    if (currentGameQuestion == null ||
+                            currentGameQuestion.intValue() != currentQuestionIndex) {
+                        return;
+                    }
+
+                    Boolean alreadyScored = snapshot.getBoolean(
+                            "quizScored.question_" + currentQuestionIndex
+                    );
+
+                    if (Boolean.TRUE.equals(alreadyScored)) {
+                        return;
+                    }
+
+                    String player1 = snapshot.getString("player1");
+                    String player2 = snapshot.getString("player2");
+
+                    if (player1 == null || player2 == null) {
+                        return;
+                    }
+
+                    Object answer1Obj = snapshot.get(
+                            "quizAnswers.question_" + currentQuestionIndex + "." + player1
+                    );
+
+                    Object answer2Obj = snapshot.get(
+                            "quizAnswers.question_" + currentQuestionIndex + "." + player2
+                    );
+
+                    if (!allowMissingAnswers && (answer1Obj == null || answer2Obj == null)) {
+                        return;
+                    }
+
+                    scoreQuestionTransaction(player1, player2, allowMissingAnswers);
+                });
+    }
+
+    private void scoreQuestionTransaction(String player1, String player2, boolean allowMissingAnswers) {
+        db.runTransaction(transaction -> {
+            com.google.firebase.firestore.DocumentReference gameRef =
+                    db.collection("games").document(gameId);
+
+            com.google.firebase.firestore.DocumentSnapshot snapshot =
+                    transaction.get(gameRef);
+
+            Boolean alreadyScored = snapshot.getBoolean(
+                    "quizScored.question_" + currentQuestionIndex
+            );
+
+            if (Boolean.TRUE.equals(alreadyScored)) {
+                return null;
+            }
+
+            Map<String, Object> answer1 =
+                    (Map<String, Object>) snapshot.get(
+                            "quizAnswers.question_" + currentQuestionIndex + "." + player1
+                    );
+
+            Map<String, Object> answer2 =
+                    (Map<String, Object>) snapshot.get(
+                            "quizAnswers.question_" + currentQuestionIndex + "." + player2
+                    );
+
+            if (!allowMissingAnswers && (answer1 == null || answer2 == null)) {
+                return null;
+            }
+
+            boolean p1Answered = answer1 != null;
+            boolean p2Answered = answer2 != null;
+
+            boolean p1Correct = p1Answered && Boolean.TRUE.equals(answer1.get("correct"));
+            boolean p2Correct = p2Answered && Boolean.TRUE.equals(answer2.get("correct"));
+
+            long p1Time = p1Answered ? ((Number) answer1.get("answeredAt")).longValue() : Long.MAX_VALUE;
+            long p2Time = p2Answered ? ((Number) answer2.get("answeredAt")).longValue() : Long.MAX_VALUE;
+
+            long p1Delta = 0;
+            long p2Delta = 0;
+
+            if (p1Answered && !p1Correct) {
+                p1Delta -= 5;
+            }
+
+            if (p2Answered && !p2Correct) {
+                p2Delta -= 5;
+            }
+
+            if (p1Correct && p2Correct) {
+                if (p1Time <= p2Time) {
+                    p1Delta += 10;
+                } else {
+                    p2Delta += 10;
+                }
+            } else if (p1Correct) {
+                p1Delta += 10;
+            } else if (p2Correct) {
+                p2Delta += 10;
+            }
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("score1", FieldValue.increment(p1Delta));
+            updates.put("score2", FieldValue.increment(p2Delta));
+            updates.put("quizScored.question_" + currentQuestionIndex, true);
+
+            transaction.update(gameRef, updates);
+
+            return null;
+        }).addOnSuccessListener(unused -> {
+            questionFinished = true;
+
+            db.collection("games").document(gameId)
+                    .get()
+                    .addOnSuccessListener(snapshot -> {
+                        String player1Id = snapshot.getString("player1");
+                        Long score1 = snapshot.getLong("score1");
+                        Long score2 = snapshot.getLong("score2");
+
+                        if (currentUid.equals(player1Id)) {
+                            playerScore = score1 != null ? score1.intValue() : 0;
+                        } else {
+                            playerScore = score2 != null ? score2.intValue() : 0;
+                        }
+
+                        tvPlayerScore.setText(playerScore + " pts");
+
+                        if (currentQuestionIndex < questions.size() - 1) {
+                            advanceQuizQuestionSafely();
+                        } else {
+                            showResultDialog();
+                        }
+                    });
+        });
     }
 
 }

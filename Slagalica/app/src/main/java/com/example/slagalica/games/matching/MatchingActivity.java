@@ -24,6 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 import com.example.slagalica.data.StatisticsRepository;
+import com.google.firebase.firestore.ListenerRegistration;
+
 import android.widget.ImageView;
 
 public class MatchingActivity extends AppCompatActivity {
@@ -47,12 +49,26 @@ public class MatchingActivity extends AppCompatActivity {
     private TextView tvPlayerScore;
     private boolean isBattleMode;
     private boolean resultSaved = false;
+    private String gameId;
+    private boolean isMultiplayer;
+    private String currentUid;
+    private String currentTurnUid;
+    private boolean isMyTurn = false;
+    private FirebaseFirestore db;
+    private ListenerRegistration matchingListener;
+    private String lastShownOpponentMatch = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_matching);
+
+        db = FirebaseFirestore.getInstance();
+
+        gameId = getIntent().getStringExtra("gameId");
+        isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
@@ -80,6 +96,7 @@ public class MatchingActivity extends AppCompatActivity {
         setupMatchingViews();
         setupMatchingClicks();
         setupInfoButton();
+        listenForMatchingUpdates();
 
         loadMatchingGameFromFirebase();
     }
@@ -227,6 +244,17 @@ public class MatchingActivity extends AppCompatActivity {
         String selectedLeftText = selectedLeftItem.getText().toString();
         String selectedRightText = rightItem.getText().toString();
 
+        if (isMultiplayer && gameId != null) {
+            db.collection("games")
+                    .document(gameId)
+                    .update(
+                            "matchingSelectedLeft", selectedLeftText,
+                            "matchingSelectedRight", selectedRightText,
+                            "matchingUpdatedByUid", currentUid,
+                            "matchingConnectedPairs", connectedPairs + 1
+                    );
+        }
+
         String correctRightText = correctMatches.get(selectedLeftText);
         boolean isCorrect = correctRightText != null && correctRightText.equals(selectedRightText);
 
@@ -259,6 +287,15 @@ public class MatchingActivity extends AppCompatActivity {
     }
 
     private void startTimer() {
+
+        if (isMultiplayer && !isMyTurn) {
+            if (timer != null) {
+                timer.cancel();
+            }
+            tvTimer.setText("⏱ Waiting");
+            return;
+        }
+
         if (timer != null) {
             timer.cancel();
         }
@@ -297,9 +334,9 @@ public class MatchingActivity extends AppCompatActivity {
             StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, won);
         }
 
-        if (isBattleMode) {
+        if (isBattleMode || isMultiplayer) {
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("score", playerScore);
+            resultIntent.putExtra("points", playerScore);
             setResult(RESULT_OK, resultIntent);
             finish();
             return;
@@ -410,5 +447,103 @@ public class MatchingActivity extends AppCompatActivity {
             default:
                 return R.drawable.avatar_owl;
         }
+    }
+
+    private void listenForMatchingUpdates() {
+        if (!isMultiplayer || gameId == null) {
+            return;
+        }
+
+        matchingListener = db.collection("games")
+                .document(gameId)
+                .addSnapshotListener((snapshot, e) -> {
+                    if (snapshot == null || !snapshot.exists()) {
+                        return;
+                    }
+
+                    currentTurnUid = snapshot.getString("currentTurnUid");
+                    isMyTurn = currentUid != null && currentUid.equals(currentTurnUid);
+
+                    updateTurnUi();
+
+                    String selectedLeft = snapshot.getString("matchingSelectedLeft");
+                    String selectedRight = snapshot.getString("matchingSelectedRight");
+                    String updatedByUid = snapshot.getString("matchingUpdatedByUid");
+
+                    if (!isMyTurn
+                            && updatedByUid != null
+                            && !updatedByUid.equals(currentUid)
+                            && selectedLeft != null
+                            && selectedRight != null) {
+                        showOpponentMatch(selectedLeft, selectedRight);
+                    }
+                });
+    }
+
+    private void updateTurnUi() {
+        if (leftItems == null || rightItems == null) {
+            return;
+        }
+
+        for (TextView leftItem : leftItems) {
+            leftItem.setEnabled(isMyTurn);
+        }
+
+        for (TextView rightItem : rightItems) {
+            rightItem.setEnabled(isMyTurn);
+        }
+
+        if (!isMyTurn) {
+            if (timer != null) {
+                timer.cancel();
+            }
+            tvTimer.setText("⏱ Waiting");
+        }
+    }
+
+    private void showOpponentMatch(String selectedLeft, String selectedRight) {
+
+        String matchKey = selectedLeft + "|" + selectedRight;
+
+        if (matchKey.equals(lastShownOpponentMatch)) {
+            return;
+        }
+
+        lastShownOpponentMatch = matchKey;
+
+        TextView leftView = null;
+        TextView rightView = null;
+
+        for (TextView item : leftItems) {
+            if (item.getText().toString().equals(selectedLeft)) {
+                leftView = item;
+                break;
+            }
+        }
+
+        for (TextView item : rightItems) {
+            if (item.getText().toString().equals(selectedRight)) {
+                rightView = item;
+                break;
+            }
+        }
+
+        if (leftView == null || rightView == null) {
+            return;
+        }
+
+        String correctRightText = correctMatches.get(selectedLeft);
+        boolean isCorrect = correctRightText != null && correctRightText.equals(selectedRight);
+
+        if (isCorrect) {
+            leftView.setBackgroundResource(R.drawable.bg_quiz_answer_correct);
+            rightView.setBackgroundResource(R.drawable.bg_quiz_answer_correct);
+        } else {
+            leftView.setBackgroundResource(R.drawable.bg_quiz_answer_wrong);
+            rightView.setBackgroundResource(R.drawable.bg_quiz_answer_wrong);
+        }
+
+        leftView.setEnabled(false);
+        rightView.setEnabled(false);
     }
 }

@@ -59,12 +59,61 @@ public class FirebaseSeeder {
                 "Dante Alighieri",
                 "William Shakespeare"
         );
+        QuizQuestion q6 = new QuizQuestion(
+                "What is the largest mammal in the world?",
+                "Elephant",
+                "Blue Whale",
+                "Giraffe",
+                "Hippopotamus",
+                "Blue Whale"
+        );
+
+        QuizQuestion q7 = new QuizQuestion(
+                "Which country is famous for the Eiffel Tower?",
+                "Italy",
+                "France",
+                "Spain",
+                "Germany",
+                "France"
+        );
+
+        QuizQuestion q8 = new QuizQuestion(
+                "How many continents are there?",
+                "5",
+                "6",
+                "7",
+                "8",
+                "7"
+        );
+
+        QuizQuestion q9 = new QuizQuestion(
+                "Which gas do plants absorb from the atmosphere?",
+                "Oxygen",
+                "Carbon Dioxide",
+                "Nitrogen",
+                "Hydrogen",
+                "Carbon Dioxide"
+        );
+
+        QuizQuestion q10 = new QuizQuestion(
+                "Who painted the Mona Lisa?",
+                "Pablo Picasso",
+                "Vincent van Gogh",
+                "Leonardo da Vinci",
+                "Michelangelo",
+                "Leonardo da Vinci"
+        );
 
         db.collection("quizQuestions").document("q1").set(q1);
         db.collection("quizQuestions").document("q2").set(q2);
         db.collection("quizQuestions").document("q3").set(q3);
         db.collection("quizQuestions").document("q4").set(q4);
         db.collection("quizQuestions").document("q5").set(q5);
+        db.collection("quizQuestions").document("q6").set(q6);
+        db.collection("quizQuestions").document("q7").set(q7);
+        db.collection("quizQuestions").document("q8").set(q8);
+        db.collection("quizQuestions").document("q9").set(q9);
+        db.collection("quizQuestions").document("q10").set(q10);
     }
 
     public static void seedMatchingGames() {
@@ -91,6 +140,51 @@ public class FirebaseSeeder {
         matchingGame.setMatch5("Madrid");
 
         db.collection("matchingGames").document("game1").set(matchingGame);
+
+        MatchingGame matchingGame2 = new MatchingGame();
+
+        matchingGame2.setLeft1("Dog");
+        matchingGame2.setLeft2("Cat");
+        matchingGame2.setLeft3("Cow");
+        matchingGame2.setLeft4("Sheep");
+        matchingGame2.setLeft5("Horse");
+
+        matchingGame2.setRight1("Meow");
+        matchingGame2.setRight2("Neigh");
+        matchingGame2.setRight3("Bark");
+        matchingGame2.setRight4("Moo");
+        matchingGame2.setRight5("Baa");
+
+        matchingGame2.setMatch1("Bark");
+        matchingGame2.setMatch2("Meow");
+        matchingGame2.setMatch3("Moo");
+        matchingGame2.setMatch4("Baa");
+        matchingGame2.setMatch5("Neigh");
+
+        db.collection("matchingGames").document("game2").set(matchingGame2);
+
+
+        MatchingGame matchingGame3 = new MatchingGame();
+
+        matchingGame3.setLeft1("Java");
+        matchingGame3.setLeft2("Android");
+        matchingGame3.setLeft3("Firebase");
+        matchingGame3.setLeft4("HTML");
+        matchingGame3.setLeft5("Git");
+
+        matchingGame3.setRight1("Version control");
+        matchingGame3.setRight2("Web page structure");
+        matchingGame3.setRight3("Programming language");
+        matchingGame3.setRight4("Mobile platform");
+        matchingGame3.setRight5("Cloud database");
+
+        matchingGame3.setMatch1("Programming language");
+        matchingGame3.setMatch2("Mobile platform");
+        matchingGame3.setMatch3("Cloud database");
+        matchingGame3.setMatch4("Web page structure");
+        matchingGame3.setMatch5("Version control");
+
+        db.collection("matchingGames").document("game3").set(matchingGame3);
     }
 
     public static void seedAssociationGames() {
