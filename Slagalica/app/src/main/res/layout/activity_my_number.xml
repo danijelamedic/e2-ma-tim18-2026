@@ -1,228 +1,371 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_profile_screen"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="24dp"
-        android:paddingBottom="32dp">
+        android:paddingStart="14dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="8dp">
 
-        <!-- HEADER -->
+
         <LinearLayout
             android:id="@+id/layoutHeader"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_height="44dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="20dp">
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center_vertical"
+                android:text="My Number"
+                android:textColor="#2D1B5E"
+                android:textSize="25sp"
+                android:textStyle="bold|italic" />
+
+            <Button
+                android:id="@+id/btnLeaveMyNumber"
+                android:layout_width="92dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_purple_button"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text="LEAVE"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/layoutPlayersCard"
+            android:layout_width="match_parent"
+            android:layout_height="136dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_profile_card"
+            android:baselineAligned="false"
+            android:elevation="4dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/tvYourAvatar"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_active_player_avatar"
+                    android:contentDescription="Player avatar"
+                    android:padding="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/avatar_owl" />
+
+                <TextView
+                    android:id="@+id/tvPlayerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:gravity="center"
+                    android:text="You"
+                    android:textColor="#2D1B5E"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvPlayerScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:gravity="center"
+                    android:text="0 pts"
+                    android:textColor="#5B2FC4"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvPlayerInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="🪙0 ⭐0 L0"
+                    android:textColor="#5B2FC4"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="104dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/my_number"
-                    android:textColor="#2D1B5E"
-                    android:textSize="30sp"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black" />
+                    android:id="@+id/tvTimer"
+                    android:layout_width="92dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_stat_card"
+                    android:gravity="center"
+                    android:text="⏱ 60s"
+                    android:textColor="#5B2FC4"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
-                <View
-                    android:layout_width="36dp"
-                    android:layout_height="3dp"
-                    android:background="@drawable/bg_accent_line"
-                    android:layout_marginTop="6dp" />
-
+                <TextView
+                    android:id="@+id/tvRoundInfo"
+                    android:layout_width="92dp"
+                    android:layout_height="26dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_small_pill"
+                    android:gravity="center"
+                    android:text="1/2"
+                    android:textColor="#5B2FC4"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- TIMER PILL -->
-            <TextView
-                android:id="@+id/tvTimer"
-                android:layout_width="100dp"
-                android:layout_height="44dp"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/timer_my_number"
-                android:textColor="#5B2FC4"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-black"
-                android:background="@drawable/bg_timer_pill" />
+                android:orientation="vertical">
 
+                <ImageView
+                    android:id="@+id/tvOpponentAvatar"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_inactive_player_avatar"
+                    android:contentDescription="Opponent avatar"
+                    android:padding="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/avatar_owl" />
+
+                <TextView
+                    android:id="@+id/tvOpponentName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:gravity="center"
+                    android:text="Opponent"
+                    android:textColor="#2D1B5E"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvOpponentScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:gravity="center"
+                    android:text="0 pts"
+                    android:textColor="#5B2FC4"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvOpponentInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="🪙0 ⭐0 L0"
+                    android:textColor="#5B2FC4"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- TARGET NUMBER CARD -->
+
         <LinearLayout
             android:id="@+id/layoutTargetCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="4dp"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_premium"
-            android:elevation="12dp"
-            android:padding="20dp"
-            android:gravity="center"
-            android:layout_marginBottom="16dp">
+            android:paddingStart="10dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="7dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="🎯 Target number"
+                    android:textColor="#5B2FC4"
+                    android:textSize="15sp"
+                    android:textStyle="bold|italic" />
+
+
+                <TextView
+                    android:id="@+id/tvTargetNumber"
+                    android:layout_width="92dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_target_number"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🎯  TARGET NUMBER"
-                android:textColor="#5B2FC4"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.12"
-                android:layout_marginBottom="12dp" />
-
-            <TextView
-                android:id="@+id/tvTargetNumber"
-                android:layout_width="180dp"
-                android:layout_height="80dp"
-                android:gravity="center"
-                android:text="@string/target_number"
-                android:textColor="@android:color/white"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-black"
-                android:background="@drawable/bg_target_number"
-                android:layout_marginBottom="16dp" />
-
-            <Button
                 android:id="@+id/btnStopTarget"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:text="@string/stop"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_purple_button"
+                android:clickable="true"
+                android:focusable="true"
                 android:fontFamily="sans-serif-black"
-                android:textSize="15sp"
-                android:letterSpacing="0.1"
-                android:background="@drawable/bg_button_selector"
-                android:stateListAnimator="@null" />
-
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:padding="0dp"
+                android:text="STOP TARGET"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold|italic" />
         </LinearLayout>
 
-        <!-- NUMBERS CARD -->
+
         <LinearLayout
             android:id="@+id/layoutNumbersCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="4dp"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_premium"
-            android:elevation="10dp"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
+            android:paddingStart="10dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="7dp">
 
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_height="26dp"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="🔢  YOUR NUMBERS"
-                    android:textColor="#5B2FC4"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.12" />
-
-            </LinearLayout>
+                android:text="🔢 Your numbers"
+                android:textColor="#5B2FC4"
+                android:textSize="15sp"
+                android:textStyle="bold|italic" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginTop="4dp"
                 android:gravity="center"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal">
 
-                <TextView android:id="@+id/tvNum1" android:layout_width="48dp" android:layout_height="52dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="4dp" android:text="?" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="18sp"/>
-                <TextView android:id="@+id/tvNum2" android:layout_width="48dp" android:layout_height="52dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="4dp" android:text="?" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="18sp"/>
-                <TextView android:id="@+id/tvNum3" android:layout_width="48dp" android:layout_height="52dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="4dp" android:text="?" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="18sp"/>
-                <TextView android:id="@+id/tvNum4" android:layout_width="48dp" android:layout_height="52dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="4dp" android:text="?" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="18sp"/>
-                <TextView android:id="@+id/tvNum5" android:layout_width="48dp" android:layout_height="52dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="4dp" android:text="?" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="18sp"/>
-                <TextView android:id="@+id/tvNum6" android:layout_width="48dp" android:layout_height="52dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="4dp" android:text="?" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="18sp"/>
-
+                <TextView android:id="@+id/tvNum1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="0" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="16sp"/>
+                <TextView android:id="@+id/tvNum2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="0" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="16sp"/>
+                <TextView android:id="@+id/tvNum3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="0" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="16sp"/>
+                <TextView android:id="@+id/tvNum4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="0" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="16sp"/>
+                <TextView android:id="@+id/tvNum5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="0" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="16sp"/>
+                <TextView android:id="@+id/tvNum6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="44dp" android:gravity="center" android:background="@drawable/bg_tile" android:layout_margin="3dp" android:text="0" android:textColor="#2D1B5E" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textSize="16sp"/>
             </LinearLayout>
 
-            <Button
+            <TextView
                 android:id="@+id/btnStopNumbers"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:text="@string/stop"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_purple_button"
+                android:clickable="true"
+                android:focusable="true"
                 android:fontFamily="sans-serif-black"
-                android:textSize="15sp"
-                android:letterSpacing="0.1"
-                android:background="@drawable/bg_button_selector"
-                android:stateListAnimator="@null" />
-
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:padding="0dp"
+                android:text="STOP NUMBERS"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold|italic" />
         </LinearLayout>
 
-        <!-- EXPRESSION CARD -->
+
         <LinearLayout
             android:id="@+id/layoutExpressionCard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="4dp"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_premium"
-            android:elevation="10dp"
-            android:padding="20dp"
-            android:layout_marginBottom="8dp">
+            android:paddingStart="10dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="7dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="✏️  YOUR EXPRESSION"
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:text="✏️ Your expression"
                 android:textColor="#5B2FC4"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.12"
-                android:layout_marginBottom="10dp" />
+                android:textSize="15sp"
+                android:textStyle="bold|italic" />
 
             <EditText
                 android:id="@+id/etExpression"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:hint="@string/hint_expression"
+                android:layout_height="48dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_input_selector"
+                android:hint="e.g. (25+75)*2"
                 android:inputType="text"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
                 android:textColor="#1E0A3C"
                 android:textColorHint="#A89CC8"
-                android:textSize="15sp"
-                android:background="@drawable/bg_input_selector"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:layout_marginBottom="16dp" />
+                android:textSize="15sp" />
 
-            <Button
+            <TextView
                 android:id="@+id/btnConfirm"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="@string/confirm"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_purple_button"
+                android:clickable="true"
+                android:focusable="true"
                 android:fontFamily="sans-serif-black"
-                android:textSize="17sp"
-                android:letterSpacing="0.08"
-                android:background="@drawable/bg_button_selector"
-                android:stateListAnimator="@null" />
-
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:padding="0dp"
+                android:text="CONFIRM"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold|italic" />
         </LinearLayout>
 
     </LinearLayout>
-</ScrollView>
+</LinearLayout>
