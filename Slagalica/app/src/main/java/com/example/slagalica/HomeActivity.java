@@ -69,6 +69,9 @@ public class HomeActivity extends AppCompatActivity {
     private final Set<String> seenNotificationIds = new HashSet<>();
     private boolean notificationFirstLoad = true;
 
+    private View navStatistics;
+    private View navFriends;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -267,6 +270,8 @@ public class HomeActivity extends AppCompatActivity {
         navNotifications = findViewById(R.id.navNotifications);
         navProfile = findViewById(R.id.navProfile);
         tvWelcomeUsername = findViewById(R.id.tvWelcomeUsername);
+        navStatistics = findViewById(R.id.navStatistics);
+        navFriends = findViewById(R.id.navFriends);
     }
 
     private void setupClickListeners() {
@@ -322,6 +327,14 @@ public class HomeActivity extends AppCompatActivity {
 
         navProfile.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class))
+        );
+
+        navStatistics.setOnClickListener(v ->
+                startActivity(new Intent(this, ProfileActivity.class))
+        );
+
+        navFriends.setOnClickListener(v ->
+                Toast.makeText(this, "Friends list will be added later", Toast.LENGTH_SHORT).show()
         );
     }
 

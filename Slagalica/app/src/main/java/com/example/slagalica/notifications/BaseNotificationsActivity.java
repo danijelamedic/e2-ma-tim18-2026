@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import com.example.slagalica.HomeActivity;
+
 
 public abstract class BaseNotificationsActivity extends AppCompatActivity {
     private final NotificationRepository repository = new NotificationRepository();
@@ -68,6 +70,7 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
 
         bindViews();
         setupActions();
+        setupBottomNavigation();
         listenForNotifications();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -389,5 +392,25 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
         ALL,
         UNREAD,
         READ
+    }
+
+    private void setupBottomNavigation() {
+        findViewById(R.id.navHome).setOnClickListener(v ->
+                startActivity(new Intent(this, HomeActivity.class)));
+
+        findViewById(R.id.navNotifications).setOnClickListener(v ->
+                Toast.makeText(this, "You are already on Notifications", Toast.LENGTH_SHORT).show());
+
+        findViewById(R.id.navProfile).setOnClickListener(v ->
+                startActivity(new Intent(this, ProfileActivity.class)));
+
+        findViewById(R.id.navStatistics).setOnClickListener(v ->
+                startActivity(new Intent(this, ProfileActivity.class)));
+
+        findViewById(R.id.navFriends).setOnClickListener(v ->
+                Toast.makeText(this, "Friends list will be added later", Toast.LENGTH_SHORT).show());
+
+        findViewById(R.id.navLeaderboard).setOnClickListener(v ->
+                Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show());
     }
 }
