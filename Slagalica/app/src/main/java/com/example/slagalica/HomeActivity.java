@@ -55,12 +55,6 @@ public class HomeActivity extends AppCompatActivity {
     private View navNotifications;
     private View navProfile;
     private View btnChallenge;
-    private View btnQuiz;
-    private View btnMatching;
-    private View btnAssociations;
-    private View btnSkocko;
-    private View btnStepByStep;
-    private View btnMyNumber;
     private FirebaseFirestore db;
     private String currentUid;
     private TextView tvWelcomeUsername;
@@ -121,12 +115,8 @@ public class HomeActivity extends AppCompatActivity {
         db.collection("users").document(currentUid)
                 .get()
                 .addOnSuccessListener(document -> {
-                    if (!document.exists()) {
-                        return;
-                    }
-
+                    if (!document.exists()) return;
                     String username = document.getString("username");
-
                     if (username != null && tvWelcomeUsername != null) {
                         tvWelcomeUsername.setText("Welcome, " + username + "!");
                     }
@@ -153,7 +143,6 @@ public class HomeActivity extends AppCompatActivity {
 
                     long league = snapshot.getLong("league") != null ?
                             snapshot.getLong("league") : 0;
-
                     long dailyTokens = 5 + league;
 
                     db.collection("users").document(currentUid)
@@ -208,29 +197,22 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void startNotificationListener() {
-        if (notificationListener != null) {
-            notificationListener.remove();
-        }
+        if (notificationListener != null) notificationListener.remove();
 
         notificationListener = notificationRepository.listen(currentUid, null,
                 new NotificationRepository.NotificationsCallback() {
                     @Override
                     public void onNotificationsLoaded(List<AppNotification> notifications) {
                         if (notificationFirstLoad) {
-                            for (AppNotification notification : notifications) {
-                                seenNotificationIds.add(notification.id);
-                            }
+                            for (AppNotification n : notifications) seenNotificationIds.add(n.id);
                             notificationFirstLoad = false;
                             return;
                         }
-
-                        for (AppNotification notification : notifications) {
-                            if (notification.read || notification.id == null) {
-                                continue;
-                            }
-                            if (seenNotificationIds.add(notification.id)) {
+                        for (AppNotification n : notifications) {
+                            if (n.read || n.id == null) continue;
+                            if (seenNotificationIds.add(n.id)) {
                                 Intent intent = new Intent(HomeActivity.this, NotificationCenterActivity.class);
-                                LocalNotificationSender.show(HomeActivity.this, notification, intent);
+                                LocalNotificationSender.show(HomeActivity.this, n, intent);
                             }
                         }
                     }
@@ -247,7 +229,6 @@ public class HomeActivity extends AppCompatActivity {
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == REQUEST_MICROPHONE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "Microphone permission granted");
@@ -256,93 +237,56 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        btnPlay = findViewById(R.id.btnPlay);
-        btnChallenge = findViewById(R.id.btnChallenge);
-        btnQuiz = findViewById(R.id.btnQuiz);
-        btnMatching = findViewById(R.id.btnMatching);
-        btnAssociations = findViewById(R.id.btnAssociations);
-        btnSkocko = findViewById(R.id.btnSkocko);
-        btnStepByStep = findViewById(R.id.btnStepByStep);
-        btnMyNumber = findViewById(R.id.btnMyNumber);
-        btnLogout = findViewById(R.id.btnLogout);
-        navHome = findViewById(R.id.navHome);
-        navLeaderboard = findViewById(R.id.navLeaderboard);
-        navNotifications = findViewById(R.id.navNotifications);
-        navProfile = findViewById(R.id.navProfile);
+        btnPlay           = findViewById(R.id.btnPlay);
+        btnChallenge      = findViewById(R.id.btnChallenge);
+        btnLogout         = findViewById(R.id.btnLogout);
+        navHome           = findViewById(R.id.navHome);
+        navLeaderboard    = findViewById(R.id.navLeaderboard);
+        navNotifications  = findViewById(R.id.navNotifications);
+        navProfile        = findViewById(R.id.navProfile);
         tvWelcomeUsername = findViewById(R.id.tvWelcomeUsername);
-        navStatistics = findViewById(R.id.navStatistics);
-        navFriends = findViewById(R.id.navFriends);
+        navStatistics     = findViewById(R.id.navStatistics);
+        navFriends        = findViewById(R.id.navFriends);
     }
 
     private void setupClickListeners() {
         btnPlay.setOnClickListener(v ->
                 startActivity(new Intent(this, MatchmakingActivity.class)));
 
-        //btnPlay.setOnClickListener(v ->
-        //        startActivity(new Intent(this, GameSessionActivity.class))
-        //);
-
         if (btnChallenge != null) {
             btnChallenge.setOnClickListener(v ->
                     startActivity(new Intent(this, ChallengeActivity.class)));
         }
 
-        btnQuiz.setOnClickListener(v ->
-                startActivity(new Intent(this, QuizActivity.class)));
-
-        btnMatching.setOnClickListener(v ->
-                startActivity(new Intent(this, MatchingActivity.class)));
-
-        btnAssociations.setOnClickListener(v ->
-                startActivity(new Intent(this, AssociationsActivity.class)));
-
-        btnSkocko.setOnClickListener(v ->
-                startActivity(new Intent(this, SkockoActivity.class)));
-
-        btnStepByStep.setOnClickListener(v ->
-                startActivity(new Intent(this, StepByStepActivity.class)));
-
-        btnMyNumber.setOnClickListener(v ->
-                startActivity(new Intent(this, MyNumberActivity.class)));
-
         btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         });
 
         navHome.setOnClickListener(v ->
-                Toast.makeText(this, "You are already on Home", Toast.LENGTH_SHORT).show()
-        );
+                Toast.makeText(this, "You are already on Home", Toast.LENGTH_SHORT).show());
 
         navLeaderboard.setOnClickListener(v ->
-                Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show()
-        );
+                Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show());
 
         navNotifications.setOnClickListener(v ->
-                startActivity(new Intent(this, NotificationCenterActivity.class))
-        );
+                startActivity(new Intent(this, NotificationCenterActivity.class)));
 
         navProfile.setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class))
-        );
+                startActivity(new Intent(this, ProfileActivity.class)));
 
         navStatistics.setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class))
-        );
+                startActivity(new Intent(this, ProfileActivity.class)));
 
         navFriends.setOnClickListener(v ->
-                Toast.makeText(this, "Friends list will be added later", Toast.LENGTH_SHORT).show()
-        );
+                Toast.makeText(this, "Friends list will be added later", Toast.LENGTH_SHORT).show());
     }
 
     @Override
     protected void onDestroy() {
-        if (notificationListener != null) {
-            notificationListener.remove();
-        }
+        if (notificationListener != null) notificationListener.remove();
         super.onDestroy();
     }
 }
