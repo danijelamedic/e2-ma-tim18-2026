@@ -27,6 +27,9 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.example.slagalica.ResetPasswordActivity;
+import com.example.slagalica.HomeActivity;
+import com.example.slagalica.notifications.NotificationCenterActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -91,6 +94,10 @@ public class ProfileActivity extends AppCompatActivity {
             finish();
         });
 
+        findViewById(R.id.btnResetPasswordProfile).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, ResetPasswordActivity.class))
+        );
+
         findViewById(R.id.cardQuizStatistics).setOnClickListener(v ->
                 startActivity(new Intent(ProfileActivity.this, QuizStatisticsActivity.class)));
 
@@ -112,6 +119,24 @@ public class ProfileActivity extends AppCompatActivity {
         imgAvatar.setOnClickListener(v -> openChangeAvatar());
 
         findViewById(R.id.btnEditAvatar).setOnClickListener(v -> openChangeAvatar());
+
+        findViewById(R.id.navHome).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, HomeActivity.class)));
+
+        findViewById(R.id.navProfile).setOnClickListener(v ->
+                Toast.makeText(this, "You are already on Profile", Toast.LENGTH_SHORT).show());
+
+        findViewById(R.id.navNotifications).setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, NotificationCenterActivity.class)));
+
+        findViewById(R.id.navStatistics).setOnClickListener(v ->
+                Toast.makeText(this, "Statistics screen coming soon", Toast.LENGTH_SHORT).show());
+
+        findViewById(R.id.navFriends).setOnClickListener(v ->
+                Toast.makeText(this, "Friends screen coming soon", Toast.LENGTH_SHORT).show());
+
+        findViewById(R.id.navLeaderboard).setOnClickListener(v ->
+                Toast.makeText(this, "Leaderboard screen coming soon", Toast.LENGTH_SHORT).show());
     }
 
     private void loadOverviewStatistics() {
