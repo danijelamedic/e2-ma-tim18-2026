@@ -2,8 +2,20 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_profile_screen">
+    android:layout_height="match_parent">
+
+    <!-- POZADINA — quiz slika preko celog ekrana -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/img_quiz_banner"
+        android:scaleType="centerCrop" />
+
+    <!-- Poluprovidni overlay da kartice budu citljive -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AAFFFFFF" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -101,97 +113,6 @@
                     android:background="@drawable/bg_purple_button" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_profile_card"
-                android:elevation="8dp"
-                android:padding="18dp"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/games_menu_title"
-                    android:textColor="#2D1B5E"
-                    android:textSize="20sp"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:layout_marginBottom="12dp" />
-
-                <Button
-                    android:id="@+id/btnQuiz"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="Ko zna zna"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="14sp"
-                    android:background="@drawable/bg_purple_button"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnMatching"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="Spojnice"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="14sp"
-                    android:background="@drawable/bg_purple_button"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnAssociations"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="Asocijacije"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="14sp"
-                    android:background="@drawable/bg_purple_button"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnSkocko"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="Skocko"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="14sp"
-                    android:background="@drawable/bg_purple_button"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnStepByStep"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="Korak po korak"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="14sp"
-                    android:background="@drawable/bg_purple_button"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnMyNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="Moj broj"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="14sp"
-                    android:background="@drawable/bg_purple_button" />
-            </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 
@@ -231,8 +152,6 @@
             android:clickable="true"
             android:focusable="true" />
 
-
-
         <TextView
             android:id="@+id/navFriends"
             android:layout_width="0dp"
@@ -243,8 +162,6 @@
             android:textSize="24sp"
             android:clickable="true"
             android:focusable="true" />
-
-
 
         <TextView
             android:id="@+id/navLeaderboard"
