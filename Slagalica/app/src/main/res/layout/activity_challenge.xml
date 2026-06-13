@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_profile_screen">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚔️ CHALLENGE"
+            android:textSize="28sp"
+            android:textColor="#2D1B5E"
+            android:textStyle="bold|italic"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginBottom="20dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:padding="20dp"
+            android:elevation="6dp"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🎯 POST A CHALLENGE"
+                android:textSize="16sp"
+                android:textColor="#5B2FC4"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⭐ STARS TO STAKE (max 10)"
+                android:textColor="#2D1B5E"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <EditText
+                android:id="@+id/etStars"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="Enter 0-10 stars"
+                android:inputType="number"
+                android:background="@drawable/bg_input_selector"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="#1E0A3C"
+                android:textColorHint="#A89CC8"
+                android:textSize="15sp"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎟️ TOKENS TO STAKE (max 2)"
+                android:textColor="#2D1B5E"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <EditText
+                android:id="@+id/etTokens"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="Enter 0-2 tokens"
+                android:inputType="number"
+                android:background="@drawable/bg_input_selector"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="#1E0A3C"
+                android:textColorHint="#A89CC8"
+                android:textSize="15sp"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🏆 Winner gets 75% of the total pool\n🥈 2nd place gets their stake back"
+                android:textColor="#8B6FBF"
+                android:textSize="12sp"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnPostChallenge"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="⚔️ POST CHALLENGE"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:background="@drawable/bg_purple_button"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔥 OPEN CHALLENGES"
+            android:textSize="18sp"
+            android:textColor="#2D1B5E"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginBottom="12dp"/>
+
+        <LinearLayout
+            android:id="@+id/challengesList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+
+    </LinearLayout>
+</ScrollView>

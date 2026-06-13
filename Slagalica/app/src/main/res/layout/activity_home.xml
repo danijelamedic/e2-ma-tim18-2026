@@ -1,307 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_profile_screen"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
+
+    <!-- POZADINA — quiz slika preko celog ekrana -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/img_quiz_banner"
+        android:scaleType="centerCrop" />
+
+    <!-- Poluprovidni overlay da kartice budu citljive -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AAFFFFFF" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingBottom="92dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:paddingBottom="110dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/home_title"
+                    android:textColor="#2D1B5E"
+                    android:textSize="30sp"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black" />
+
+                <TextView
+                    android:id="@+id/btnLogout"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:gravity="center"
+                    android:text="↪"
+                    android:textSize="26sp"
+                    android:textColor="#5B2FC4"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_profile_card"
+                android:elevation="8dp"
+                android:padding="18dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tvWelcomeUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_welcome_title"
+                    android:textColor="#2D1B5E"
+                    android:textSize="24sp"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_welcome_subtitle"
+                    android:textColor="#5B2FC4"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp" />
+
+                <Button
+                    android:id="@+id/btnPlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:text="@string/play"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black"
+                    android:textSize="18sp"
+                    android:background="@drawable/bg_purple_button" />
+
+                <Button
+                    android:id="@+id/btnChallenge"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Challenge"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black"
+                    android:textSize="15sp"
+                    android:background="@drawable/bg_purple_button" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
+        android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="86dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/bg_profile_card"
+        android:elevation="12dp">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/home_title"
-            android:textColor="#2D1B5E"
-            android:textSize="30sp"
-            android:textStyle="bold|italic"
-            android:fontFamily="sans-serif-black"
-            android:layout_marginBottom="16dp" />
+            android:id="@+id/navHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="🏠"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_profile_card"
-            android:elevation="8dp"
-            android:layout_marginBottom="16dp">
+        <TextView
+            android:id="@+id/navNotifications"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="🔔"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/home_welcome_title"
-                android:textColor="#2D1B5E"
-                android:textSize="24sp"
-                android:textStyle="bold|italic"
-                android:fontFamily="sans-serif-black"
-                android:layout_marginBottom="8dp" />
+        <TextView
+            android:id="@+id/navFriends"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="👥"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/home_welcome_subtitle"
-                android:textColor="#5B2FC4"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
+        <TextView
+            android:id="@+id/navLeaderboard"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="🏆"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
 
-            <Button
-                android:id="@+id/btnPlay"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:text="@string/play"
-                android:textColor="@android:color/white"
-                android:textStyle="bold|italic"
-                android:fontFamily="sans-serif-black"
-                android:textSize="18sp"
-                android:background="@drawable/bg_purple_button" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/navStatistics"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="📊"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <Button
-                android:id="@+id/btnProfile"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:text="@string/profile"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:background="@drawable/bg_purple_button"
-                android:layout_marginEnd="8dp" />
-
-            <Button
-                android:id="@+id/btnLeaderboard"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:text="@string/leaderboard"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:background="@drawable/bg_purple_button"
-                android:layout_marginStart="8dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_profile_card"
-            android:elevation="6dp"
-            android:padding="14dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/games_menu_title"
-                android:textColor="#5B2FC4"
-                android:textSize="22sp"
-                android:textStyle="bold|italic"
-                android:fontFamily="sans-serif-black"
-                android:layout_marginBottom="14dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
-
-                <LinearLayout
-                    android:id="@+id/btnQuiz"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/bg_stat_card"
-                    android:layout_marginEnd="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quiz_icon"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quiz_name"
-                        android:textColor="#2D1B5E"
-                        android:textStyle="bold"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btnMatching"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/bg_stat_card"
-                    android:layout_marginStart="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/matching_icon"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/matching_name"
-                        android:textColor="#2D1B5E"
-                        android:textStyle="bold"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
-
-                <LinearLayout
-                    android:id="@+id/btnAssociations"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/bg_stat_card"
-                    android:layout_marginEnd="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/associations_icon"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/associations_name"
-                        android:textColor="#2D1B5E"
-                        android:textStyle="bold"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btnSkocko"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/bg_stat_card"
-                    android:layout_marginStart="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/skocko_icon"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/skocko_name"
-                        android:textColor="#2D1B5E"
-                        android:textStyle="bold"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:id="@+id/btnStepByStep"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/bg_stat_card"
-                    android:layout_marginEnd="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/step_by_step_icon"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/step_by_step_name"
-                        android:textColor="#2D1B5E"
-                        android:textStyle="bold"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btnMyNumber"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/bg_stat_card"
-                    android:layout_marginStart="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/my_number_icon"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/my_number_name"
-                        android:textColor="#2D1B5E"
-                        android:textStyle="bold"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btnNotifications"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:text="@string/home_notifications_button"
-            android:textColor="@android:color/white"
-            android:textStyle="bold|italic"
-            android:fontFamily="sans-serif-black"
-            android:textSize="18sp"
-            android:background="@drawable/bg_purple_button" />
+        <TextView
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="👤"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
 
     </LinearLayout>
-</ScrollView>
+
+</FrameLayout>

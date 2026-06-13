@@ -1,47 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_profile_screen"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="14dp"
+            android:layout_height="44dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
+                android:layout_width="24dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/associations_icon"
                 android:textColor="#2D1B5E"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
+                android:gravity="center_vertical"
                 android:text="@string/associations_game_title"
                 android:textColor="#2D1B5E"
-                android:textSize="26sp"
+                android:textSize="25sp"
                 android:textStyle="bold|italic" />
 
             <TextView
                 android:id="@+id/btnAssociationsInfo"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="8dp"
                 android:gravity="center"
                 android:text="@string/info_icon"
                 android:textColor="#5B2FC4"
@@ -50,9 +52,13 @@
 
             <Button
                 android:id="@+id/btnLeaveAssociations"
-                android:layout_width="96dp"
-                android:layout_height="48dp"
+                android:layout_width="92dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="4dp"
                 android:background="@drawable/bg_purple_button"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
                 android:text="@string/leave_game"
                 android:textColor="@android:color/white"
                 android:textSize="13sp"
@@ -61,236 +67,209 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_height="136dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_profile_card"
-            android:elevation="6dp"
-            android:orientation="vertical"
-            android:padding="14dp">
-
-            <TextView
-                android:id="@+id/tvAssociationsTimer"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginBottom="14dp"
-                android:background="@drawable/bg_stat_card"
-                android:gravity="center"
-                android:text="@string/associations_timer"
-                android:textColor="#5B2FC4"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+            android:baselineAligned="false"
+            android:elevation="4dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:baselineAligned="false"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                <ImageView
+                    android:id="@+id/tvAssociationsPlayerAvatar"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_active_player_avatar"
+                    android:contentDescription="Player avatar"
                     android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:background="@drawable/bg_active_player_avatar"
-                        android:gravity="center"
-                        android:text="@string/avatar_icon"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="@string/player_you_name"
-                        android:textColor="#2D1B5E"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvAssociationsPlayerScore"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/player_you_score"
-                        android:textColor="#5B2FC4"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                    android:padding="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/avatar_owl" />
 
                 <TextView
+                    android:id="@+id/tvAssociationsPlayerName"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_height="22dp"
                     android:gravity="center"
-                    android:text="@string/vs_label"
+                    android:text="@string/player_you_name"
+                    android:textColor="#2D1B5E"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvAssociationsPlayerScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:gravity="center"
+                    android:text="@string/player_you_score"
                     android:textColor="#5B2FC4"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                <TextView
+                    android:id="@+id/tvAssociationsPlayerInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
                     android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:background="@drawable/bg_inactive_player_avatar"
-                        android:gravity="center"
-                        android:text="@string/opponent_avatar_icon"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="@string/player_opponent_name"
-                        android:textColor="#2D1B5E"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvAssociationsOpponentScore"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/player_opponent_score"
-                        android:textColor="#5B2FC4"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                    android:singleLine="true"
+                    android:text="🪙0 ⭐0 L0"
+                    android:textColor="#5B2FC4"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
+                android:layout_width="104dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvAssociationsTimer"
+                    android:layout_width="92dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_stat_card"
+                    android:gravity="center"
+                    android:text="@string/associations_timer"
+                    android:textColor="#5B2FC4"
+                    android:textSize="23sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvAssociationsRound"
-                    android:layout_width="0dp"
-                    android:layout_height="38dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_weight="1"
+                    android:layout_width="92dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="6dp"
                     android:background="@drawable/bg_small_pill"
                     android:gravity="center"
                     android:text="@string/associations_round_short"
                     android:textColor="#5B2FC4"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvAssociationsPoints"
-                    android:layout_width="0dp"
-                    android:layout_height="38dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_weight="1"
+                    android:layout_width="92dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/bg_small_pill"
                     android:gravity="center"
                     android:text="@string/associations_points_short"
                     android:textColor="#5B2FC4"
-                    android:textSize="14sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/tvAssociationsOpponentAvatar"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_inactive_player_avatar"
+                    android:contentDescription="Opponent avatar"
+                    android:gravity="center"
+                    android:padding="6dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/avatar_owl" />
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="38dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_small_pill"
+                    android:id="@+id/tvAssociationsOpponentName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
                     android:gravity="center"
-                    android:text="@string/skocko_tokens_short"
-                    android:textColor="#5B2FC4"
-                    android:textSize="13sp"
+                    android:text="@string/player_opponent_name"
+                    android:textColor="#2D1B5E"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="38dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_small_pill"
+                    android:id="@+id/tvAssociationsOpponentScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
                     android:gravity="center"
-                    android:text="@string/skocko_stars_short"
+                    android:text="@string/player_opponent_score"
                     android:textColor="#5B2FC4"
-                    android:textSize="13sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="38dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_small_pill"
+                    android:id="@+id/tvAssociationsOpponentInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
                     android:gravity="center"
-                    android:text="@string/skocko_league_short"
+                    android:singleLine="true"
+                    android:text="🪙0 ⭐0 L0"
                     android:textColor="#5B2FC4"
-                    android:textSize="13sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvAssociationsTurn"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_small_pill"
-            android:gravity="center"
-            android:text="@string/associations_turn_short"
-            android:textColor="#5B2FC4"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
             android:background="@drawable/bg_profile_card"
-            android:elevation="6dp"
+            android:elevation="4dp"
             android:orientation="vertical"
-            android:padding="14dp">
+            android:padding="10dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="@string/associations_board_title"
-                android:textColor="#5B2FC4"
-                android:textSize="20sp"
-                android:textStyle="bold|italic" />
+                android:layout_height="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:gravity="center"
-                android:text="@string/associations_final_hint"
-                android:textColor="#5B2FC4"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/associations_board_title"
+                    android:textColor="#5B2FC4"
+                    android:textSize="16sp"
+                    android:textStyle="bold|italic" />
+
+                <Button
+                    android:id="@+id/btnPassAssociations"
+                    android:layout_width="76dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/bg_purple_button"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:padding="0dp"
+                    android:text="PASS"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_marginTop="4dp"
                 android:baselineAligned="false"
                 android:gravity="center"
                 android:orientation="horizontal">
@@ -301,22 +280,21 @@
 
             <TextView
                 android:id="@+id/tvFinalSolution"
-                android:layout_width="240dp"
-                android:layout_height="72dp"
+                android:layout_width="230dp"
+                android:layout_height="56dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_associations_closed"
                 android:gravity="center"
                 android:text="@string/associations_final_placeholder"
                 android:textColor="@android:color/white"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
                 android:baselineAligned="false"
                 android:gravity="center"
                 android:orientation="horizontal">
@@ -324,7 +302,6 @@
                 <include layout="@layout/item_associations_column_c" />
                 <include layout="@layout/item_associations_column_d" />
             </LinearLayout>
-
         </LinearLayout>
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

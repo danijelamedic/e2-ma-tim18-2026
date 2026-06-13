@@ -1,44 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_profile_screen"
-    android:fillViewport="true">
+    android:background="@drawable/bg_profile_screen">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingBottom="92dp"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_marginBottom="18dp">
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:paddingBottom="150dp">
 
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/profile_title"
-                android:textColor="#2D1B5E"
-                android:textSize="28sp"
-                android:textStyle="bold|italic"
-                android:fontFamily="sans-serif-black" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_marginBottom="18dp">
 
-            <TextView
-                android:id="@+id/btnLogout"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:gravity="center"
-                android:text="@string/logout_icon"
-                android:textSize="34sp"
-                android:textStyle="bold"
-                android:textColor="#2D1B5E" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/profile_title"
+                    android:textColor="#2D1B5E"
+                    android:textSize="28sp"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black" />
+
+                <TextView
+                    android:id="@+id/btnLogout"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:gravity="center"
+                    android:text="@string/logout_icon"
+                    android:textSize="34sp"
+                    android:textStyle="bold"
+                    android:textColor="#2D1B5E" />
+
+            </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,16 +58,31 @@
             android:elevation="8dp"
             android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/tvAvatar"
+            <FrameLayout
                 android:layout_width="110dp"
                 android:layout_height="110dp"
-                android:gravity="center"
-                android:text="@string/avatar_icon"
-                android:textSize="48sp"
-                android:background="@drawable/bg_avatar_circle"
-                android:layout_marginEnd="18dp" />
+                android:layout_marginEnd="18dp">
 
+                <ImageView
+                    android:id="@+id/imgAvatar"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:src="@drawable/avatar_owl"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg_avatar_circle"
+                    android:padding="6dp"/>
+
+                <TextView
+                    android:id="@+id/btnEditAvatar"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|end"
+                    android:gravity="center"
+                    android:text="✏"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_small_pill"/>
+            </FrameLayout>
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -66,6 +90,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tvUsername"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/profile_username"
@@ -75,6 +100,7 @@
                     android:fontFamily="sans-serif-black" />
 
                 <TextView
+                    android:id="@+id/tvLeague"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/profile_league"
@@ -89,16 +115,6 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="12dp" />
 
-                <Button
-                    android:id="@+id/btnChangeAvatar"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="@string/change_avatar"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="16sp"
-                    android:background="@drawable/bg_purple_button" />
             </LinearLayout>
         </LinearLayout>
 
@@ -131,6 +147,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvTokens"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/token_count"
@@ -139,14 +156,7 @@
                         android:textStyle="bold"
                         android:fontFamily="sans-serif-black" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tokens_label"
-                        android:textColor="#2D1B5E"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-black" />
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -173,6 +183,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvStars"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/star_count"
@@ -181,14 +192,7 @@
                         android:textStyle="bold"
                         android:fontFamily="sans-serif-black" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/stars_label"
-                        android:textColor="#2D1B5E"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-black" />
+
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -212,6 +216,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvEmail"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -224,6 +229,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvRegion"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -254,15 +260,71 @@
                 android:fontFamily="sans-serif-black"
                 android:layout_marginBottom="14dp" />
 
-            <TextView
+            <ImageView
+                android:id="@+id/imgQrCode"
                 android:layout_width="145dp"
                 android:layout_height="145dp"
-                android:gravity="center"
-                android:text="@string/qr_placeholder"
-                android:textSize="34sp"
-                android:textStyle="bold"
+                android:background="@drawable/bg_qr_box"
+                android:padding="10dp"
+                android:contentDescription="@string/qr_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_profile_card"
+            android:elevation="6dp"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="OVERALL STATISTICS"
                 android:textColor="#5B2FC4"
-                android:background="@drawable/bg_qr_box" />
+                android:textSize="22sp"
+                android:textStyle="bold|italic"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvOverallSuccess"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="Success: 0%"
+                android:textColor="#2D1B5E"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvOverallPlayedGames"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="Played games: 0"
+                android:textColor="#2D1B5E"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvOverallWinLoss"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="Wins: 0% Losses: 0%"
+                android:textColor="#2D1B5E"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_stat_card"
+                android:paddingLeft="14dp" />
         </LinearLayout>
 
         <!-- STATISTICS -->
@@ -320,6 +382,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvQuizOverviewPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/quiz_percent"
@@ -328,6 +391,7 @@
                         android:textSize="18sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressQuizOverview"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
@@ -367,6 +431,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvMatchingOverviewPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/matching_percent"
@@ -375,6 +440,7 @@
                         android:textSize="18sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressMatchingOverview"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
@@ -591,5 +657,100 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnResetPasswordProfile"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="Reset password"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:background="@drawable/bg_purple_button"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="86dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/bg_profile_card"
+        android:elevation="12dp">
+
+        <TextView
+            android:id="@+id/navHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="🏠"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/navNotifications"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="🔔"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/navFriends"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="👥"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/navLeaderboard"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="🏆"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/navStatistics"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="📊"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="👤"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
+
     </LinearLayout>
-</ScrollView>
+
+</FrameLayout>

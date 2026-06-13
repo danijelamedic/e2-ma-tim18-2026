@@ -60,9 +60,10 @@
                 android:fontFamily="sans-serif-black" />
 
             <TextView
+                android:id="@+id/tvQuizSuccess"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/average_quiz_points"
+                android:text="0%"
                 android:textColor="#2D1B5E"
                 android:textSize="34sp"
                 android:textStyle="bold"
@@ -70,10 +71,11 @@
                 android:layout_marginTop="8dp" />
 
             <ProgressBar
+                android:id="@+id/progressQuiz"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:progress="73"
+                android:progress="0"
                 android:max="100"
                 android:progressTint="#6A4CAF"
                 android:progressBackgroundTint="#E6D8FF"
@@ -100,10 +102,11 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvCorrectAnswers"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
-                android:text="@string/quiz_correct_answers"
+                android:text="Correct answers: 0"
                 android:textColor="#2D1B5E"
                 android:textSize="17sp"
                 android:textStyle="bold"
@@ -112,10 +115,11 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvWrongAnswers"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
-                android:text="@string/quiz_wrong_answers"
+                android:text="Wrong answers: 0"
                 android:textColor="#2D1B5E"
                 android:textSize="17sp"
                 android:textStyle="bold"
@@ -142,10 +146,11 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvQuizGamesPlayed"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
-                android:text="@string/total_played_matches"
+                android:text="Played quiz games: 0"
                 android:textColor="#2D1B5E"
                 android:textSize="17sp"
                 android:textStyle="bold"
@@ -154,10 +159,11 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvQuizWinLoss"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
-                android:text="@string/win_loss_percentage"
+                android:text="Wins: 0% Losses: 0%"
                 android:textColor="#2D1B5E"
                 android:textSize="17sp"
                 android:textStyle="bold"

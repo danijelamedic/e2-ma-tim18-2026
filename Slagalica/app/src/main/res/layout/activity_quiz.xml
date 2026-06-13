@@ -73,7 +73,7 @@
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:background="@drawable/bg_stat_card"
-                android:layout_marginBottom="14dp" />
+                android:layout_marginBottom="10dp" />
 
             <!-- PLAYERS -->
             <LinearLayout
@@ -82,7 +82,7 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:baselineAligned="false"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="8dp">
 
                 <!-- YOU -->
                 <LinearLayout
@@ -92,23 +92,25 @@
                     android:orientation="vertical"
                     android:gravity="center">
 
-                    <TextView
-                        android:id="@+id/tvYourAvatar"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:gravity="center"
-                        android:text="@string/avatar_icon"
-                        android:textSize="30sp"
-                        android:background="@drawable/bg_active_player_avatar" />
+                    <ImageView
+                        android:id="@+id/imgYourAvatar"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_active_player_avatar"
+                        android:contentDescription="Your avatar"
+                        android:padding="5dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_owl" />
 
                     <TextView
+                        android:id="@+id/tvPlayerName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/player_you_name"
                         android:textColor="#2D1B5E"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="6dp" />
+                        android:layout_marginTop="4dp" />
 
                     <TextView
                         android:id="@+id/tvPlayerScore"
@@ -116,8 +118,18 @@
                         android:layout_height="wrap_content"
                         android:text="@string/player_you_score"
                         android:textColor="#5B2FC4"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvPlayerInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🪙0 ⭐0 L0"
+                        android:textColor="#5B2FC4"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <TextView
@@ -126,10 +138,10 @@
                     android:gravity="center"
                     android:text="@string/vs_label"
                     android:textColor="#5B2FC4"
-                    android:textSize="18sp"
+                    android:textSize="17sp"
                     android:textStyle="bold"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp" />
 
                 <!-- OPPONENT -->
                 <LinearLayout
@@ -139,23 +151,25 @@
                     android:orientation="vertical"
                     android:gravity="center">
 
-                    <TextView
-                        android:id="@+id/tvOpponentAvatar"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:gravity="center"
-                        android:text="@string/opponent_avatar_icon"
-                        android:textSize="30sp"
-                        android:background="@drawable/bg_inactive_player_avatar" />
+                    <ImageView
+                        android:id="@+id/imgOpponentAvatar"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_inactive_player_avatar"
+                        android:contentDescription="Opponent avatar"
+                        android:padding="5dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_owl" />
 
                     <TextView
+                        android:id="@+id/tvOpponentName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/player_opponent_name"
                         android:textColor="#2D1B5E"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="6dp" />
+                        android:layout_marginTop="4dp" />
 
                     <TextView
                         android:id="@+id/tvOpponentScore"
@@ -163,23 +177,68 @@
                         android:layout_height="wrap_content"
                         android:text="@string/player_opponent_score"
                         android:textColor="#5B2FC4"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvOpponentInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🪙0 ⭐0 L0"
+                        android:textColor="#5B2FC4"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
+            </LinearLayout>
+
+
+            <!-- ROUND + TURN -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false">
+
+                <TextView
+                    android:id="@+id/tvBattleRound"
+                    android:layout_width="0dp"
+                    android:layout_height="34dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Round 1 / 6"
+                    android:textColor="#5B2FC4"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_small_pill"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:id="@+id/tvQuestionProgress"
+                    android:layout_width="0dp"
+                    android:layout_height="34dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Question 1 / 5"
+                    android:textColor="#5B2FC4"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_small_pill"
+                    android:layout_marginStart="5dp" />
             </LinearLayout>
         </LinearLayout>
 
         <!-- QUESTION CARD -->
-        <TextView
-            android:id="@+id/tvQuestionCounter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/quiz_question_counter"
-            android:textColor="#5B2FC4"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginBottom="8dp" />
+<!--        <TextView-->
+<!--            android:id="@+id/tvQuestionCounter"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/quiz_question_counter"-->
+<!--            android:textColor="#5B2FC4"-->
+<!--            android:textSize="14sp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:gravity="center"-->
+<!--            android:layout_marginBottom="8dp" />-->
 
         <TextView
             android:id="@+id/tvQuestion"

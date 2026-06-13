@@ -1,18 +1,25 @@
 package com.example.slagalica;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.AuthCredential;
+
 public class ResetPasswordActivity extends AppCompatActivity {
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_password);
+
+        mAuth = FirebaseAuth.getInstance();
 
         EditText etOldPassword = findViewById(R.id.etOldPassword);
         EditText etNewPassword = findViewById(R.id.etNewPassword);
@@ -25,36 +32,45 @@ public class ResetPasswordActivity extends AppCompatActivity {
             String newPasswordConfirm = etNewPasswordConfirm.getText().toString().trim();
 
             if (oldPassword.isEmpty() || newPassword.isEmpty() || newPasswordConfirm.isEmpty()) {
-                Toast.makeText(this, getString(R.string.error_fields_empty), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!newPassword.equals(newPasswordConfirm)) {
-                Toast.makeText(this, getString(R.string.error_passwords_no_match), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "New passwords do not match", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            Intent intent = new Intent(ResetPasswordActivity.this, HomeActivity.class);
-            startActivity(intent);
-            finish();
+            if (newPassword.length() < 6) {
+                Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (mAuth.getCurrentUser() == null) {
+                Toast.makeText(this, "You are not logged in", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String email = mAuth.getCurrentUser().getEmail();
+            AuthCredential credential = EmailAuthProvider.getCredential(email, oldPassword);
+
+            mAuth.getCurrentUser().reauthenticate(credential)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            mAuth.getCurrentUser().updatePassword(newPassword)
+                                    .addOnCompleteListener(updateTask -> {
+                                        if (updateTask.isSuccessful()) {
+                                            Toast.makeText(this, "Password changed successfully!", Toast.LENGTH_LONG).show();
+                                            finish();
+                                        } else {
+                                            Toast.makeText(this, "Error: " + updateTask.getException().getMessage(),
+                                                    Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(this, "Old password is incorrect", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
     }
-
-    @Override
-    protected void onStart() { super.onStart(); }
-
-    @Override
-    protected void onResume() { super.onResume(); }
-
-    @Override
-    protected void onPause() { super.onPause(); }
-
-    @Override
-    protected void onStop() { super.onStop(); }
-
-    @Override
-    protected void onDestroy() { super.onDestroy(); }
-
-    @Override
-    protected void onRestart() { super.onRestart(); }
 }

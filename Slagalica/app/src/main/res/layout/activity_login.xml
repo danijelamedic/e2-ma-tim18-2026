@@ -159,15 +159,6 @@
                 android:gravity="center"
                 android:layout_marginBottom="10dp" />
 
-            <TextView
-                android:id="@+id/tvResetPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/reset_password_link"
-                android:textColor="#8B6FBF"
-                android:textSize="13sp"
-                android:gravity="center" />
-
         </LinearLayout>
 
     </LinearLayout>
