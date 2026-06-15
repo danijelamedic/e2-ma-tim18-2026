@@ -63,6 +63,7 @@ public class QuizActivity extends AppCompatActivity {
     private long questionStartTime = 0;
     private boolean questionFinished = false;
     private boolean resultShown = false;
+    private int initialScore = 0;
 
     private ImageView imgOpponentAvatar;
     private TextView tvOpponentName;
@@ -103,7 +104,8 @@ public class QuizActivity extends AppCompatActivity {
         tvQuestionProgress = findViewById(R.id.tvQuestionProgress);
 
 
-        playerScore = getIntent().getIntExtra("currentTotalScore", 0);
+        initialScore = getIntent().getIntExtra("currentTotalScore", 0);
+        playerScore = initialScore;
         tvPlayerScore.setText(playerScore + " pts");
 
         tvBattleRound = findViewById(R.id.tvBattleRound);
@@ -290,6 +292,10 @@ public class QuizActivity extends AppCompatActivity {
         }
 
         if (isMultiplayer && gameId != null) {
+            if (isCorrect) {
+                correctAnswersCount++;
+            }
+
             saveMultiplayerAnswer(index, selectedAnswer, isCorrect);
             return;
         }
@@ -445,7 +451,8 @@ public class QuizActivity extends AppCompatActivity {
         resultShown = true;
         boolean won = correctAnswersCount >= Math.ceil(questions.size() / 2.0);
 
-        StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), won);
+        int quizOnlyScore = playerScore - initialScore;
+        StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), quizOnlyScore, won);
 
         if (countDownTimer != null) {
             countDownTimer.cancel();

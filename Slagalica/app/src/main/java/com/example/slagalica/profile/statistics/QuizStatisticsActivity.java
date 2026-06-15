@@ -12,6 +12,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class QuizStatisticsActivity extends AppCompatActivity {
@@ -49,9 +51,17 @@ public class QuizStatisticsActivity extends AppCompatActivity {
 
     private void loadQuizStatistics() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = user.getUid();
 
         db.collection("statistics")
-                .document("player1")
+                .document(userId)
                 .get()
                 .addOnSuccessListener(document -> {
                     if (!document.exists()) {
@@ -59,6 +69,14 @@ public class QuizStatisticsActivity extends AppCompatActivity {
                     }
 
                     long gamesPlayed = getLongValue(document.getLong("quizGamesPlayed"));
+
+                    long totalScore = getLongValue(document.getLong("quizTotalScore"));
+
+                    int averageScore = 0;
+                    if (gamesPlayed > 0) {
+                        averageScore = (int) Math.round((totalScore * 1.0) / gamesPlayed);
+                    }
+
                     long correctAnswers = getLongValue(document.getLong("quizCorrectAnswers"));
                     long totalQuestions = getLongValue(document.getLong("quizTotalQuestions"));
                     long wrongAnswers = totalQuestions - correctAnswers;
@@ -83,7 +101,9 @@ public class QuizStatisticsActivity extends AppCompatActivity {
                     progressQuiz.setProgress(successPercent);
                     tvCorrectAnswers.setText("Correct answers: " + correctAnswers);
                     tvWrongAnswers.setText("Wrong answers: " + wrongAnswers);
-                    tvQuizGamesPlayed.setText("Played quiz games: " + gamesPlayed);
+                    tvQuizGamesPlayed.setText(
+                            "Played quiz games: " + gamesPlayed + "\nAverage score: " + averageScore + "/50"
+                    );
                     tvQuizWinLoss.setText("Wins: " + winPercent + "% Losses: " + lossPercent + "%");
                 })
                 .addOnFailureListener(e ->

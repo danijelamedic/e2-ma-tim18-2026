@@ -20,6 +20,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.example.slagalica.data.StatisticsRepository;
 
 public class StepByStepActivity extends AppCompatActivity {
 
@@ -477,6 +478,13 @@ public class StepByStepActivity extends AppCompatActivity {
     private void finishAndReturn(int points) {
         if (stepTimer    != null) { stepTimer.cancel();    stepTimer    = null; }
         if (gameListener != null) { gameListener.remove(); gameListener = null; }
+
+        int guessedStep = points > 0 ? currentStep + 1 : 0;
+
+        StatisticsRepository.saveStepByStepResult(
+                points,
+                guessedStep
+        );
 
         Intent result = new Intent();
         result.putExtra("points", points);

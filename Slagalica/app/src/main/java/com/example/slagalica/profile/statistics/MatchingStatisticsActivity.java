@@ -11,7 +11,10 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.slagalica.R;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MatchingStatisticsActivity extends AppCompatActivity {
@@ -45,10 +48,18 @@ public class MatchingStatisticsActivity extends AppCompatActivity {
     }
 
     private void loadStatistics() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        FirebaseFirestore.getInstance()
-                .collection("statistics")
-                .document("player1")
+        if (user == null) {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = user.getUid();
+
+        db.collection("statistics")
+                .document(userId)
                 .get()
                 .addOnSuccessListener(document -> {
 
@@ -70,6 +81,16 @@ public class MatchingStatisticsActivity extends AppCompatActivity {
                             document.getLong("matchingGamesPlayed") == null
                                     ? 0
                                     : document.getLong("matchingGamesPlayed");
+
+                    long totalScore =
+                            document.getLong("matchingTotalScore") == null
+                                    ? 0
+                                    : document.getLong("matchingTotalScore");
+
+                    int averageScore = 0;
+                    if (gamesPlayed > 0) {
+                        averageScore = (int) Math.round((totalScore * 1.0) / gamesPlayed);
+                    }
 
                     int successPercent = 0;
 
@@ -94,7 +115,7 @@ public class MatchingStatisticsActivity extends AppCompatActivity {
                             "Failed connections: " + failedMatches);
 
                     tvMatchingGamesPlayed.setText(
-                            "Played matching games: " + gamesPlayed);
+                            "Played matching games: " + gamesPlayed + "\nAverage score: " + averageScore + "/20");
 
                     tvMatchingWinLoss.setText(
                             "Wins: " + wins + "%  Losses: " + losses + "%");

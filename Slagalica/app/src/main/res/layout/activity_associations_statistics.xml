@@ -60,6 +60,7 @@
                 android:fontFamily="sans-serif-black" />
 
             <TextView
+                android:id="@+id/tvAssociationsSuccess"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/average_associations_points"
@@ -70,6 +71,7 @@
                 android:layout_marginTop="8dp" />
 
             <ProgressBar
+                android:id="@+id/progressAssociations"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
@@ -101,6 +103,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvAssociationsSolved"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
@@ -113,6 +116,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvAssociationsUnsolved"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
@@ -144,6 +148,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvAssociationsGamesPlayed"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
@@ -156,6 +161,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvAssociationsAverageScore"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"

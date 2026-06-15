@@ -60,6 +60,7 @@
                 android:fontFamily="sans-serif-black" />
 
             <TextView
+                android:id="@+id/tvSkockoSuccess"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/average_skocko_points"
@@ -70,6 +71,7 @@
                 android:layout_marginTop="8dp" />
 
             <ProgressBar
+                android:id="@+id/progressSkocko"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
@@ -100,6 +102,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvAttempt1Percent"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -112,6 +115,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvAttempt2Percent"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -124,6 +128,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvAttempt3Percent"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -136,6 +141,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvAttempt4Percent"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -148,6 +154,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvAttempt5Percent"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -160,6 +167,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvAttempt6Percent"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center_vertical"
@@ -190,6 +198,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvSkockoGamesPlayed"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
@@ -202,6 +211,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvSkockoAverageScore"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"

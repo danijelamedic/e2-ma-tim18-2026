@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import com.example.slagalica.data.StatisticsRepository;
 
 public class AssociationsActivity extends AppCompatActivity {
 
@@ -81,6 +82,7 @@ public class AssociationsActivity extends AppCompatActivity {
     private String activeUid;
     private int roundNumber = 1;
     private boolean canOpenClue = true;
+    private boolean statisticsSaved = false;
     private Map<String, Long> multiplayerScores = new HashMap<>();
 
     @Override
@@ -347,6 +349,16 @@ public class AssociationsActivity extends AppCompatActivity {
 
         if (Boolean.TRUE.equals(finished) && !multiplayerResultSent) {
             multiplayerResultSent = true;
+
+            if (!statisticsSaved) {
+                statisticsSaved = true;
+
+                int myScore = (int) getScoreFor(currentUid);
+                boolean solvedNumber = myScore > 0;
+
+                StatisticsRepository.saveAssociationsResult(myScore, solvedNumber);
+            }
+
             Intent resultIntent = new Intent();
             resultIntent.putExtra("score", (int) getScoreFor(currentUid));
             resultIntent.putExtra("points", (int) getScoreFor(currentUid));
@@ -993,6 +1005,11 @@ public class AssociationsActivity extends AppCompatActivity {
 
     private void showEndDialog(String message) {
         pauseTimer();
+
+        StatisticsRepository.saveAssociationsResult(
+                playerScore,
+                finalSolved
+        );
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.associations_end_title)
