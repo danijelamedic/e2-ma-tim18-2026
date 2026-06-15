@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.example.slagalica.data.StatisticsRepository;
 
 public class MyNumberActivity extends AppCompatActivity implements SensorEventListener {
     private static final int STOP_TIMEOUT_MS   = 5000;
@@ -599,6 +600,11 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
     private void finishGame(int lastRoundPoints) {
         if (scoreListener != null) { scoreListener.remove(); scoreListener = null; }
+
+        StatisticsRepository.saveMyNumberResult(
+                lastRoundPoints,
+                myResult == targetNumber
+        );
 
         Intent result = new Intent();
         result.putExtra("points", lastRoundPoints);

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.example.slagalica.data.StatisticsRepository;
 
 public class SkockoActivity extends AppCompatActivity {
 
@@ -67,6 +68,7 @@ public class SkockoActivity extends AppCompatActivity {
     private boolean opponentBonusTurn = false;
     private boolean roundFinished = false;
     private boolean gameLoaded = false;
+    private boolean statisticsSaved = false;
     private int earnedScore = 0;
     private boolean isBattleMode;
     private boolean isMultiplayer;
@@ -391,6 +393,16 @@ public class SkockoActivity extends AppCompatActivity {
 
         if (Boolean.TRUE.equals(finished) && !multiplayerResultSent) {
             multiplayerResultSent = true;
+
+            if (!statisticsSaved) {
+                statisticsSaved = true;
+
+                int myScore = (int) getScoreFor(currentUid);
+                int guessedAttempt = getMySolvedAttempt();
+
+                StatisticsRepository.saveSkockoResult(myScore, guessedAttempt);
+            }
+
             Intent resultIntent = new Intent();
             resultIntent.putExtra("score", (int) getScoreFor(currentUid));
             resultIntent.putExtra("points", (int) getScoreFor(currentUid));
@@ -951,6 +963,13 @@ public class SkockoActivity extends AppCompatActivity {
             return;
         }
 
+        int guessedAttempt = solved ? attemptIndex : 0;
+
+        StatisticsRepository.saveSkockoResult(
+                earnedScore,
+                guessedAttempt
+        );
+
         new AlertDialog.Builder(this)
                 .setTitle(R.string.skocko_end_title)
                 .setMessage(message)
@@ -1029,5 +1048,24 @@ public class SkockoActivity extends AppCompatActivity {
             return 15;
         }
         return 10;
+    }
+
+    private int getMySolvedAttempt() {
+        for (int i = 0; i < multiplayerAttempts.size(); i++) {
+            Map<String, Object> attempt = multiplayerAttempts.get(i);
+
+            String uid = (String) attempt.get("uid");
+            if (!currentUid.equals(uid)) {
+                continue;
+            }
+
+            int[] feedback = listToIntArray(attempt.get("feedback"));
+
+            if (isSolved(feedback)) {
+                return i + 1;
+            }
+        }
+
+        return 0;
     }
 }
