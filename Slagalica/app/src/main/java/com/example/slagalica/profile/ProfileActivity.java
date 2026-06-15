@@ -35,12 +35,20 @@ public class ProfileActivity extends AppCompatActivity {
 
     private TextView tvQuizOverviewPercent;
     private TextView tvMatchingOverviewPercent;
+    private TextView tvAssociationsOverviewPercent;
+    private TextView tvSkockoOverviewPercent;
+    private TextView tvStepByStepOverviewPercent;
+    private TextView tvMyNumberOverviewPercent;
     private TextView tvOverallSuccess;
     private TextView tvOverallPlayedGames;
     private TextView tvOverallWinLoss;
 
     private ProgressBar progressQuizOverview;
     private ProgressBar progressMatchingOverview;
+    private ProgressBar progressAssociationsOverview;
+    private ProgressBar progressSkockoOverview;
+    private ProgressBar progressStepByStepOverview;
+    private ProgressBar progressMyNumberOverview;
 
     private TextView tvUsername;
     private TextView tvLeague;
@@ -69,9 +77,17 @@ public class ProfileActivity extends AppCompatActivity {
 
         tvQuizOverviewPercent = findViewById(R.id.tvQuizOverviewPercent);
         tvMatchingOverviewPercent = findViewById(R.id.tvMatchingOverviewPercent);
+        tvAssociationsOverviewPercent = findViewById(R.id.tvAssociationsOverviewPercent);
+        tvSkockoOverviewPercent = findViewById(R.id.tvSkockoOverviewPercent);
+        tvStepByStepOverviewPercent = findViewById(R.id.tvStepByStepOverviewPercent);
+        tvMyNumberOverviewPercent = findViewById(R.id.tvMyNumberOverviewPercent);
 
         progressQuizOverview = findViewById(R.id.progressQuizOverview);
         progressMatchingOverview = findViewById(R.id.progressMatchingOverview);
+        progressAssociationsOverview = findViewById(R.id.progressAssociationsOverview);
+        progressSkockoOverview = findViewById(R.id.progressSkockoOverview);
+        progressStepByStepOverview = findViewById(R.id.progressStepByStepOverview);
+        progressMyNumberOverview = findViewById(R.id.progressMyNumberOverview);
 
         tvOverallSuccess = findViewById(R.id.tvOverallSuccess);
         tvOverallPlayedGames = findViewById(R.id.tvOverallPlayedGames);
@@ -157,45 +173,67 @@ public class ProfileActivity extends AppCompatActivity {
                         return;
                     }
 
-                    long quizCorrect =
-                            document.getLong("quizCorrectAnswers") == null
-                                    ? 0
-                                    : document.getLong("quizCorrectAnswers");
+                    int quizPercent = percent(
+                            getLong(document.getLong("quizCorrectAnswers")),
+                            getLong(document.getLong("quizTotalQuestions"))
+                    );
 
-                    long quizTotal =
-                            document.getLong("quizTotalQuestions") == null
-                                    ? 0
-                                    : document.getLong("quizTotalQuestions");
+                    int matchingPercent = percent(
+                            getLong(document.getLong("matchingCorrectMatches")),
+                            getLong(document.getLong("matchingTotalMatches"))
+                    );
 
-                    int quizPercent = 0;
+                    long associationsGames = getLong(document.getLong("associationsGamesPlayed"));
+                    int associationsPercent = percent(
+                            getLong(document.getLong("associationsSolved")),
+                            associationsGames
+                    );
 
-                    if (quizTotal > 0) {
-                        quizPercent =
-                                (int) ((quizCorrect * 100) / quizTotal);
-                    }
+                    long skockoGames = getLong(document.getLong("skockoGamesPlayed"));
+                    long skockoHits =
+                            getLong(document.getLong("attempt1Hits")) +
+                                    getLong(document.getLong("attempt2Hits")) +
+                                    getLong(document.getLong("attempt3Hits")) +
+                                    getLong(document.getLong("attempt4Hits")) +
+                                    getLong(document.getLong("attempt5Hits")) +
+                                    getLong(document.getLong("attempt6Hits"));
 
-                    long matchingCorrect =
-                            document.getLong("matchingCorrectMatches") == null
-                                    ? 0
-                                    : document.getLong("matchingCorrectMatches");
+                    int skockoPercent = percent(skockoHits, skockoGames);
 
-                    long matchingTotal =
-                            document.getLong("matchingTotalMatches") == null
-                                    ? 0
-                                    : document.getLong("matchingTotalMatches");
+                    long stepGames = getLong(document.getLong("stepByStepGamesPlayed"));
+                    long stepHits =
+                            getLong(document.getLong("step1Hits")) +
+                                    getLong(document.getLong("step2Hits")) +
+                                    getLong(document.getLong("step3Hits")) +
+                                    getLong(document.getLong("step4Hits")) +
+                                    getLong(document.getLong("step5Hits")) +
+                                    getLong(document.getLong("step6Hits")) +
+                                    getLong(document.getLong("step7Hits"));
 
-                    int matchingPercent = 0;
+                    int stepPercent = percent(stepHits, stepGames);
 
-                    if (matchingTotal > 0) {
-                        matchingPercent =
-                                (int) ((matchingCorrect * 100) / matchingTotal);
-                    }
+                    int myNumberPercent = percent(
+                            getLong(document.getLong("myNumberExactHits")),
+                            getLong(document.getLong("myNumberGamesPlayed"))
+                    );
 
                     tvQuizOverviewPercent.setText(quizPercent + "%");
                     progressQuizOverview.setProgress(quizPercent);
 
                     tvMatchingOverviewPercent.setText(matchingPercent + "%");
                     progressMatchingOverview.setProgress(matchingPercent);
+
+                    tvAssociationsOverviewPercent.setText(associationsPercent + "%");
+                    progressAssociationsOverview.setProgress(associationsPercent);
+
+                    tvSkockoOverviewPercent.setText(skockoPercent + "%");
+                    progressSkockoOverview.setProgress(skockoPercent);
+
+                    tvStepByStepOverviewPercent.setText(stepPercent + "%");
+                    progressStepByStepOverview.setProgress(stepPercent);
+
+                    tvMyNumberOverviewPercent.setText(myNumberPercent + "%");
+                    progressMyNumberOverview.setProgress(myNumberPercent);
                 });
     }
 
@@ -217,60 +255,141 @@ public class ProfileActivity extends AppCompatActivity {
                         return;
                     }
 
-                    long quizCorrect = document.getLong("quizCorrectAnswers") == null
-                            ? 0 : document.getLong("quizCorrectAnswers");
-
-                    long quizTotal = document.getLong("quizTotalQuestions") == null
-                            ? 0 : document.getLong("quizTotalQuestions");
-
-                    long matchingCorrect = document.getLong("matchingCorrectMatches") == null
-                            ? 0 : document.getLong("matchingCorrectMatches");
-
-                    long matchingTotal = document.getLong("matchingTotalMatches") == null
-                            ? 0 : document.getLong("matchingTotalMatches");
-
-                    long totalCorrect = quizCorrect + matchingCorrect;
-                    long totalQuestions = quizTotal + matchingTotal;
-
-                    int successPercent = 0;
-
-                    if (totalQuestions > 0) {
-                        successPercent =
-                                (int) Math.round((totalCorrect * 100.0) / totalQuestions);
-                    }
-
-                    long totalPlayed =
-                            document.getLong("totalBattlesPlayed") == null
-                                    ? 0
-                                    : document.getLong("totalBattlesPlayed");
-
-                    long wins =
-                            document.getLong("battlesWon") == null
-                                    ? 0
-                                    : document.getLong("battlesWon");
-
-                    long losses =
-                            document.getLong("battlesLost") == null
-                                    ? 0
-                                    : document.getLong("battlesLost");
+                    long totalPlayed = getLong(document.getLong("totalBattlesPlayed"));
+                    long wins = getLong(document.getLong("battlesWon"));
+                    long losses = getLong(document.getLong("battlesLost"));
 
                     long totalFinished = wins + losses;
 
-                    int winPercent = 0;
-                    int lossPercent = 0;
+                    int winPercent = percent(wins, totalFinished);
+                    int lossPercent = totalFinished > 0 ? 100 - winPercent : 0;
 
-                    if (totalFinished > 0) {
-                        winPercent =
-                                (int) Math.round((wins * 100.0) / totalFinished);
-                        lossPercent = 100 - winPercent;
+                    int quizAverage = average(
+                            getLong(document.getLong("quizTotalScore")),
+                            getLong(document.getLong("quizGamesPlayed"))
+                    );
+
+                    int matchingAverage = average(
+                            getLong(document.getLong("matchingTotalScore")),
+                            getLong(document.getLong("matchingGamesPlayed"))
+                    );
+
+                    int associationsAverage = average(
+                            getLong(document.getLong("associationsTotalScore")),
+                            getLong(document.getLong("associationsGamesPlayed"))
+                    );
+
+                    int skockoAverage = average(
+                            getLong(document.getLong("skockoTotalScore")),
+                            getLong(document.getLong("skockoGamesPlayed"))
+                    );
+
+                    int stepAverage = average(
+                            getLong(document.getLong("stepByStepTotalScore")),
+                            getLong(document.getLong("stepByStepGamesPlayed"))
+                    );
+
+                    int myNumberAverage = average(
+                            getLong(document.getLong("myNumberTotalScore")),
+                            getLong(document.getLong("myNumberGamesPlayed"))
+                    );
+
+                    int totalPercent = 0;
+                    int gamesCount = 0;
+
+                    if (getLong(document.getLong("quizGamesPlayed")) > 0) {
+                        totalPercent += percent(
+                                getLong(document.getLong("quizCorrectAnswers")),
+                                getLong(document.getLong("quizTotalQuestions"))
+                        );
+                        gamesCount++;
                     }
 
-                    tvOverallSuccess.setText("Success: " + successPercent + "%");
-                    tvOverallPlayedGames.setText("Played games: " + totalPlayed);
+                    if (getLong(document.getLong("matchingGamesPlayed")) > 0) {
+                        totalPercent += percent(
+                                getLong(document.getLong("matchingCorrectMatches")),
+                                getLong(document.getLong("matchingTotalMatches"))
+                        );
+                        gamesCount++;
+                    }
+
+                    if (getLong(document.getLong("associationsGamesPlayed")) > 0) {
+
+                        int associationsPercent = percent(
+                                getLong(document.getLong("associationsSolved")),
+                                getLong(document.getLong("associationsGamesPlayed"))
+                        );
+
+                        totalPercent += associationsPercent;
+                        gamesCount++;
+                    }
+
+                    if (getLong(document.getLong("skockoGamesPlayed")) > 0) {
+
+                        long hits =
+                                getLong(document.getLong("attempt1Hits")) +
+                                        getLong(document.getLong("attempt2Hits")) +
+                                        getLong(document.getLong("attempt3Hits")) +
+                                        getLong(document.getLong("attempt4Hits")) +
+                                        getLong(document.getLong("attempt5Hits")) +
+                                        getLong(document.getLong("attempt6Hits"));
+
+                        int skockoPercent = percent(
+                                hits,
+                                getLong(document.getLong("skockoGamesPlayed"))
+                        );
+
+                        totalPercent += skockoPercent;
+                        gamesCount++;
+                    }
+
+                    if (getLong(document.getLong("stepByStepGamesPlayed")) > 0) {
+
+                        long hits =
+                                getLong(document.getLong("step1Hits")) +
+                                        getLong(document.getLong("step2Hits")) +
+                                        getLong(document.getLong("step3Hits")) +
+                                        getLong(document.getLong("step4Hits")) +
+                                        getLong(document.getLong("step5Hits")) +
+                                        getLong(document.getLong("step6Hits")) +
+                                        getLong(document.getLong("step7Hits"));
+
+                        int stepPercent = percent(
+                                hits,
+                                getLong(document.getLong("stepByStepGamesPlayed"))
+                        );
+
+                        totalPercent += stepPercent;
+                        gamesCount++;
+                    }
+
+                    if (getLong(document.getLong("myNumberGamesPlayed")) > 0) {
+
+                        int myNumberPercent = percent(
+                                getLong(document.getLong("myNumberExactHits")),
+                                getLong(document.getLong("myNumberGamesPlayed"))
+                        );
+
+                        totalPercent += myNumberPercent;
+                        gamesCount++;
+                    }
+
+                    int overallSuccess = gamesCount > 0
+                            ? totalPercent / gamesCount
+                            : 0;
+
+                    tvOverallSuccess.setText(
+                            "Overall success: " + overallSuccess + "%"
+                    );
+
+                    tvOverallPlayedGames.setText("Played battles: " + totalPlayed);
+
                     tvOverallWinLoss.setText(
                             "Wins: " + winPercent + "% Losses: " + lossPercent + "%"
                     );
                 });
+
+
     }
 
     private void loadUserProfile() {
@@ -389,5 +508,17 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         return user.getUid();
+    }
+
+    private long getLong(Long value) {
+        return value == null ? 0 : value;
+    }
+
+    private int percent(long value, long total) {
+        return total > 0 ? (int) Math.round((value * 100.0) / total) : 0;
+    }
+
+    private int average(long totalScore, long gamesPlayed) {
+        return gamesPlayed > 0 ? (int) Math.round((totalScore * 1.0) / gamesPlayed) : 0;
     }
 }

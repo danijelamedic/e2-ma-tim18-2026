@@ -60,6 +60,7 @@
                 android:fontFamily="sans-serif-black" />
 
             <TextView
+                android:id="@+id/tvMyNumberSuccess"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/average_my_number_points"
@@ -70,6 +71,7 @@
                 android:layout_marginTop="8dp" />
 
             <ProgressBar
+                android:id="@+id/progressMyNumber"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
@@ -100,6 +102,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvMyNumberExactFound"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
@@ -112,6 +115,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvMyNumberNotExact"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
@@ -142,6 +146,7 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/tvMyNumberGamesPlayed"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"
@@ -154,6 +159,7 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/tvMyNumberAverageScore"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:gravity="center_vertical"

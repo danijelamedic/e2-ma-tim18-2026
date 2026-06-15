@@ -488,6 +488,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvAssociationsOverviewPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/associations_percent"
@@ -496,6 +497,7 @@
                         android:textSize="18sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressAssociationsOverview"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
@@ -535,6 +537,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvSkockoOverviewPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/skocko_percent"
@@ -543,6 +546,7 @@
                         android:textSize="18sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressSkockoOverview"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
@@ -589,6 +593,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvStepByStepOverviewPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/step_by_step_percent"
@@ -597,6 +602,7 @@
                         android:textSize="18sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressStepByStepOverview"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
@@ -636,6 +642,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvMyNumberOverviewPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/my_number_percent"
@@ -644,6 +651,7 @@
                         android:textSize="18sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressMyNumberOverview"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"

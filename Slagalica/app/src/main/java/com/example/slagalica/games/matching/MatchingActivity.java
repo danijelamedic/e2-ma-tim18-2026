@@ -69,6 +69,7 @@ public class MatchingActivity extends AppCompatActivity {
     private String lastSeenMatchingPhase = "";
     private String lastSeenCurrentPlayerUid = "";
     private int correctMatchesInCurrentRound = 0;
+    private int initialScore = 0;
 
     private ImageView imgOpponentAvatar;
     private TextView tvOpponentName;
@@ -104,7 +105,8 @@ public class MatchingActivity extends AppCompatActivity {
         tvOpponentName = findViewById(R.id.tvOpponentName);
 
         tvPlayerScore = findViewById(R.id.tvPlayerScore);
-        playerScore = getIntent().getIntExtra("currentTotalScore", 0);
+        initialScore = getIntent().getIntExtra("currentTotalScore", 0);
+        playerScore = initialScore;
         tvPlayerScore.setText(playerScore + " pts");
 
         loadCurrentUserInfo();
@@ -370,8 +372,8 @@ public class MatchingActivity extends AppCompatActivity {
         }
 
         boolean won = correctMatchesCount >= 3;
-        StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, won);
-
+        int matchingOnlyScore = playerScore - initialScore;
+        StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, matchingOnlyScore, won);
 
         if (isBattleMode || isMultiplayer) {
             Intent resultIntent = new Intent();
