@@ -41,6 +41,8 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.example.slagalica.leagues.League;
+import com.example.slagalica.leagues.LeagueManager;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -58,6 +60,7 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String currentUid;
     private TextView tvWelcomeUsername;
+    private TextView txtHomeStatus;
     private NotificationRepository notificationRepository;
     private ListenerRegistration notificationListener;
     private final Set<String> seenNotificationIds = new HashSet<>();
@@ -139,19 +142,26 @@ public class HomeActivity extends AppCompatActivity {
                             + cal.get(Calendar.MONTH) * 100L
                             + cal.get(Calendar.DAY_OF_MONTH);
 
-                    if (today <= lastTokenDay) return;
+                    if (today <= lastTokenDay) {
+                        loadHomeStatus();
+                        return;
+                    }
 
-                    long league = snapshot.getLong("league") != null ?
-                            snapshot.getLong("league") : 0;
-                    long dailyTokens = 5 + league;
+                    long stars = snapshot.getLong("stars") != null ? snapshot.getLong("stars") : 0;
+                    League leagueObj = LeagueManager.getLeagueForStars((int) stars);
+                    long dailyTokens = 5 + leagueObj.getLevel();
 
                     db.collection("users").document(currentUid)
                             .update("tokens", FieldValue.increment(dailyTokens),
-                                    "lastTokenDay", today)
-                            .addOnSuccessListener(unused ->
-                                    Toast.makeText(this,
-                                            "Daily tokens received: +" + dailyTokens,
-                                            Toast.LENGTH_LONG).show());
+                                    "lastTokenDay", today,
+                                    "league", leagueObj.getLevel())
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(this,
+                                        "Daily tokens received: +" + dailyTokens,
+                                        Toast.LENGTH_LONG).show();
+
+                                loadHomeStatus();
+                            });
                 });
     }
 
@@ -247,6 +257,7 @@ public class HomeActivity extends AppCompatActivity {
         tvWelcomeUsername = findViewById(R.id.tvWelcomeUsername);
         navStatistics     = findViewById(R.id.navStatistics);
         navFriends        = findViewById(R.id.navFriends);
+        txtHomeStatus = findViewById(R.id.txtHomeStatus);
     }
 
     private void setupClickListeners() {
@@ -288,5 +299,34 @@ public class HomeActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (notificationListener != null) notificationListener.remove();
         super.onDestroy();
+    }
+
+    private void loadHomeStatus() {
+        db.collection("users").document(currentUid)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (!document.exists() || txtHomeStatus == null) return;
+
+                    long stars = document.getLong("stars") != null
+                            ? document.getLong("stars")
+                            : 0;
+
+                    long tokens = document.getLong("tokens") != null
+                            ? document.getLong("tokens")
+                            : 0;
+
+                    League league = LeagueManager.getLeagueForStars((int) stars);
+
+                    txtHomeStatus.setText(
+                            league.getIcon() + " " + league.getName()
+                                    + "   🪙 " + tokens
+                                    + "   ⭐ " + stars
+                    );
+
+                    document.getReference().update("league", league.getLevel());
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to load league data", Toast.LENGTH_SHORT).show()
+                );
     }
 }

@@ -81,6 +81,20 @@
                     android:layout_marginBottom="8dp" />
 
                 <TextView
+                    android:id="@+id/txtHomeStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🌱 Beginner League   🪙 0   ⭐ 0"
+                    android:textColor="#2E1A66"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="@drawable/bg_league_chip"
+                    android:padding="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/home_welcome_subtitle"
