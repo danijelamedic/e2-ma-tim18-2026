@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalica.LoginActivity;
 import com.example.slagalica.R;
+import com.example.slagalica.leagues.League;
+import com.example.slagalica.leagues.LeagueActivity;
+import com.example.slagalica.leagues.LeagueManager;
 import com.example.slagalica.profile.statistics.QuizStatisticsActivity;
 import com.example.slagalica.profile.statistics.MatchingStatisticsActivity;
 import com.example.slagalica.profile.statistics.AssociationsStatisticsActivity;
@@ -96,6 +99,10 @@ public class ProfileActivity extends AppCompatActivity {
         loadOverviewStatistics();
         loadOverallStatistics();
         loadUserProfile();
+
+        tvLeague.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, LeagueActivity.class))
+        );
 
         TextView btnLogout = findViewById(R.id.btnLogout);
 
@@ -421,6 +428,14 @@ public class ProfileActivity extends AppCompatActivity {
                     Long stars = document.getLong("stars");
                     Long league = document.getLong("league");
 
+                    long leagueLevel = league != null ? league : 0;
+
+                    League currentLeague = LeagueManager.getLeague(leagueLevel);
+
+                    tvLeague.setText(
+                            currentLeague.getIcon() + " " + currentLeague.getName()
+                    );
+
                     tvUsername.setText(username != null ? username : "Unknown user");
                     tvEmail.setText(email != null ? "Email: " + email : "Email: /");
                     tvRegion.setText(region != null ? "Region: " + region : "Region: /");
@@ -428,7 +443,6 @@ public class ProfileActivity extends AppCompatActivity {
                     tvTokens.setText(String.valueOf(tokens != null ? tokens : 0));
                     tvStars.setText(String.valueOf(stars != null ? stars : 0));
 
-                    tvLeague.setText("League " + (league != null ? league : 0));
 
                     generateQrCode(userId);
 
