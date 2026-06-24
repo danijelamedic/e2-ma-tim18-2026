@@ -36,6 +36,18 @@ public class LeagueManager {
         return leagues.get(currentLevel + 1);
     }
 
+    public static League getLeague(long level) {
+        if (level < 0) {
+            return leagues.get(0);
+        }
+
+        if (level >= leagues.size()) {
+            return leagues.get(leagues.size() - 1);
+        }
+
+        return leagues.get((int) level);
+    }
+
     public static int getStarsNeededForNextLeague(int stars) {
         League currentLeague = getLeagueForStars(stars);
         League nextLeague = getNextLeague(currentLeague.getLevel());

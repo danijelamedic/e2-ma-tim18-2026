@@ -17,18 +17,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.slagalica.data.FirebaseSeeder;
-import com.example.slagalica.games.MyNumber.MyNumberActivity;
-import com.example.slagalica.games.StepByStep.StepByStepActivity;
-import com.example.slagalica.games.associations.AssociationsActivity;
-import com.example.slagalica.games.matching.MatchingActivity;
-import com.example.slagalica.games.quiz.QuizActivity;
-import com.example.slagalica.games.skocko.SkockoActivity;
+import com.example.slagalica.leagues.LeagueActivity;
 import com.example.slagalica.notifications.AppNotification;
 import com.example.slagalica.notifications.LocalNotificationSender;
 import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.notifications.NotificationChannelManager;
 import com.example.slagalica.notifications.NotificationRepository;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.leagues.League;
+import com.example.slagalica.leagues.LeagueManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
@@ -41,8 +38,6 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import com.example.slagalica.leagues.League;
-import com.example.slagalica.leagues.LeagueManager;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -278,6 +273,11 @@ public class HomeActivity extends AppCompatActivity {
 
         navHome.setOnClickListener(v ->
                 Toast.makeText(this, "You are already on Home", Toast.LENGTH_SHORT).show());
+
+        if (txtHomeStatus != null) {
+            txtHomeStatus.setOnClickListener(v ->
+                    startActivity(new Intent(this, LeagueActivity.class)));
+        }
 
         navLeaderboard.setOnClickListener(v ->
                 Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show());

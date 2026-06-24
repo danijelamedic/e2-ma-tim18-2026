@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.slagalica.ChatActivity;
+import com.example.slagalica.leagues.LeagueManager;
 import com.example.slagalica.profile.ProfileActivity;
 
 import java.util.HashMap;
@@ -29,10 +30,29 @@ public class NotificationFactory {
     }
 
     public void sendLeagueChange(Context context, String uid, long oldLeague, long newLeague) {
-        String title = newLeague > oldLeague ? "League promotion" : "League update";
-        String message = newLeague > oldLeague
-                ? "You advanced from League " + oldLeague + " to League " + newLeague + "."
-                : "Your league changed from League " + oldLeague + " to League " + newLeague + ".";
+        String title;
+
+        if (newLeague > oldLeague) {
+            title = "League promotion";
+        } else {
+            title = "League demotion";
+        }
+
+        String message;
+
+        if (newLeague > oldLeague) {
+            message = "Congratulations! You advanced from "
+                    + LeagueManager.getLeague(oldLeague).getName()
+                    + " to "
+                    + LeagueManager.getLeague(newLeague).getName()
+                    + ".";
+        } else {
+            message = "You dropped from "
+                    + LeagueManager.getLeague(oldLeague).getName()
+                    + " to "
+                    + LeagueManager.getLeague(newLeague).getName()
+                    + ".";
+        }
         AppNotification notification = new AppNotification(
                 uid,
                 AppNotification.TYPE_OTHER,
