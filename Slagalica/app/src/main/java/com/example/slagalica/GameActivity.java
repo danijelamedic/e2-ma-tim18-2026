@@ -25,12 +25,12 @@ import java.util.Map;
 
 public class GameActivity extends AppCompatActivity {
 
-    private static final int GAME_QUIZ         = 1;
-    private static final int GAME_MATCHING     = 2;
+    private static final int GAME_QUIZ         = 5;
+    private static final int GAME_MATCHING     = 6;
     private static final int GAME_ASSOCIATIONS = 3;
     private static final int GAME_SKOCKO       = 4;
-    private static final int GAME_STEP_BY_STEP = 5;
-    private static final int GAME_MY_NUMBER    = 6;
+    private static final int GAME_STEP_BY_STEP = 1;
+    private static final int GAME_MY_NUMBER    = 2;
     private static final int TOTAL_GAMES       = 6;
 
     private FirebaseFirestore db;
@@ -46,6 +46,8 @@ public class GameActivity extends AppCompatActivity {
     private boolean isFinishing = false;
     private int pendingLaunchGame = -1;
     private int lastCompletedGame = 0;
+    private boolean opponentLeftNotified = false;
+    private android.widget.Button btnLeaveMatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +64,19 @@ public class GameActivity extends AppCompatActivity {
         tvGameInfo = findViewById(R.id.tvGameInfo);
         tvGameInfo.setText("Loading game...");
 
+        btnLeaveMatch = findViewById(R.id.btnLeaveMatch);
+        btnLeaveMatch.setOnClickListener(v -> confirmAbandonGame());
+
         listenForGameUpdates();
+    }
+
+    private void confirmAbandonGame() {
+        new AlertDialog.Builder(this)
+                .setTitle("Abandon Game")
+                .setMessage("If you leave, you will lose the game. Are you sure?")
+                .setPositiveButton("Leave", (dialog, which) -> abandonGame())
+                .setNegativeButton("Stay", null)
+                .show();
     }
 
     private void listenForGameUpdates() {
@@ -77,9 +91,19 @@ public class GameActivity extends AppCompatActivity {
                     if (isFinishing) return;
 
                     String status = snapshot.getString("status");
+                    String abandonedBy = snapshot.getString("abandonedBy");
 
-                    if ("abandoned".equals(status)) {
-                        handleOpponentAbandoned();
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (!opponentLeftNotified) {
+                            opponentLeftNotified = true;
+                            Toast.makeText(this,
+                                    "Opponent left — you finish the match alone.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    if ("declined".equals(status)) {
+                        handleInviteDeclined();
                         return;
                     }
 
@@ -111,7 +135,11 @@ public class GameActivity extends AppCompatActivity {
                     }
 
                     if (Boolean.TRUE.equals(myDone)) {
-                        tvGameInfo.setText("Waiting for opponent...");
+                        if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                            forceAdvanceSolo(currentGame);
+                        } else {
+                            tvGameInfo.setText("Waiting for opponent...");
+                        }
                         return;
                     }
 
@@ -218,6 +246,14 @@ public class GameActivity extends AppCompatActivity {
         if (interGameTimer != null) {
             interGameTimer.cancel();
             interGameTimer = null;
+        }
+
+        boolean leftGame = (resultCode == RESULT_CANCELED)
+                || (resultCode == RESULT_OK && data != null
+                && data.getBooleanExtra("battleLost", false));
+        if (leftGame) {
+            abandonGame();
+            return;
         }
 
         int points = 0;
@@ -330,8 +366,10 @@ public class GameActivity extends AppCompatActivity {
                     updates.put("currentTurnUid", opponentUid);
 
                     Boolean opponentDone = snapshot.getBoolean(opponentDoneField);
+                    String abandonedBy = snapshot.getString("abandonedBy");
+                    boolean opponentGone = abandonedBy != null && !abandonedBy.equals(currentUid);
 
-                    if (Boolean.TRUE.equals(opponentDone)) {
+                    if (Boolean.TRUE.equals(opponentDone) || opponentGone) {
                         long nextGame = currentGame + 1;
                         if (nextGame > TOTAL_GAMES) {
                             updates.put("status", "finished");
@@ -357,7 +395,12 @@ public class GameActivity extends AppCompatActivity {
                 .addOnSuccessListener(unused -> listenForGameUpdates());
     }
 
-    private void handleOpponentAbandoned() {
+    @Override
+    public void onBackPressed() {
+        confirmAbandonGame();
+    }
+
+    private void abandonGame() {
         if (isFinishing) return;
         isFinishing = true;
         if (gameListener != null) {
@@ -365,48 +408,7 @@ public class GameActivity extends AppCompatActivity {
             gameListener = null;
         }
 
-        Toast.makeText(this, "Opponent left the game. You win!", Toast.LENGTH_LONG).show();
-
-        db.collection("games").document(gameId).get()
-                .addOnSuccessListener(snapshot -> {
-                    String player1 = snapshot.getString("player1");
-                    long myScore = currentUid.equals(player1) ?
-                            (snapshot.getLong("score1") != null ? snapshot.getLong("score1") : 0) :
-                            (snapshot.getLong("score2") != null ? snapshot.getLong("score2") : 0);
-                    long opponentScore = currentUid.equals(player1) ?
-                            (snapshot.getLong("score2") != null ? snapshot.getLong("score2") : 0) :
-                            (snapshot.getLong("score1") != null ? snapshot.getLong("score1") : 0);
-
-                    boolean isFriendly = Boolean.TRUE.equals(snapshot.getBoolean("isFriendly"));
-
-                    Intent intent = new Intent(this, GameResultActivity.class);
-                    intent.putExtra("myScore", myScore + 1);
-                    intent.putExtra("opponentScore", opponentScore);
-                    intent.putExtra("isFriendly", isFriendly);
-                    startActivity(intent);
-                    finish();
-                });
-    }
-
-    @Override
-    public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setTitle("Abandon Game")
-                .setMessage("If you leave, you will lose the game. Are you sure?")
-                .setPositiveButton("Leave", (dialog, which) -> abandonGame())
-                .setNegativeButton("Stay", null)
-                .show();
-    }
-
-    private void abandonGame() {
-        isFinishing = true;
-        if (gameListener != null) {
-            gameListener.remove();
-            gameListener = null;
-        }
-
         Map<String, Object> updates = new HashMap<>();
-        updates.put("status", "abandoned");
         updates.put("abandonedBy", currentUid);
 
         db.collection("games").document(gameId).update(updates)
@@ -418,6 +420,38 @@ public class GameActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 });
+    }
+
+    private void forceAdvanceSolo(int gameNumber) {
+        DocumentReference gameRef = db.collection("games").document(gameId);
+        db.runTransaction(transaction -> {
+            com.google.firebase.firestore.DocumentSnapshot snapshot = transaction.get(gameRef);
+            if (snapshot == null || !snapshot.exists()) return null;
+
+            Long cg = snapshot.getLong("currentGame");
+            long currentGame = cg != null ? cg : 1;
+            if (currentGame != gameNumber) return null;
+
+            String player1 = snapshot.getString("player1");
+            Map<String, Object> updates = new HashMap<>();
+            long nextGame = currentGame + 1;
+            if (nextGame > TOTAL_GAMES) {
+                updates.put("status", "finished");
+                updates.put("currentTurnUid", null);
+            } else {
+                updates.put("currentGame", nextGame);
+                updates.put("currentTurnUid", player1);
+                updates.put("player1done_game" + nextGame, false);
+                updates.put("player2done_game" + nextGame, false);
+                if (gameNumber == GAME_MY_NUMBER) updates.put("myNumberRound", 1L);
+                if (gameNumber == GAME_STEP_BY_STEP) {
+                    updates.put("stepByStepRound", 1L);
+                    updates.put("stepByStepStatus", "");
+                }
+            }
+            transaction.update(gameRef, updates);
+            return null;
+        });
     }
 
     private void showResults(com.google.firebase.firestore.DocumentSnapshot snapshot) {
@@ -435,6 +469,11 @@ public class GameActivity extends AppCompatActivity {
 
         long myScore = currentUid.equals(player1) ? score1 : score2;
         long opponentScore = currentUid.equals(player1) ? score2 : score1;
+
+        String abandonedBy = snapshot.getString("abandonedBy");
+        if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+            opponentScore = myScore > 0 ? myScore - 1 : 0;
+        }
 
         Intent intent = new Intent(this, GameResultActivity.class);
         intent.putExtra("myScore", myScore);
@@ -456,5 +495,16 @@ public class GameActivity extends AppCompatActivity {
             interGameTimer.cancel();
             interGameTimer = null;
         }
+    }
+
+    private void handleInviteDeclined() {
+        if (isFinishing) return;
+        isFinishing = true;
+        if (gameListener != null) { gameListener.remove(); gameListener = null; }
+        Toast.makeText(this, "Friend declined the invite.", Toast.LENGTH_LONG).show();
+        db.collection("games").document(gameId).delete();
+        startActivity(new Intent(this, HomeActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        finish();
     }
 }

@@ -29,7 +29,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import com.example.slagalica.HomeActivity;
-
+import android.os.CountDownTimer;
+import com.example.slagalica.GameActivity;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public abstract class BaseNotificationsActivity extends AppCompatActivity {
     private final NotificationRepository repository = new NotificationRepository();
@@ -326,14 +328,55 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
     }
 
     private void showInviteDialog(AppNotification notification) {
-        new AlertDialog.Builder(this)
+        final String gameId = notification.actionData != null
+                ? (String) notification.actionData.get("inviteId") : null;
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(notification.title)
                 .setMessage(notification.message)
-                .setPositiveButton("Accept", (dialog, which) ->
-                        Toast.makeText(this, "Invite accepted.", Toast.LENGTH_SHORT).show())
-                .setNegativeButton("Decline", (dialog, which) ->
-                        Toast.makeText(this, "Invite declined.", Toast.LENGTH_SHORT).show())
-                .show();
+                .setCancelable(false)
+                .setPositiveButton("Accept", null)
+                .setNegativeButton("Decline", null)
+                .create();
+        dialog.show();
+
+        // 10s auto-odbijanje
+        final CountDownTimer autoDecline = new CountDownTimer(10000, 1000) {
+            @Override public void onTick(long ms) {
+                dialog.setMessage(notification.message + "\n(" + (ms / 1000) + "s)");
+            }
+            @Override public void onFinish() {
+                declineInvite(gameId);
+                if (dialog.isShowing()) dialog.dismiss();
+                Toast.makeText(BaseNotificationsActivity.this,
+                        "Invite expired.", Toast.LENGTH_SHORT).show();
+            }
+        }.start();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            autoDecline.cancel();
+            dialog.dismiss();
+            if (gameId != null) {
+                Intent intent = new Intent(this, GameActivity.class);
+                intent.putExtra("gameId", gameId);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Invite no longer valid.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
+            autoDecline.cancel();
+            dialog.dismiss();
+            declineInvite(gameId);
+            Toast.makeText(this, "Invite declined.", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void declineInvite(String gameId) {
+        if (gameId == null) return;
+        FirebaseFirestore.getInstance().collection("games").document(gameId)
+                .update("status", "declined");
     }
 
     private void showRewardDialog(AppNotification notification) {

@@ -1,16 +1,21 @@
 package com.example.slagalica.games.StepByStep;
 
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.Gravity;
+import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.example.slagalica.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,10 +35,24 @@ public class StepByStepActivity extends AppCompatActivity {
     private static final int POINTS_LOSS_PER_STEP = 2;
     private static final int OPPONENT_BONUS_MS    = 10_000;
 
-    private TextView tvTimer, tvCurrentStep, tvRoundInfo;
+    // Premium palette
+    private static final int GOLD_TOP   = 0xFFF7D667;
+    private static final int GOLD_BOT   = 0xFFD9A33A;
+    private static final int GOLD_TEXT  = 0xFF3A2A00;
+    private static final int ACT_TOP    = 0xFF7C3AED;
+    private static final int ACT_BOT    = 0xFF5B21B6;
+    private static final int REV_TOP    = 0xFF4B2E8F;
+    private static final int REV_BOT    = 0xFF38226E;
+    private static final int LOCK_TOP   = 0xFF2C2150;
+    private static final int LOCK_BOT   = 0xFF241B43;
+    private static final int REV_BADGE_TOP = 0xFF8B5CF6;
+    private static final int REV_BADGE_BOT = 0xFF6D28D9;
+    private static final int LOCK_BADGE_TOP = 0xFF4A3D78;
+    private static final int LOCK_BADGE_BOT = 0xFF3A2F62;
+
+    private TextView tvTimer, tvRoundInfo;
     private TextView tvPlayerName, tvPlayerScore, tvPlayerInfo;
     private TextView tvOpponentName, tvOpponentScore, tvOpponentInfo;
-    private TextView[] stepTiles;
     private TextView btnConfirm;
     private EditText etAnswer;
     private CountDownTimer stepTimer;
@@ -54,6 +73,14 @@ public class StepByStepActivity extends AppCompatActivity {
     private String myQuestionId;
 
     private boolean activityAlive = true;
+    private LinearLayout llCluesList;
+    private ScrollView scrollClues;
+
+    private LinearLayout[] slotCard;
+    private TextView[] slotBadge;
+    private TextView[] slotText;
+    private int cluesShown = 0;
+    private int activeIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +93,8 @@ public class StepByStepActivity extends AppCompatActivity {
         gameId        = getIntent().getStringExtra("gameId");
 
         tvTimer       = findViewById(R.id.tvTimer);
-        tvCurrentStep = findViewById(R.id.tvCurrentStep);
+        llCluesList   = findViewById(R.id.llCluesList);
+        scrollClues   = findViewById(R.id.scrollClues);
         tvRoundInfo   = findViewById(R.id.tvRoundInfo);
         btnConfirm    = findViewById(R.id.btnConfirm);
         etAnswer      = findViewById(R.id.etAnswer);
@@ -79,13 +107,6 @@ public class StepByStepActivity extends AppCompatActivity {
         tvOpponentInfo  = findViewById(R.id.tvOpponentInfo);
 
         tvRoundInfo.setText(currentRound + "/2");
-
-        stepTiles = new TextView[]{
-                findViewById(R.id.tvStep1), findViewById(R.id.tvStep2),
-                findViewById(R.id.tvStep3), findViewById(R.id.tvStep4),
-                findViewById(R.id.tvStep5), findViewById(R.id.tvStep6),
-                findViewById(R.id.tvStep7)
-        };
 
         findViewById(R.id.layoutHeader).startAnimation(
                 AnimationUtils.loadAnimation(this, R.anim.bounce_in));
@@ -165,7 +186,6 @@ public class StepByStepActivity extends AppCompatActivity {
     }
 
     private void loadScores(String player1Uid) {
-        // Live listener — scores update in real time as opponent finishes
         if (scoreListener != null) { scoreListener.remove(); scoreListener = null; }
         scoreListener = db.collection("games").document(gameId)
                 .addSnapshotListener((snapshot, e) -> {
@@ -290,11 +310,18 @@ public class StepByStepActivity extends AppCompatActivity {
 
     private void waitForQuestionToBeSet() {
         if (!isAlive()) return;
-        tvCurrentStep.setText("Waiting for opponent...");
-
+        showStatusCard("⏳  Waiting for opponent to set the question…");
         gameListener = db.collection("games").document(gameId)
                 .addSnapshotListener((snapshot, e) -> {
                     if (!isAlive() || snapshot == null) return;
+
+                    String abandonedBy = snapshot.getString("abandonedBy");
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (gameListener != null) { gameListener.remove(); gameListener = null; }
+                        finishAndReturn(0);
+                        return;
+                    }
+
                     String savedId = snapshot.getString(
                             "stepByStepQuestionId_r" + currentRound);
                     if (savedId != null) {
@@ -312,11 +339,19 @@ public class StepByStepActivity extends AppCompatActivity {
         String doneStatus = "r" + currentRound + "done";
         String stepField  = "stepByStepCurrentStep_r" + currentRound;
 
-        if (clues != null) revealClue(0);
+        buildBoard();
+        revealClue(0);
 
         gameListener = db.collection("games").document(gameId)
                 .addSnapshotListener((snapshot, e) -> {
                     if (!isAlive() || snapshot == null) return;
+
+                    String abandonedBy = snapshot.getString("abandonedBy");
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (gameListener != null) { gameListener.remove(); gameListener = null; }
+                        finishAndReturn(0);
+                        return;
+                    }
 
                     Long stepLong = snapshot.getLong(stepField);
                     if (stepLong != null) {
@@ -340,15 +375,17 @@ public class StepByStepActivity extends AppCompatActivity {
 
     private void startBonusChance() {
         if (!isAlive()) return;
-        tvCurrentStep.setText("Opponent didn't guess! You have 10 seconds for a bonus!");
+        Toast.makeText(this,
+                "Opponent didn't guess! You have 10 seconds for a bonus!",
+                Toast.LENGTH_LONG).show();
         setConfirmEnabled(true);
         etAnswer.setEnabled(true);
-        for (int i = 0; i < MAX_STEPS; i++) revealClue(i);
+        revealClue(MAX_STEPS - 1);
 
         stepTimer = new CountDownTimer(OPPONENT_BONUS_MS, 1000) {
             @Override public void onTick(long ms) {
                 if (!isAlive()) { cancel(); return; }
-                tvTimer.setText("Bonus: " + (ms / 1000) + "s");
+                tvTimer.setText("🏆 " + (ms / 1000) + "s");
             }
             @Override public void onFinish() {
                 if (!isAlive()) return;
@@ -362,6 +399,7 @@ public class StepByStepActivity extends AppCompatActivity {
 
     private void startMyTurn() {
         if (!isAlive()) return;
+        buildBoard();
         setConfirmEnabled(true);
         etAnswer.setEnabled(true);
         currentStep = 0;
@@ -395,19 +433,133 @@ public class StepByStepActivity extends AppCompatActivity {
         db.collection("games").document(gameId).update(updates);
     }
 
-    private void revealClue(int stepIndex) {
-        if (!isAlive()) return;
-        if (stepIndex >= MAX_STEPS || clues == null) return;
 
-        tvCurrentStep.setText(clues[stepIndex]);
-        tvCurrentStep.startAnimation(
-                AnimationUtils.loadAnimation(this, R.anim.slide_up_fade_in));
+    private int dp(float v) {
+        return Math.round(v * getResources().getDisplayMetrics().density);
+    }
 
-        for (int i = 0; i <= stepIndex; i++) {
-            stepTiles[i].setBackgroundResource(R.drawable.bg_tile_active);
-            stepTiles[i].setTextColor(
-                    ContextCompat.getColor(this, android.R.color.white));
+    private GradientDrawable bg(int radius, int top, int bottom) {
+        GradientDrawable g = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM, new int[]{top, bottom});
+        g.setCornerRadius(radius);
+        return g;
+    }
+
+    private GradientDrawable circle(int top, int bottom) {
+        GradientDrawable g = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM, new int[]{top, bottom});
+        g.setShape(GradientDrawable.OVAL);
+        return g;
+    }
+
+    private void buildBoard() {
+        if (llCluesList == null) return;
+        llCluesList.removeAllViews();
+        cluesShown = 0;
+        activeIndex = -1;
+        slotCard  = new LinearLayout[MAX_STEPS];
+        slotBadge = new TextView[MAX_STEPS];
+        slotText  = new TextView[MAX_STEPS];
+
+        for (int i = 0; i < MAX_STEPS; i++) {
+            LinearLayout card = new LinearLayout(this);
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
+            cp.setMargins(0, 0, 0, dp(7));
+            card.setLayoutParams(cp);
+            card.setOrientation(LinearLayout.HORIZONTAL);
+            card.setGravity(Gravity.CENTER_VERTICAL);
+            card.setPadding(dp(14), dp(8), dp(16), dp(8));
+            card.setMinimumHeight(dp(50));
+
+            TextView badge = new TextView(this);
+            LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(dp(38), dp(38));
+            bp.setMargins(0, 0, dp(14), 0);
+            badge.setLayoutParams(bp);
+            badge.setGravity(Gravity.CENTER);
+            badge.setText(String.valueOf(i + 1));
+            badge.setTypeface(null, Typeface.BOLD);
+            badge.setTextSize(16);
+
+            TextView text = new TextView(this);
+            text.setLayoutParams(new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+            text.setTypeface(null, Typeface.BOLD);
+            text.setLetterSpacing(0.02f);
+            text.setMaxLines(2);
+
+            card.addView(badge);
+            card.addView(text);
+            llCluesList.addView(card);
+
+            slotCard[i] = card; slotBadge[i] = badge; slotText[i] = text;
+            styleLocked(i);
         }
+    }
+
+    private void styleLocked(int i) {
+        slotCard[i].setBackground(bg(dp(16), LOCK_TOP, LOCK_BOT));
+        slotCard[i].setElevation(dp(2));
+        slotBadge[i].setBackground(circle(LOCK_BADGE_TOP, LOCK_BADGE_BOT));
+        slotBadge[i].setTextColor(0xFF9D8FC9);
+        slotText[i].setText("• • • • •");
+        slotText[i].setTextColor(0xFF6B5E99);
+        slotText[i].setTextSize(15);
+    }
+
+    private void styleRevealed(int i) {
+        slotCard[i].setBackground(bg(dp(16), REV_TOP, REV_BOT));
+        slotCard[i].setElevation(dp(4));
+        slotBadge[i].setBackground(circle(REV_BADGE_TOP, REV_BADGE_BOT));
+        slotBadge[i].setTextColor(0xFFFFFFFF);
+        slotText[i].setText(clues != null && clues[i] != null ? clues[i] : "");
+        slotText[i].setTextColor(0xFFE9E2FF);
+        slotText[i].setTextSize(16);
+    }
+
+    private void styleActive(int i) {
+        GradientDrawable g = bg(dp(16), ACT_TOP, ACT_BOT);
+        g.setStroke(dp(2), GOLD_TOP);
+        slotCard[i].setBackground(g);
+        slotCard[i].setElevation(dp(12));
+        slotBadge[i].setBackground(circle(GOLD_TOP, GOLD_BOT));
+        slotBadge[i].setTextColor(GOLD_TEXT);
+        slotText[i].setText(clues != null && clues[i] != null ? clues[i] : "");
+        slotText[i].setTextColor(0xFFFFFFFF);
+        slotText[i].setTextSize(19);
+        slotCard[i].startAnimation(AnimationUtils.loadAnimation(this, R.anim.bounce_in));
+    }
+
+    private void revealClue(int target) {
+        if (!isAlive() || slotCard == null) return;
+        for (int i = cluesShown; i <= target && i < MAX_STEPS; i++) {
+            if (activeIndex >= 0) styleRevealed(activeIndex);
+            styleActive(i);
+            activeIndex = i;
+            cluesShown = i + 1;
+        }
+        final int focus = activeIndex;
+        scrollClues.post(() -> {
+            if (focus >= 0 && slotCard != null && slotCard[focus] != null)
+                scrollClues.smoothScrollTo(0, slotCard[focus].getTop());
+        });
+    }
+
+    private void showStatusCard(String msg) {
+        if (llCluesList == null) return;
+        llCluesList.removeAllViews();
+        TextView t = new TextView(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, dp(20), 0, 0);
+        t.setLayoutParams(lp);
+        t.setText(msg);
+        t.setTextColor(0xFF8B7FB8);
+        t.setTextSize(15);
+        t.setPadding(dp(24), dp(28), dp(24), dp(28));
+        t.setGravity(Gravity.CENTER);
+        llCluesList.addView(t);
     }
 
 

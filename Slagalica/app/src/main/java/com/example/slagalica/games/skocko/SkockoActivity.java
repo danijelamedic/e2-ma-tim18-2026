@@ -77,6 +77,7 @@ public class SkockoActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private DocumentReference skockoStateRef;
     private ListenerRegistration skockoStateListener;
+    private ListenerRegistration abandonListener;
     private String gameId;
     private String currentUid;
     private String player1Uid;
@@ -262,6 +263,7 @@ public class SkockoActivity extends AppCompatActivity {
 
                     loadPlayerPanels();
                     listenForSkockoState();
+                    listenForAbandon();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to load players.", Toast.LENGTH_SHORT).show();
@@ -1037,6 +1039,7 @@ public class SkockoActivity extends AppCompatActivity {
         if (skockoStateListener != null) {
             skockoStateListener.remove();
         }
+        if (abandonListener != null) { abandonListener.remove(); abandonListener = null; }
         super.onDestroy();
     }
 
@@ -1068,4 +1071,19 @@ public class SkockoActivity extends AppCompatActivity {
 
         return 0;
     }
+    private void listenForAbandon() {
+        abandonListener = db.collection("games").document(gameId)
+                .addSnapshotListener((snapshot, e) -> {
+                    if (snapshot == null || !snapshot.exists()) return;
+                    String abandonedBy = snapshot.getString("abandonedBy");
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (abandonListener != null) { abandonListener.remove(); abandonListener = null; }
+                        Intent r = new Intent();
+                        r.putExtra("points", 0);
+                        setResult(RESULT_OK, r);
+                        finish();
+                    }
+                });
+    }
+
 }
