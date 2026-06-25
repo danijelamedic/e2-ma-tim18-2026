@@ -52,6 +52,7 @@ public class HomeActivity extends AppCompatActivity {
     private View navNotifications;
     private View navProfile;
     private View btnChallenge;
+    private View btnChat;
     private FirebaseFirestore db;
     private String currentUid;
     private TextView tvWelcomeUsername;
@@ -84,6 +85,7 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseSeeder.seedMatchingGames();
         FirebaseSeeder.seedAssociationGames();
         FirebaseSeeder.seedSkockoGames();
+        FirebaseSeeder.seedStepByStepQuestions();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -106,7 +108,7 @@ public class HomeActivity extends AppCompatActivity {
         checkDailyTokens();
         loadCurrentUserName();
         saveFcmToken();
-        ensureTestNotifications();
+        startNotificationListener();
     }
 
     private void loadCurrentUserName() {
@@ -167,40 +169,6 @@ public class HomeActivity extends AppCompatActivity {
                         .update("fcmToken", token));
     }
 
-    private void ensureTestNotifications() {
-        ensureTestNotification("test_chat",
-                new AppNotification(currentUid, AppNotification.TYPE_CHAT,
-                        "Test chat message", "This is a test chat notification.",
-                        AppNotification.ACTION_OPEN_CHAT, null),
-                () -> ensureTestNotification("test_reward",
-                        new AppNotification(currentUid, AppNotification.TYPE_REWARD,
-                                "Test reward", "You earned 3 test tokens.",
-                                AppNotification.ACTION_OPEN_REWARDS, null),
-                        () -> ensureTestNotification("test_other",
-                                new AppNotification(currentUid, AppNotification.TYPE_OTHER,
-                                        "Test league update", "You advanced to League 1.",
-                                        AppNotification.ACTION_OPEN_PROFILE, null),
-                                this::startNotificationListener)));
-    }
-
-    private void ensureTestNotification(String documentId, AppNotification notification, Runnable onComplete) {
-        com.google.firebase.firestore.DocumentReference ref = db.collection("users")
-                .document(currentUid)
-                .collection("notifications")
-                .document(documentId);
-
-        ref.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
-                java.util.Map<String, Object> data = notification.toMap();
-                data.remove("read");
-                data.remove("createdAt");
-                ref.set(data, SetOptions.merge()).addOnCompleteListener(updateTask -> onComplete.run());
-            } else {
-                ref.set(notification.toMap()).addOnCompleteListener(createTask -> onComplete.run());
-            }
-        });
-    }
-
     private void startNotificationListener() {
         if (notificationListener != null) notificationListener.remove();
 
@@ -244,6 +212,7 @@ public class HomeActivity extends AppCompatActivity {
     private void initializeViews() {
         btnPlay           = findViewById(R.id.btnPlay);
         btnChallenge      = findViewById(R.id.btnChallenge);
+        btnChat = findViewById(R.id.btnChat);
         btnLogout         = findViewById(R.id.btnLogout);
         navHome           = findViewById(R.id.navHome);
         navLeaderboard    = findViewById(R.id.navLeaderboard);
@@ -262,6 +231,10 @@ public class HomeActivity extends AppCompatActivity {
         if (btnChallenge != null) {
             btnChallenge.setOnClickListener(v ->
                     startActivity(new Intent(this, ChallengeActivity.class)));
+        }
+        if (btnChat != null) {
+            btnChat.setOnClickListener(v ->
+                    startActivity(new Intent(this, ChatActivity.class)));
         }
 
         btnLogout.setOnClickListener(v -> {

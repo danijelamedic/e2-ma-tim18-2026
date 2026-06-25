@@ -82,6 +82,10 @@ public class GameActivity extends AppCompatActivity {
                         handleOpponentAbandoned();
                         return;
                     }
+                    if ("declined".equals(status)) {
+                        handleInviteDeclined();
+                        return;
+                    }
 
                     if ("finished".equals(status)) {
                         showResults(snapshot);
@@ -456,5 +460,16 @@ public class GameActivity extends AppCompatActivity {
             interGameTimer.cancel();
             interGameTimer = null;
         }
+    }
+
+    private void handleInviteDeclined() {
+        if (isFinishing) return;
+        isFinishing = true;
+        if (gameListener != null) { gameListener.remove(); gameListener = null; }
+        Toast.makeText(this, "Friend declined the invite.", Toast.LENGTH_LONG).show();
+        db.collection("games").document(gameId).delete();
+        startActivity(new Intent(this, HomeActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        finish();
     }
 }
