@@ -502,6 +502,17 @@ public class MatchingActivity extends AppCompatActivity {
                         return;
                     }
 
+                    String abandonedBy = snapshot.getString("abandonedBy");
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (matchingListener != null) { matchingListener.remove(); matchingListener = null; }
+                        if (timer != null) { timer.cancel(); timer = null; }
+                        Intent r = new Intent();
+                        r.putExtra("points", 0);
+                        setResult(RESULT_OK, r);
+                        finish();
+                        return;
+                    }
+
                     matchingRound = snapshot.getLong("matchingRound") != null
                             ? snapshot.getLong("matchingRound").intValue()
                             : 1;
