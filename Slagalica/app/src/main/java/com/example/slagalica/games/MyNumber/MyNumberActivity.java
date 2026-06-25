@@ -1,14 +1,18 @@
 package com.example.slagalica.games.MyNumber;
 
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.Gravity;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +69,10 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
     private int myResult = -1;
 
+    // On-screen keypad (numbers + operators)
+    private TextView[] numKeys = new TextView[6];
+    private boolean[] numUsed  = new boolean[6];
+
     private static final int[] MEDIUM_NUMBERS = {10, 15, 20};
     private static final int[] LARGE_NUMBERS  = {25, 50, 75, 100};
 
@@ -90,6 +98,12 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         btnConfirm     = findViewById(R.id.btnConfirm);
         etExpression   = findViewById(R.id.etExpression);
 
+        // Display-only field: no system keyboard, type from the on-screen pad
+        etExpression.setShowSoftInputOnFocus(false);
+        etExpression.setCursorVisible(true);
+        etExpression.setFocusableInTouchMode(false);
+        etExpression.setKeyListener(null);
+
         tvPlayerName    = findViewById(R.id.tvPlayerName);
         tvPlayerScore   = findViewById(R.id.tvPlayerScore);
         tvPlayerInfo    = findViewById(R.id.tvPlayerInfo);
@@ -102,6 +116,9 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                 findViewById(R.id.tvNum3), findViewById(R.id.tvNum4),
                 findViewById(R.id.tvNum5), findViewById(R.id.tvNum6)
         };
+
+        stylePremiumTiles();
+        buildKeypad();
 
         findViewById(R.id.layoutHeader).startAnimation(
                 AnimationUtils.loadAnimation(this, R.anim.bounce_in));
@@ -152,6 +169,186 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+    }
+
+
+    // ---------------- Premium styling + on-screen keypad ----------------
+
+    private int dp(float v) {
+        return Math.round(v * getResources().getDisplayMetrics().density);
+    }
+
+    private GradientDrawable grad(int radius, int top, int bottom) {
+        GradientDrawable g = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM, new int[]{top, bottom});
+        g.setCornerRadius(radius);
+        return g;
+    }
+
+    private void styleKeyByIndex(TextView v, int index) {
+        if (index == 5) {                 // big number → gold
+            v.setBackground(grad(dp(14), 0xFFF7D667, 0xFFD9A33A));
+            v.setTextColor(0xFF3A2A00);
+        } else if (index == 4) {          // medium number → indigo
+            v.setBackground(grad(dp(14), 0xFF4F46E5, 0xFF3730A3));
+            v.setTextColor(0xFFFFFFFF);
+        } else {                          // single digits → violet
+            v.setBackground(grad(dp(14), 0xFF7C3AED, 0xFF5B21B6));
+            v.setTextColor(0xFFFFFFFF);
+        }
+        v.setElevation(dp(3));
+    }
+
+    private void stylePremiumTiles() {
+        for (int i = 0; i < numberTiles.length; i++) {
+            styleKeyByIndex(numberTiles[i], i);
+            numberTiles[i].setTextSize(18);
+        }
+    }
+
+    private void buildKeypad() {
+        LinearLayout card = findViewById(R.id.layoutExpressionCard);
+        if (card == null) return;
+
+        LinearLayout pad = new LinearLayout(this);
+        LinearLayout.LayoutParams padLp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f);
+        padLp.setMargins(0, dp(10), 0, dp(6));
+        pad.setLayoutParams(padLp);
+        pad.setOrientation(LinearLayout.VERTICAL);
+        pad.setGravity(Gravity.CENTER_VERTICAL);
+
+        TextView title = new TextView(this);
+        title.setText("⌨  Tap to build your expression");
+        title.setTextColor(0xFF5B2FC4);
+        title.setTextSize(13);
+        title.setTypeface(null, Typeface.BOLD);
+        pad.addView(title);
+
+        // Row of the 6 given numbers
+        LinearLayout numRow = new LinearLayout(this);
+        LinearLayout.LayoutParams nrp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        nrp.setMargins(0, dp(6), 0, 0);
+        numRow.setLayoutParams(nrp);
+        numRow.setOrientation(LinearLayout.HORIZONTAL);
+        for (int i = 0; i < 6; i++) {
+            numKeys[i] = makeNumKey(i);
+            numRow.addView(numKeys[i]);
+        }
+        pad.addView(numRow);
+
+        // Operator rows
+        pad.addView(opRow(new String[]{"(", ")", "+", "-"}));
+        pad.addView(opRow(new String[]{"*", "/", "⌫", "C"}));
+
+        int idx = card.indexOfChild(btnConfirm);
+        if (idx < 0) idx = card.getChildCount();
+        card.addView(pad, idx);
+    }
+
+    private TextView makeNumKey(int index) {
+        TextView chip = new TextView(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(50), 1f);
+        lp.setMargins(dp(4), 0, dp(4), 0);
+        chip.setLayoutParams(lp);
+        chip.setGravity(Gravity.CENTER);
+        chip.setTypeface(null, Typeface.BOLD);
+        chip.setTextSize(18);
+        chip.setClickable(true);
+        chip.setFocusable(true);
+        chip.setText("?");
+        styleKeyByIndex(chip, index);
+        chip.setOnClickListener(v -> onNumKey(index));
+        return chip;
+    }
+
+    private LinearLayout opRow(String[] keys) {
+        LinearLayout row = new LinearLayout(this);
+        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        rp.setMargins(0, dp(6), 0, 0);
+        row.setLayoutParams(rp);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        for (String k : keys) row.addView(makeOpChip(k));
+        return row;
+    }
+
+    private TextView makeOpChip(String label) {
+        TextView chip = new TextView(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(52), 1f);
+        lp.setMargins(dp(4), 0, dp(4), 0);
+        chip.setLayoutParams(lp);
+        chip.setGravity(Gravity.CENTER);
+        chip.setText(label);
+        chip.setTextColor(0xFFFFFFFF);
+        chip.setTypeface(null, Typeface.BOLD);
+        chip.setTextSize(20);
+        chip.setElevation(dp(3));
+        if ("C".equals(label)) {
+            chip.setBackground(grad(dp(14), 0xFFEF4444, 0xFFB91C1C));   // red clear
+        } else if ("⌫".equals(label)) {
+            chip.setBackground(grad(dp(14), 0xFF6B5E99, 0xFF4A3D78));   // muted backspace
+        } else {
+            chip.setBackground(grad(dp(14), 0xFF7C3AED, 0xFF5B21B6));   // violet
+        }
+        chip.setClickable(true);
+        chip.setFocusable(true);
+        chip.setOnClickListener(v -> onOpKey(label));
+        return chip;
+    }
+
+    private void refreshNumKeys() {
+        if (numKeys[0] == null) return;
+        for (int i = 0; i < 6; i++) {
+            numKeys[i].setText(String.valueOf(numbers[i]));
+            numKeys[i].setAlpha(numUsed[i] ? 0.3f : 1.0f);
+            numKeys[i].setClickable(!numUsed[i]);
+        }
+    }
+
+    private void resetKeypadUsage() {
+        for (int i = 0; i < 6; i++) numUsed[i] = false;
+        refreshNumKeys();
+    }
+
+    private void onNumKey(int index) {
+        if (numUsed[index]) return;
+        etExpression.append(String.valueOf(numbers[index]));
+        etExpression.setSelection(etExpression.getText().length());
+        numUsed[index] = true;
+        refreshNumKeys();
+    }
+
+    private void onOpKey(String k) {
+        if ("C".equals(k)) {
+            etExpression.setText("");
+            resetKeypadUsage();
+            return;
+        }
+        if ("⌫".equals(k)) {
+            String s = etExpression.getText().toString();
+            if (s.isEmpty()) return;
+            // if the deleted tail is one of the numbers, free that key again
+            for (int i = 0; i < 6; i++) {
+                String num = String.valueOf(numbers[i]);
+                if (numUsed[i] && s.endsWith(num)) {
+                    s = s.substring(0, s.length() - num.length());
+                    numUsed[i] = false;
+                    etExpression.setText(s);
+                    etExpression.setSelection(s.length());
+                    refreshNumKeys();
+                    return;
+                }
+            }
+            // else just delete one trailing character (operator/bracket)
+            etExpression.setText(s.substring(0, s.length() - 1));
+            etExpression.setSelection(etExpression.getText().length());
+            return;
+        }
+        etExpression.append(k);
+        etExpression.setSelection(etExpression.getText().length());
     }
 
 
@@ -212,6 +409,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         numbersStopped = false;
         targetNumber   = 0;
         etExpression.setText("");
+        resetKeypadUsage();
 
         setButtonEnabled(btnStopTarget,  false);
         setButtonEnabled(btnStopNumbers, false);
@@ -273,6 +471,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
             numberTiles[i].setText(String.valueOf(numbers[i]));
         }
         setButtonEnabled(btnConfirm, true);
+        resetKeypadUsage();
     }
 
 
@@ -367,6 +566,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         if (isMultiplayer) {
             saveStoppedNumbers();
         } else {
+            resetKeypadUsage();
             setButtonEnabled(btnConfirm, true);
             startGameTimer();
         }
@@ -382,6 +582,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
         db.collection("games").document(gameId).update(updates)
                 .addOnSuccessListener(unused -> {
+                    resetKeypadUsage();
                     setButtonEnabled(btnConfirm, true);
                     startGameTimer();
                 });
@@ -485,15 +686,21 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                 ? "myNumberResult2_r" + currentRound
                 : "myNumberResult1_r" + currentRound;
 
-        // Remove any existing listener first
         if (gameListener != null) { gameListener.remove(); gameListener = null; }
 
         gameListener = db.collection("games").document(gameId)
                 .addSnapshotListener((snapshot, e) -> {
                     if (snapshot == null) return;
-                    Object oppResObj = snapshot.get(oppResField);
-                    if (oppResObj == null) return; // opponent hasn't submitted yet
 
+                    String abandonedBy = snapshot.getString("abandonedBy");
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (gameListener != null) { gameListener.remove(); gameListener = null; }
+                        calculateAndSavePoints(myResult, 0);
+                        return;
+                    }
+
+                    Object oppResObj = snapshot.get(oppResField);
+                    if (oppResObj == null) return;
                     int oppResult = ((Number) oppResObj).intValue();
                     if (gameListener != null) { gameListener.remove(); gameListener = null; }
 
@@ -512,7 +719,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         String msg;
 
         if (myExact && oppExact) {
-            // Both exact: both get 10
             myPoints = 10;
             msg = "Both exact! You get 10 points.";
         } else if (myExact) {
@@ -522,11 +728,9 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
             myPoints = 0;
             msg = "Opponent found it exactly. 0 points.";
         } else if (myRes == 0 && oppRes == 0) {
-            // Nobody entered anything
             myPoints = 0;
             msg = "Nobody entered an expression. 0 points.";
         } else if (myRes == oppRes && myRes != 0) {
-            // Same result (≠ target, ≠ 0): stopper of this round gets 5
             myPoints = isStopper ? 5 : 0;
             msg = isStopper ? "Tie! Your round — 5 points." : "Tie! Opponent's round — 0 points.";
         } else if (myRes == 0) {
@@ -542,7 +746,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
             myPoints = 0;
             msg = "Opponent is closer. 0 points.";
         } else {
-            // Equal diff, neither exact: stopper gets 5
             myPoints = isStopper ? 5 : 0;
             msg = isStopper ? "Equal distance! Your round — 5 points." : "Equal distance! Opponent's round — 0 points.";
         }
@@ -565,10 +768,8 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                     db.collection("games").document(gameId).update(updates)
                             .addOnSuccessListener(unused -> {
                                 if (currentRound == 1) {
-                                    // Advance to round 2
                                     advanceToRound2();
                                 } else {
-                                    // Both rounds done — return to game activity
                                     finishGame(points);
                                 }
                             });
@@ -577,22 +778,20 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
 
     private void advanceToRound2() {
-        // Only one player should write myNumberRound=2; use a transaction-safe approach:
-        // Both players try to set it; Firestore last-write-wins is fine here since value is same.
         Map<String, Object> updates = new HashMap<>();
         updates.put("myNumberRound", 2);
 
         db.collection("games").document(gameId).update(updates)
                 .addOnSuccessListener(unused -> {
                     currentRound = 2;
-                    // Reset UI for round 2
                     runOnUiThread(() -> {
                         tvTimer.setText("⏱ 60s");
-                        tvTimer.setTextColor(0xFF5B2FC4); // back to purple
+                        tvTimer.setTextColor(0xFF5B2FC4);
                         tvTargetNumber.setText("0");
                         for (TextView t : numberTiles) t.setText("0");
                         etExpression.setText("");
                         etExpression.setEnabled(true);
+                        resetKeypadUsage();
                         setupRound();
                     });
                 });
