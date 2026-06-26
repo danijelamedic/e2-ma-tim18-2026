@@ -32,6 +32,7 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.example.slagalica.data.StatisticsRepository;
+import android.widget.ImageView;
 
 public class MyNumberActivity extends AppCompatActivity implements SensorEventListener {
     private static final int STOP_TIMEOUT_MS   = 5000;
@@ -45,6 +46,8 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
     private TextView tvTimer, tvTargetNumber, tvRoundInfo;
     private TextView tvPlayerName, tvPlayerScore, tvPlayerInfo;
+    private ImageView imgYourAvatar, imgOpponentAvatar;
+
     private TextView tvOpponentName, tvOpponentScore, tvOpponentInfo;
     private TextView[] numberTiles;
     private TextView btnStopTarget, btnStopNumbers, btnConfirm;
@@ -98,7 +101,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         btnConfirm     = findViewById(R.id.btnConfirm);
         etExpression   = findViewById(R.id.etExpression);
 
-        // Display-only field: no system keyboard, type from the on-screen pad
         etExpression.setShowSoftInputOnFocus(false);
         etExpression.setCursorVisible(true);
         etExpression.setFocusableInTouchMode(false);
@@ -110,6 +112,8 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         tvOpponentName  = findViewById(R.id.tvOpponentName);
         tvOpponentScore = findViewById(R.id.tvOpponentScore);
         tvOpponentInfo  = findViewById(R.id.tvOpponentInfo);
+        imgYourAvatar     = findViewById(R.id.tvYourAvatar);
+        imgOpponentAvatar = findViewById(R.id.tvOpponentAvatar);
 
         numberTiles = new TextView[]{
                 findViewById(R.id.tvNum1), findViewById(R.id.tvNum2),
@@ -361,6 +365,8 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                         Long   stars = myDoc.getLong("stars");
                         Long   level = myDoc.getLong("level");
                         if (name != null) tvPlayerName.setText(name);
+                        imgYourAvatar.setImageResource(
+                                com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(myDoc.getString("avatar")));
                         tvPlayerInfo.setText(
                                 "🪙" + (coins != null ? coins : 0) +
                                         " ⭐" + (stars != null ? stars : 0) +
@@ -379,6 +385,8 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                         Long   stars = doc.getLong("stars");
                         Long   level = doc.getLong("level");
                         if (name != null) tvOpponentName.setText(name);
+                        imgOpponentAvatar.setImageResource(
+                                com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(doc.getString("avatar")));
                         tvOpponentInfo.setText(
                                 "🪙" + (coins != null ? coins : 0) +
                                         " ⭐" + (stars != null ? stars : 0) +

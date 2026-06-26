@@ -14,6 +14,7 @@ public class GameResultActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private String currentUid;
+    private boolean isGuest;
     private NotificationFactory notificationFactory;
 
     @Override
@@ -24,6 +25,7 @@ public class GameResultActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         notificationFactory = new NotificationFactory();
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        isGuest = FirebaseAuth.getInstance().getCurrentUser().isAnonymous();
 
         long myScore = getIntent().getLongExtra("myScore", 0);
         long opponentScore = getIntent().getLongExtra("opponentScore", 0);
@@ -45,13 +47,22 @@ public class GameResultActivity extends AppCompatActivity {
 
         tvScores.setText("Your score: " + myScore + "\nOpponent score: " + opponentScore);
 
-        if (!isFriendly) {
+        if (isGuest) {
+            tvStars.setText("Guest match - no stars awarded");
+        } else if (!isFriendly) {
             updateStarsAndTokens(won, myScore, tvStars);
         } else {
             tvStars.setText("Friendly match - no stars awarded");
         }
+
         findViewById(R.id.btnHome).setOnClickListener(v -> {
-            Intent intent = new Intent(this, HomeActivity.class);
+            Intent intent;
+            if (isGuest) {
+                FirebaseAuth.getInstance().signOut();   // gost završava → nazad na login
+                intent = new Intent(this, LoginActivity.class);
+            } else {
+                intent = new Intent(this, HomeActivity.class);
+            }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();

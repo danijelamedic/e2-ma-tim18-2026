@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="56dp"
+        android:paddingTop="32dp"
         android:paddingBottom="32dp">
 
         <LinearLayout
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginBottom="40dp">
+            android:layout_marginBottom="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -146,7 +146,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#EDE9FE"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="14dp" />
 
             <TextView
                 android:id="@+id/tvRegister"
@@ -157,9 +158,31 @@
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:gravity="center"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="14dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="— or —"
+                android:textColor="#A89CC8"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_marginBottom="14dp" />
+
+            <TextView
+                android:id="@+id/btnGuest"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="Play as guest"
+                android:background="@drawable/bg_guest_outline"
+                android:textColor="#5B2FC4"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

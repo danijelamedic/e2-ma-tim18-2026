@@ -416,6 +416,8 @@ public class FriendsActivity extends AppCompatActivity {
                 return R.drawable.avatar_cat;
             case "dog":
                 return R.drawable.avatar_dog;
+            case "guest":
+                return R.drawable.avatar_guest;
             case "owl":
             default:
                 return R.drawable.avatar_owl;
