@@ -579,6 +579,17 @@ public class QuizActivity extends AppCompatActivity {
                         return;
                     }
 
+                    String abandonedBy = snapshot.getString("abandonedBy");
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (quizListener != null) { quizListener.remove(); quizListener = null; }
+                        if (countDownTimer != null) { countDownTimer.cancel(); countDownTimer = null; }
+                        Intent r = new Intent();
+                        r.putExtra("points", 0);
+                        setResult(RESULT_OK, r);
+                        finish();
+                        return;
+                    }
+
                     Long questionIndex =
                             snapshot.getLong("quizQuestionIndex");
                     currentTurnUid = snapshot.getString("currentTurnUid");

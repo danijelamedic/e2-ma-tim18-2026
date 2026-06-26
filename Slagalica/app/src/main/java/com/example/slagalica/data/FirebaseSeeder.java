@@ -344,4 +344,37 @@ public class FirebaseSeeder {
     private static SkockoGame skocko(long first, long second, long third, long fourth) {
         return new SkockoGame(Arrays.asList(first, second, third, fourth));
     }
+    public static void seedStepByStepQuestions() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("stepByStepQuestions").document("step1").set(java.util.Map.of(
+                "clue1", "A celestial body", "clue2", "Fourth planet from the Sun",
+                "clue3", "Named after the Roman god of war", "clue4", "Has the largest volcano in the solar system",
+                "clue5", "Explored by the Curiosity rover", "clue6", "Reddish iron-oxide surface",
+                "clue7", "Called the Red Planet", "answer", "Mars"));
+
+        db.collection("stepByStepQuestions").document("step2").set(java.util.Map.of(
+                "clue1", "An ancient structure", "clue2", "Has a triangular shape",
+                "clue3", "Built thousands of years ago", "clue4", "Made of large stone blocks",
+                "clue5", "Served as a royal tomb", "clue6", "Found in Egypt",
+                "clue7", "The Great one stands in Giza", "answer", "Pyramid"));
+
+        db.collection("stepByStepQuestions").document("step3").set(java.util.Map.of(
+                "clue1", "A living animal", "clue2", "A mammal",
+                "clue3", "Lives in the ocean", "clue4", "Among the largest animals on Earth",
+                "clue5", "Breathes through a blowhole", "clue6", "The blue type is the biggest",
+                "clue7", "A giant sea creature, not a fish", "answer", "Whale"));
+
+        db.collection("stepByStepQuestions").document("step4").set(java.util.Map.of(
+                "clue1", "A sport", "clue2", "Played with a racket",
+                "clue3", "Has a net in the middle", "clue4", "Scored in sets and games",
+                "clue5", "Has Grand Slam tournaments", "clue6", "Wimbledon is famous for it",
+                "clue7", "Novak Djokovic plays it", "answer", "Tennis"));
+
+        db.collection("stepByStepQuestions").document("step5").set(java.util.Map.of(
+                "clue1", "A device", "clue2", "Has a screen",
+                "clue3", "Fits in your pocket", "clue4", "Used to call and text",
+                "clue5", "Runs apps", "clue6", "Made by Apple or Samsung",
+                "clue7", "A mobile phone that is smart", "answer", "Smartphone"));
+    }
 }

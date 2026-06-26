@@ -74,6 +74,7 @@ public class AssociationsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private DocumentReference associationsStateRef;
     private ListenerRegistration associationsStateListener;
+    private ListenerRegistration abandonListener;
     private String gameId;
     private String currentUid;
     private String player1Uid;
@@ -209,6 +210,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
                     loadPlayerPanels();
                     listenForAssociationsState();
+                    listenForAbandon();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to load players.", Toast.LENGTH_SHORT).show();
@@ -1042,6 +1044,21 @@ public class AssociationsActivity extends AppCompatActivity {
         void onGuess(String guess);
     }
 
+    private void listenForAbandon() {
+        abandonListener = db.collection("games").document(gameId)
+                .addSnapshotListener((snapshot, e) -> {
+                    if (snapshot == null || !snapshot.exists()) return;
+                    String abandonedBy = snapshot.getString("abandonedBy");
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (abandonListener != null) { abandonListener.remove(); abandonListener = null; }
+                        Intent r = new Intent();
+                        r.putExtra("points", 0);
+                        setResult(RESULT_OK, r);
+                        finish();
+                    }
+                });
+    }
+
     @Override
     protected void onDestroy() {
         if (timer != null) {
@@ -1050,6 +1067,7 @@ public class AssociationsActivity extends AppCompatActivity {
         if (associationsStateListener != null) {
             associationsStateListener.remove();
         }
+        if (abandonListener != null) { abandonListener.remove(); abandonListener = null; }
         super.onDestroy();
     }
 }
