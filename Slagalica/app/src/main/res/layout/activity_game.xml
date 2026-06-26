@@ -41,4 +41,16 @@
         android:textSize="16sp"
         android:textColor="#2D1B5E"/>
 
+    <Button
+        android:id="@+id/btnLeaveMatch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/bg_purple_button"
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:text="LEAVE"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
 </LinearLayout>
