@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.example.slagalica.data.StatisticsRepository;
+import android.widget.ImageView;
 
 public class StepByStepActivity extends AppCompatActivity {
 
@@ -52,6 +53,8 @@ public class StepByStepActivity extends AppCompatActivity {
 
     private TextView tvTimer, tvRoundInfo;
     private TextView tvPlayerName, tvPlayerScore, tvPlayerInfo;
+    private ImageView imgYourAvatar, imgOpponentAvatar;
+
     private TextView tvOpponentName, tvOpponentScore, tvOpponentInfo;
     private TextView btnConfirm;
     private EditText etAnswer;
@@ -105,6 +108,8 @@ public class StepByStepActivity extends AppCompatActivity {
         tvOpponentName  = findViewById(R.id.tvOpponentName);
         tvOpponentScore = findViewById(R.id.tvOpponentScore);
         tvOpponentInfo  = findViewById(R.id.tvOpponentInfo);
+        imgYourAvatar     = findViewById(R.id.tvYourAvatar);
+        imgOpponentAvatar = findViewById(R.id.tvOpponentAvatar);
 
         tvRoundInfo.setText(currentRound + "/2");
 
@@ -158,6 +163,8 @@ public class StepByStepActivity extends AppCompatActivity {
                         Long   stars = myDoc.getLong("stars");
                         Long   level = myDoc.getLong("level");
                         if (name != null) tvPlayerName.setText(name);
+                        imgYourAvatar.setImageResource(
+                                com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(myDoc.getString("avatar")));
                         tvPlayerInfo.setText(
                                 "🪙" + (coins != null ? coins : 0) +
                                         " ⭐" + (stars != null ? stars : 0) +
@@ -177,6 +184,8 @@ public class StepByStepActivity extends AppCompatActivity {
                         Long   stars = doc.getLong("stars");
                         Long   level = doc.getLong("level");
                         if (name != null) tvOpponentName.setText(name);
+                        imgOpponentAvatar.setImageResource(
+                                com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(doc.getString("avatar")));
                         tvOpponentInfo.setText(
                                 "🪙" + (coins != null ? coins : 0) +
                                         " ⭐" + (stars != null ? stars : 0) +

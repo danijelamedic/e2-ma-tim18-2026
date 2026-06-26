@@ -7,11 +7,16 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -80,7 +85,47 @@ public class LoginActivity extends AppCompatActivity {
         tvRegister.setOnClickListener(v ->
                 startActivity(new Intent(this, RegisterActivity.class)));
 
-           }
+        View btnGuest = findViewById(R.id.btnGuest);
+        if (btnGuest != null) {
+            btnGuest.setOnClickListener(v -> playAsGuest());
+        }
+    }
+
+    private void playAsGuest() {
+        Toast.makeText(this, "Entering as guest...", Toast.LENGTH_SHORT).show();
+        mAuth.signInAnonymously().addOnCompleteListener(task -> {
+            if (!task.isSuccessful() || mAuth.getCurrentUser() == null) {
+                String msg = task.getException() != null ? task.getException().getMessage() : "unknown error";
+                Toast.makeText(this, "Guest login failed: " + msg, Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            String uid = mAuth.getCurrentUser().getUid();
+            int rnd = 1000 + new Random().nextInt(9000);
+
+            Map<String, Object> guest = new HashMap<>();
+            guest.put("username", "Guest" + rnd);
+            guest.put("email", "");
+            guest.put("region", "general");
+            guest.put("tokens", 5);
+            guest.put("stars", 0);
+            guest.put("league", 0);
+            guest.put("avatarUrl", "");
+            guest.put("avatar", "guest");
+            guest.put("online", true);
+            guest.put("isGuest", true);
+            guest.put("createdAt", System.currentTimeMillis());
+
+            db.collection("users").document(uid).set(guest)
+                    .addOnSuccessListener(unused -> {
+                        startActivity(new Intent(this, MatchmakingActivity.class));
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Guest setup failed: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show());
+        });
+    }
 
     private void loginWithEmail(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
