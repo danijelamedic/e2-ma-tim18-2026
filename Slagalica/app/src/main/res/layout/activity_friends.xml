@@ -1,47 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/img_quiz_banner"
-        android:scaleType="centerCrop" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#AAFFFFFF" />
+    android:layout_height="match_parent"
+    android:background="#F8F1FF">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:paddingBottom="92dp">
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="110dp"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp"
-            android:paddingBottom="110dp">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="18dp">
+
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/home_title"
+                    android:text="FRIENDS"
                     android:textColor="#2D1B5E"
-                    android:textSize="30sp"
+                    android:textSize="28sp"
                     android:textStyle="bold|italic"
                     android:fontFamily="sans-serif-black" />
 
@@ -61,77 +52,106 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_profile_card"
-                android:elevation="8dp"
-                android:padding="18dp"
-                android:layout_marginBottom="16dp">
+                android:elevation="6dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:layout_marginBottom="12dp">
 
                 <TextView
-                    android:id="@+id/tvWelcomeUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/home_welcome_title"
-                    android:textColor="#2D1B5E"
-                    android:textSize="24sp"
+                    android:text="🔍 FIND PLAYER"
+                    android:textColor="#5A31C8"
+                    android:textSize="15sp"
                     android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/searchUsernameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_profile_card"
+                    android:hint="Username"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textColor="#2D1457"
+                    android:textColorHint="#7B61B8"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:inputType="text"
+                    android:importantForAutofill="no"
                     android:layout_marginBottom="8dp" />
 
                 <TextView
-                    android:id="@+id/txtHomeStatus"
+                    android:id="@+id/searchPlayerButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="🌱 Beginner League   🪙 0   ⭐ 0"
-                    android:textColor="#2E1A66"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    android:layout_height="48dp"
                     android:gravity="center"
-                    android:background="@drawable/bg_league_chip"
-                    android:padding="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp" />
+                    android:text="+ ADD FRIEND"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold|italic"
+                    android:background="@drawable/bg_purple_button"
+                    android:clickable="true"
+                    android:focusable="true" />
 
                 <TextView
+                    android:id="@+id/searchResultTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/home_welcome_subtitle"
-                    android:textColor="#5B2FC4"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp" />
+                    android:text=""
+                    android:visibility="gone"
+                    android:textColor="#2D1457"
+                    android:textSize="13sp"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
 
-                <Button
-                    android:id="@+id/btnPlay"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:text="@string/play"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="18sp"
-                    android:background="@drawable/bg_purple_button" />
+            <TextView
+                android:id="@+id/cardScanQr"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:gravity="center_vertical"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp"
+                android:text="▦  SCAN QR CODE"
+                android:textColor="#5A31C8"
+                android:textSize="16sp"
+                android:textStyle="bold|italic"
+                android:background="@drawable/bg_profile_card"
+                android:elevation="6dp"
+                android:layout_marginBottom="18dp"
+                android:clickable="true"
+                android:focusable="true" />
 
-                <Button
-                    android:id="@+id/btnChallenge"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👥 MY FRIENDS"
+                android:textColor="#5A31C8"
+                android:textSize="17sp"
+                android:textStyle="bold|italic"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:id="@+id/friendsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvEmptyFriends"
                     android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:layout_marginTop="12dp"
-                    android:text="Challenge"
-                    android:textColor="@android:color/white"
+                    android:layout_height="90dp"
+                    android:gravity="center"
+                    android:text="No friends yet.\nSearch by username or scan QR code."
+                    android:textColor="#6F50B5"
+                    android:textSize="14sp"
                     android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="15sp"
-                    android:background="@drawable/bg_purple_button" />
-                <Button
-                    android:id="@+id/btnChat"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:layout_marginTop="12dp"
-                    android:text="Regional chat"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="15sp"
-                    android:background="@drawable/bg_purple_button" />
+                    android:background="@drawable/bg_profile_card"
+                    android:elevation="5dp" />
+
             </LinearLayout>
 
         </LinearLayout>

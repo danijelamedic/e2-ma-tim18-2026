@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.ChatActivity;
 import com.example.slagalica.R;
+import com.example.slagalica.friends.FriendsActivity;
 import com.example.slagalica.profile.ProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -451,7 +452,7 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ProfileActivity.class)));
 
         findViewById(R.id.navFriends).setOnClickListener(v ->
-                Toast.makeText(this, "Friends list will be added later", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(this, FriendsActivity.class)));
 
         findViewById(R.id.navLeaderboard).setOnClickListener(v ->
                 Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show());

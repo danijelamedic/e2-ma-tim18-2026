@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.slagalica.data.FirebaseSeeder;
+import com.example.slagalica.friends.FriendsActivity;
 import com.example.slagalica.leagues.LeagueActivity;
 import com.example.slagalica.notifications.AppNotification;
 import com.example.slagalica.notifications.LocalNotificationSender;
@@ -265,7 +266,7 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ProfileActivity.class)));
 
         navFriends.setOnClickListener(v ->
-                Toast.makeText(this, "Friends list will be added later", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(this, FriendsActivity.class)));
     }
 
     @Override
