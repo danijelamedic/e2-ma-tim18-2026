@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.example.slagalica.ResetPasswordActivity;
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.notifications.NotificationCenterActivity;
+import com.example.slagalica.friends.FriendsActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -156,7 +157,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(this, "Statistics screen coming soon", Toast.LENGTH_SHORT).show());
 
         findViewById(R.id.navFriends).setOnClickListener(v ->
-                Toast.makeText(this, "Friends screen coming soon", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(ProfileActivity.this, FriendsActivity.class)));
 
         findViewById(R.id.navLeaderboard).setOnClickListener(v ->
                 Toast.makeText(this, "Leaderboard screen coming soon", Toast.LENGTH_SHORT).show());
