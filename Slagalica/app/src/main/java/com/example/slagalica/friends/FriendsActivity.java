@@ -21,6 +21,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,18 @@ public class FriendsActivity extends AppCompatActivity {
     private LinearLayout friendsContainer;
     private FirebaseFirestore db;
     private String currentUid;
+
+    private final androidx.activity.result.ActivityResultLauncher<ScanOptions> qrLauncher =
+            registerForActivityResult(new ScanContract(), result -> {
+
+                if (result.getContents() == null) {
+                    return;
+                }
+
+                String scannedUid = result.getContents().trim();
+
+                addFriendByQr(scannedUid);
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +70,7 @@ public class FriendsActivity extends AppCompatActivity {
         friendsContainer = findViewById(R.id.friendsContainer);
 
         searchPlayerButton.setOnClickListener(v -> searchAndAddFriend());
+        findViewById(R.id.cardScanQr).setOnClickListener(v -> openQrScanner());
 
         findViewById(R.id.btnLogout).setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
@@ -68,6 +83,56 @@ public class FriendsActivity extends AppCompatActivity {
 
         setupBottomNavigation();
         loadFriends();
+    }
+
+    private void openQrScanner() {
+        ScanOptions options = new ScanOptions();
+        options.setPrompt("Scan friend's QR code");
+        options.setBeepEnabled(true);
+        options.setOrientationLocked(false);
+        options.setBarcodeImageEnabled(false);
+
+        qrLauncher.launch(options);
+    }
+
+    private void addFriendByQr(String friendId) {
+        if (friendId == null || friendId.isEmpty()) {
+            showSearchMessage("Invalid QR code.");
+            return;
+        }
+
+        if (friendId.equals(currentUid)) {
+            showSearchMessage("You cannot add yourself.");
+            return;
+        }
+
+        db.collection("users")
+                .document(friendId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (!document.exists()) {
+                        showSearchMessage("Player not found.");
+                        return;
+                    }
+
+                    String username = document.getString("username");
+                    String avatar = document.getString("avatar");
+                    String region = document.getString("region");
+                    Long stars = document.getLong("stars");
+                    Long league = document.getLong("league");
+
+                    addFriend(
+                            friendId,
+                            username != null ? username : "Unknown",
+                            avatar != null ? avatar : "owl",
+                            region != null ? region : "",
+                            stars,
+                            league
+                    );
+                })
+                .addOnFailureListener(e ->
+                        showSearchMessage("Failed to scan QR code.")
+                );
     }
 
     private void searchAndAddFriend() {
