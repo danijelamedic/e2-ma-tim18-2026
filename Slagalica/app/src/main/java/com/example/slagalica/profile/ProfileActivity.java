@@ -108,14 +108,26 @@ public class ProfileActivity extends AppCompatActivity {
         TextView btnLogout = findViewById(R.id.btnLogout);
 
         btnLogout.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
+            String uid = getCurrentUserId();
 
-            Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+            if (uid == null) {
+                return;
+            }
 
-            Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(uid)
+                    .update("online", false)
+                    .addOnCompleteListener(task -> {
+                        FirebaseAuth.getInstance().signOut();
+
+                        Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    });
         });
 
         findViewById(R.id.btnResetPasswordProfile).setOnClickListener(v ->

@@ -11,16 +11,21 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.slagalica.GameActivity;
+import com.example.slagalica.GameSessionActivity;
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
 import com.example.slagalica.leagues.League;
 import com.example.slagalica.leagues.LeagueManager;
 import com.example.slagalica.notifications.NotificationCenterActivity;
+import com.example.slagalica.notifications.NotificationFactory;
 import com.example.slagalica.profile.ProfileActivity;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -35,6 +40,10 @@ public class FriendsActivity extends AppCompatActivity {
     private LinearLayout friendsContainer;
     private FirebaseFirestore db;
     private String currentUid;
+    private final NotificationFactory notificationFactory = new NotificationFactory();
+    private ListenerRegistration friendlyRequestListener;
+    private String activeRequestId = null;
+    private androidx.appcompat.app.AlertDialog pendingRequestDialog;
 
     private final androidx.activity.result.ActivityResultLauncher<ScanOptions> qrLauncher =
             registerForActivityResult(new ScanContract(), result -> {
@@ -73,12 +82,18 @@ public class FriendsActivity extends AppCompatActivity {
         findViewById(R.id.cardScanQr).setOnClickListener(v -> openQrScanner());
 
         findViewById(R.id.btnLogout).setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUid)
+                    .update("online", false)
+                    .addOnCompleteListener(task -> {
+                        FirebaseAuth.getInstance().signOut();
 
-            Intent intent = new Intent(FriendsActivity.this, com.example.slagalica.LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+                        Intent intent = new Intent(FriendsActivity.this, com.example.slagalica.LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    });
         });
 
         setupBottomNavigation();
@@ -327,6 +342,7 @@ public class FriendsActivity extends AppCompatActivity {
         buttonsLayout.setOrientation(LinearLayout.HORIZONTAL);
         buttonsLayout.setGravity(android.view.Gravity.CENTER_VERTICAL);
 
+        //play button
         TextView playButton = new TextView(this);
         playButton.setText("PLAY");
         playButton.setTextColor(android.graphics.Color.WHITE);
@@ -344,6 +360,9 @@ public class FriendsActivity extends AppCompatActivity {
         playParams.setMargins(dpToPx(12), 0, dpToPx(6), 0);
         playButton.setLayoutParams(playParams);
 
+        playButton.setOnClickListener(v -> sendFriendlyMatchRequest(friendId, username));
+
+        //three dots
         TextView moreButton = new TextView(this);
         moreButton.setText("⋮");
         moreButton.setTextColor(android.graphics.Color.parseColor("#5A31C8"));
@@ -489,6 +508,207 @@ public class FriendsActivity extends AppCompatActivity {
                 )
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to remove friend", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    private void sendFriendlyMatchRequest(String friendId, String friendUsername) {
+        if (friendId == null || friendId.isEmpty()) {
+            Toast.makeText(this, "Friend not found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("users").document(friendId).get()
+                .addOnSuccessListener(friendDoc -> {
+                    if (!friendDoc.exists()) {
+                        Toast.makeText(this, "Friend profile not found.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Boolean online = friendDoc.getBoolean("online");
+
+                    if (!Boolean.TRUE.equals(online)) {
+                        Toast.makeText(this, friendUsername + " is not online.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Boolean inGame = friendDoc.getBoolean("inGame");
+
+                    if (Boolean.TRUE.equals(inGame)) {
+                        Toast.makeText(this, friendUsername + " is already in a game.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    createFriendlyRequest(friendId, friendUsername);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to check friend status.", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    private void createFriendlyRequest(String friendId, String friendUsername) {
+        db.collection("users").document(currentUid).get()
+                .addOnSuccessListener(myDoc -> {
+                    String loadedUsername = myDoc.getString("username");
+                    final String myUsername = (loadedUsername != null && !loadedUsername.isEmpty())
+                            ? loadedUsername
+                            : "Your friend";
+
+                    Map<String, Object> request = new HashMap<>();
+                    request.put("fromUid", currentUid);
+                    request.put("fromUsername", myUsername);
+                    request.put("toUid", friendId);
+                    request.put("toUsername", friendUsername);
+                    request.put("status", "pending");
+                    request.put("friendly", true);
+                    request.put("createdAt", FieldValue.serverTimestamp());
+
+                    long expiresAt = System.currentTimeMillis() + 10000;
+
+                    request.put("expiresAt", expiresAt);
+
+                    db.collection("friendlyRequests")
+                            .add(request)
+                            .addOnSuccessListener(documentReference -> {
+                                String requestId = documentReference.getId();
+                                activeRequestId = requestId;
+                                showCancelRequestDialog(requestId, friendUsername);
+                                listenForFriendlyRequestResponse(requestId, friendId, friendUsername);
+
+                                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                                    db.collection("friendlyRequests")
+                                            .document(requestId)
+                                            .get()
+                                            .addOnSuccessListener(doc -> {
+                                                if (doc.exists() && "pending".equals(doc.getString("status"))) {
+                                                    doc.getReference().update(
+                                                            "status", "expired",
+                                                            "respondedAt", FieldValue.serverTimestamp()
+                                                    );
+                                                }
+                                            });
+                                }, 10000);
+
+                                notificationFactory.sendFriendInvite(
+                                        FriendsActivity.this,
+                                        friendId,
+                                        myUsername,
+                                        requestId
+                                );
+
+                                Toast.makeText(
+                                        this,
+                                        "Request sent to " + friendUsername + ".",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Failed to send request.", Toast.LENGTH_SHORT).show()
+                            );
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to load your profile.", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    private void listenForFriendlyRequestResponse(String requestId, String friendId, String friendUsername) {
+        Toast.makeText(this, "Waiting for " + friendUsername + "...", Toast.LENGTH_SHORT).show();
+
+        if (friendlyRequestListener != null) {
+            friendlyRequestListener.remove();
+            friendlyRequestListener = null;
+        }
+
+        friendlyRequestListener = db.collection("friendlyRequests")
+                .document(requestId)
+                .addSnapshotListener((snapshot, error) -> {
+                    if (error != null || snapshot == null || !snapshot.exists()) {
+                        return;
+                    }
+
+                    String status = snapshot.getString("status");
+
+                    if ("accepted".equals(status)) {
+
+                        String gameId = snapshot.getString("gameId");
+
+                        activeRequestId = null;
+                        dismissPendingRequestDialog();
+                        stopFriendlyRequestListener();
+
+                        if (gameId == null) {
+                            Toast.makeText(this, "Game not found.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Intent intent = new Intent(FriendsActivity.this, GameActivity.class);
+                        intent.putExtra("gameId", gameId);
+                        startActivity(intent);
+                    } else if ("declined".equals(status)) {
+                        stopFriendlyRequestListener();
+                        activeRequestId = null;
+                        dismissPendingRequestDialog();
+                        Toast.makeText(this, friendUsername + " declined the invite.", Toast.LENGTH_SHORT).show();
+                    } else if ("expired".equals(status)) {
+                        stopFriendlyRequestListener();
+                        activeRequestId = null;
+                        dismissPendingRequestDialog();
+                        Toast.makeText(this, "Invite expired.", Toast.LENGTH_SHORT).show();
+                    } else if ("cancelled".equals(status)) {
+                        stopFriendlyRequestListener();
+                        activeRequestId = null;
+                        dismissPendingRequestDialog();
+                        Toast.makeText(this, "Invite cancelled.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void stopFriendlyRequestListener() {
+        if (friendlyRequestListener != null) {
+            friendlyRequestListener.remove();
+            friendlyRequestListener = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopFriendlyRequestListener();
+        super.onDestroy();
+    }
+
+    private void showCancelRequestDialog(String requestId, String friendUsername) {
+        pendingRequestDialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Waiting for " + friendUsername)
+                .setMessage("Friendly match request is pending.")
+                .setNegativeButton("Cancel request", (dialog, which) -> cancelFriendlyRequest(requestId))
+                .setPositiveButton("Keep waiting", null)
+                .create();
+
+        pendingRequestDialog.show();
+    }
+
+    private void dismissPendingRequestDialog() {
+        if (pendingRequestDialog != null && pendingRequestDialog.isShowing()) {
+            pendingRequestDialog.dismiss();
+        }
+        pendingRequestDialog = null;
+    }
+
+    private void cancelFriendlyRequest(String requestId) {
+        if (requestId == null) return;
+
+        db.collection("friendlyRequests")
+                .document(requestId)
+                .update(
+                        "status", "cancelled",
+                        "respondedAt", FieldValue.serverTimestamp()
+                )
+                .addOnSuccessListener(unused -> {
+                    activeRequestId = null;
+                    stopFriendlyRequestListener();
+                    Toast.makeText(this, "Request cancelled.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to cancel request.", Toast.LENGTH_SHORT).show()
                 );
     }
 }

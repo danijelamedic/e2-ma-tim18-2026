@@ -22,13 +22,17 @@ import com.example.slagalica.R;
 import com.example.slagalica.friends.FriendsActivity;
 import com.example.slagalica.profile.ProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 import com.example.slagalica.HomeActivity;
 import android.os.CountDownTimer;
 import com.example.slagalica.GameActivity;
@@ -329,7 +333,7 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
     }
 
     private void showInviteDialog(AppNotification notification) {
-        final String gameId = notification.actionData != null
+        final String requestId = notification.actionData != null
                 ? (String) notification.actionData.get("inviteId") : null;
 
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -347,7 +351,7 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
                 dialog.setMessage(notification.message + "\n(" + (ms / 1000) + "s)");
             }
             @Override public void onFinish() {
-                declineInvite(gameId);
+                expireInvite(requestId);
                 if (dialog.isShowing()) dialog.dismiss();
                 Toast.makeText(BaseNotificationsActivity.this,
                         "Invite expired.", Toast.LENGTH_SHORT).show();
@@ -357,10 +361,9 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             autoDecline.cancel();
             dialog.dismiss();
-            if (gameId != null) {
-                Intent intent = new Intent(this, GameActivity.class);
-                intent.putExtra("gameId", gameId);
-                startActivity(intent);
+
+            if (requestId != null) {
+                acceptFriendlyInvite(requestId);
             } else {
                 Toast.makeText(this, "Invite no longer valid.", Toast.LENGTH_SHORT).show();
             }
@@ -369,15 +372,94 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
             autoDecline.cancel();
             dialog.dismiss();
-            declineInvite(gameId);
+            declineInvite(requestId);
             Toast.makeText(this, "Invite declined.", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void declineInvite(String gameId) {
-        if (gameId == null) return;
-        FirebaseFirestore.getInstance().collection("games").document(gameId)
-                .update("status", "declined");
+    private void declineInvite(String requestId) {
+        if (requestId == null) return;
+
+        FirebaseFirestore.getInstance()
+                .collection("friendlyRequests")
+                .document(requestId)
+                .update(
+                        "status", "declined",
+                        "respondedAt", FieldValue.serverTimestamp()
+                );
+    }
+
+    private void acceptFriendlyInvite(String requestId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("friendlyRequests")
+                .document(requestId)
+                .get()
+                .addOnSuccessListener(requestDoc -> {
+                    if (!requestDoc.exists()) {
+                        Toast.makeText(this, "Invite no longer exists.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String status = requestDoc.getString("status");
+
+                    if (!"pending".equals(status)) {
+                        Toast.makeText(this, "Invite is no longer active.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String fromUid = requestDoc.getString("fromUid");
+                    String toUid = requestDoc.getString("toUid");
+
+                    if (fromUid == null || toUid == null) {
+                        Toast.makeText(this, "Invalid invite.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Map<String, Object> game = new HashMap<>();
+                    game.put("player1", fromUid);
+                    game.put("player2", toUid);
+                    game.put("score1", 0L);
+                    game.put("score2", 0L);
+                    game.put("currentGame", 1L);
+                    game.put("currentTurnUid", fromUid);
+                    game.put("status", "active");
+                    game.put("isFriendly", true);
+                    game.put("createdAt", FieldValue.serverTimestamp());
+
+                    for (int i = 1; i <= 6; i++) {
+                        game.put("player1done_game" + i, false);
+                        game.put("player2done_game" + i, false);
+                    }
+
+                    game.put("myNumberRound", 1L);
+                    game.put("stepByStepRound", 1L);
+                    game.put("stepByStepStatus", "");
+
+                    db.collection("games")
+                            .add(game)
+                            .addOnSuccessListener(gameRef -> {
+                                String gameId = gameRef.getId();
+
+                                db.collection("friendlyRequests")
+                                        .document(requestId)
+                                        .update(
+                                                "status", "accepted",
+                                                "gameId", gameId,
+                                                "respondedAt", FieldValue.serverTimestamp()
+                                        );
+
+                                db.collection("users").document(fromUid).update("inGame", true);
+                                db.collection("users").document(toUid).update("inGame", true);
+
+                                Intent intent = new Intent(this, GameActivity.class);
+                                intent.putExtra("gameId", gameId);
+                                startActivity(intent);
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Failed to accept invite.", Toast.LENGTH_SHORT).show()
+                            );
+                });
     }
 
     private void showRewardDialog(AppNotification notification) {
@@ -456,5 +538,17 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
 
         findViewById(R.id.navLeaderboard).setOnClickListener(v ->
                 Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show());
+    }
+
+    private void expireInvite(String requestId) {
+        if (requestId == null) return;
+
+        FirebaseFirestore.getInstance()
+                .collection("friendlyRequests")
+                .document(requestId)
+                .update(
+                        "status", "expired",
+                        "respondedAt", FieldValue.serverTimestamp()
+                );
     }
 }
