@@ -27,8 +27,16 @@ public class LoginActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().isEmailVerified()) {
-            startActivity(new Intent(this, HomeActivity.class));
-            finish();
+            String uid = mAuth.getCurrentUser().getUid();
+
+            db.collection("users")
+                    .document(uid)
+                    .update("online", true)
+                    .addOnCompleteListener(task -> {
+                        startActivity(new Intent(this, HomeActivity.class));
+                        finish();
+                    });
+
             return;
         }
 
@@ -79,8 +87,15 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         if (mAuth.getCurrentUser().isEmailVerified()) {
-                            startActivity(new Intent(this, HomeActivity.class));
-                            finish();
+                            String uid = mAuth.getCurrentUser().getUid();
+
+                            db.collection("users")
+                                    .document(uid)
+                                    .update("online", true)
+                                    .addOnCompleteListener(updateTask -> {
+                                        startActivity(new Intent(this, HomeActivity.class));
+                                        finish();
+                                    });
                         } else {
                             Toast.makeText(this, "Please verify your email first!", Toast.LENGTH_LONG).show();
                             mAuth.signOut();

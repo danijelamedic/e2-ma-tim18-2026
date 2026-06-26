@@ -239,10 +239,19 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         btnLogout.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUid)
+                    .update("online", false)
+                    .addOnCompleteListener(task -> {
+                        FirebaseAuth.getInstance().signOut();
+
+                        Intent intent = new Intent(this, com.example.slagalica.LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    });
+
         });
 
         navHome.setOnClickListener(v ->

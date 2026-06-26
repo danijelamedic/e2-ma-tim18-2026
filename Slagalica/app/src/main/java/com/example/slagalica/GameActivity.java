@@ -93,7 +93,27 @@ public class GameActivity extends AppCompatActivity {
                     String status = snapshot.getString("status");
                     String abandonedBy = snapshot.getString("abandonedBy");
 
+                    Boolean isFriendly = snapshot.getBoolean("isFriendly");
+
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        if (Boolean.TRUE.equals(isFriendly)) {
+                            isFinishing = true;
+
+                            if (gameListener != null) {
+                                gameListener.remove();
+                                gameListener = null;
+                            }
+
+                            Toast.makeText(this, "Friend left the match.", Toast.LENGTH_LONG).show();
+
+                            db.collection("users").document(currentUid).update("inGame", false);
+
+                            startActivity(new Intent(this, HomeActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            finish();
+                            return;
+                        }
+
                         if (!opponentLeftNotified) {
                             opponentLeftNotified = true;
                             Toast.makeText(this,
@@ -395,6 +415,7 @@ public class GameActivity extends AppCompatActivity {
                 .addOnSuccessListener(unused -> listenForGameUpdates());
     }
 
+    @SuppressWarnings("MissingSuperCall")
     @Override
     public void onBackPressed() {
         confirmAbandonGame();
@@ -412,14 +433,28 @@ public class GameActivity extends AppCompatActivity {
         updates.put("abandonedBy", currentUid);
 
         db.collection("games").document(gameId).update(updates)
-                .addOnSuccessListener(unused -> {
-                    Intent intent = new Intent(this, GameResultActivity.class);
-                    intent.putExtra("myScore", (long) 0);
-                    intent.putExtra("opponentScore", (long) 999);
-                    intent.putExtra("isFriendly", false);
-                    startActivity(intent);
-                    finish();
-                });
+                .addOnSuccessListener(unused ->
+                        db.collection("games").document(gameId).get()
+                                .addOnSuccessListener(snapshot -> {
+                                    boolean isFriendly = Boolean.TRUE.equals(snapshot.getBoolean("isFriendly"));
+
+                                    db.collection("users").document(currentUid).update("inGame", false);
+
+                                    if (isFriendly) {
+                                        startActivity(new Intent(this, HomeActivity.class)
+                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                        finish();
+                                        return;
+                                    }
+
+                                    Intent intent = new Intent(this, GameResultActivity.class);
+                                    intent.putExtra("myScore", (long) 0);
+                                    intent.putExtra("opponentScore", (long) 999);
+                                    intent.putExtra("isFriendly", false);
+                                    startActivity(intent);
+                                    finish();
+                                })
+                );
     }
 
     private void forceAdvanceSolo(int gameNumber) {
@@ -457,6 +492,7 @@ public class GameActivity extends AppCompatActivity {
     private void showResults(com.google.firebase.firestore.DocumentSnapshot snapshot) {
         if (isFinishing) return;
         isFinishing = true;
+
         if (gameListener != null) {
             gameListener.remove();
             gameListener = null;
@@ -464,7 +500,21 @@ public class GameActivity extends AppCompatActivity {
 
         long score1 = snapshot.getLong("score1") != null ? snapshot.getLong("score1") : 0;
         long score2 = snapshot.getLong("score2") != null ? snapshot.getLong("score2") : 0;
+
         String player1 = snapshot.getString("player1");
+        String player2 = snapshot.getString("player2");
+
+        if (player1 != null) {
+            db.collection("users").document(player1).update("inGame", false);
+        }
+
+        if (player2 != null) {
+            db.collection("users").document(player2).update("inGame", false);
+        }
+
+        db.collection("games").document(gameId)
+                .update("status", "completed");
+
         boolean isFriendly = Boolean.TRUE.equals(snapshot.getBoolean("isFriendly"));
 
         long myScore = currentUid.equals(player1) ? score1 : score2;
