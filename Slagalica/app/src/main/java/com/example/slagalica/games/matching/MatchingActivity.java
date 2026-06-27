@@ -55,6 +55,7 @@ public class MatchingActivity extends AppCompatActivity {
     private boolean resultSaved = false;
     private String gameId;
     private boolean isMultiplayer;
+    private boolean opponentAlreadyLeft;
     private String currentUid;
     private String currentTurnUid;
     private boolean isMyTurn = false;
@@ -84,6 +85,7 @@ public class MatchingActivity extends AppCompatActivity {
 
         gameId = getIntent().getStringExtra("gameId");
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
@@ -505,7 +507,7 @@ public class MatchingActivity extends AppCompatActivity {
                     }
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
                         if (matchingListener != null) { matchingListener.remove(); matchingListener = null; }
                         if (timer != null) { timer.cancel(); timer = null; }
                         Intent r = new Intent();
@@ -781,7 +783,6 @@ public class MatchingActivity extends AppCompatActivity {
                     }
 
                     String opponentUid = currentUid.equals(player1) ? player2 : player1;
-                    Toast.makeText(this, "Opponent uid: " + opponentUid, Toast.LENGTH_LONG).show();
 
                     db.collection("users")
                             .document(opponentUid)

@@ -62,6 +62,7 @@ public class StepByStepActivity extends AppCompatActivity {
     private int currentStep = 0;
 
     private boolean isMultiplayer = false;
+    private boolean opponentAlreadyLeft = false;
     private String gameId;
     private String currentUid;
     private boolean isPlayer1 = false;
@@ -93,6 +94,7 @@ public class StepByStepActivity extends AppCompatActivity {
         db            = FirebaseFirestore.getInstance();
         currentUid    = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         gameId        = getIntent().getStringExtra("gameId");
 
         tvTimer       = findViewById(R.id.tvTimer);
@@ -119,7 +121,9 @@ public class StepByStepActivity extends AppCompatActivity {
         findViewById(R.id.btnLeaveStepByStep).setOnClickListener(v -> {
             if (stepTimer    != null) { stepTimer.cancel();    stepTimer    = null; }
             if (gameListener != null) { gameListener.remove(); gameListener = null; }
-            setResult(RESULT_CANCELED);
+            Intent result = new Intent();
+            result.putExtra("battleLost", true);
+            setResult(RESULT_OK, result);
             finish();
         });
 
@@ -229,6 +233,9 @@ public class StepByStepActivity extends AppCompatActivity {
 
                     boolean iAmActive = (currentRound == 1 && isPlayer1)
                             || (currentRound == 2 && !isPlayer1);
+                    if (opponentAlreadyLeft) {
+                        iAmActive = true;
+                    }
 
                     String savedQuestionId = snapshot.getString(
                             "stepByStepQuestionId_r" + currentRound);
@@ -325,7 +332,7 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive() || snapshot == null) return;
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
                         if (gameListener != null) { gameListener.remove(); gameListener = null; }
                         finishAndReturn(0);
                         return;
@@ -356,7 +363,7 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive() || snapshot == null) return;
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
                         if (gameListener != null) { gameListener.remove(); gameListener = null; }
                         finishAndReturn(0);
                         return;

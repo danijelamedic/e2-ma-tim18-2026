@@ -55,6 +55,7 @@ public class QuizActivity extends AppCompatActivity {
     private TextView tvBattleRound;
     private String gameId;
     private boolean isMultiplayer;
+    private boolean opponentAlreadyLeft;
     private ListenerRegistration quizListener;
     private String currentUid;
     private String currentTurnUid;
@@ -80,6 +81,7 @@ public class QuizActivity extends AppCompatActivity {
 
         gameId = getIntent().getStringExtra("gameId");
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -582,7 +584,7 @@ public class QuizActivity extends AppCompatActivity {
                     }
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
                         if (quizListener != null) { quizListener.remove(); quizListener = null; }
                         if (countDownTimer != null) { countDownTimer.cancel(); countDownTimer = null; }
                         Intent r = new Intent();

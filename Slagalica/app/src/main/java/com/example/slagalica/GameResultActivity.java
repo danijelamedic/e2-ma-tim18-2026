@@ -6,6 +6,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalica.notifications.NotificationFactory;
+import com.example.slagalica.ranking.RankingRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FieldValue;
@@ -30,14 +31,20 @@ public class GameResultActivity extends AppCompatActivity {
         long myScore = getIntent().getLongExtra("myScore", 0);
         long opponentScore = getIntent().getLongExtra("opponentScore", 0);
         boolean isFriendly = getIntent().getBooleanExtra("isFriendly", false);
+        boolean abandonedMatch = getIntent().getBooleanExtra("abandonedMatch", false);
+        boolean opponentAbandoned = getIntent().getBooleanExtra("opponentAbandoned", false);
 
         TextView tvResult = findViewById(R.id.tvResult);
         TextView tvScores = findViewById(R.id.tvScores);
         TextView tvStars = findViewById(R.id.tvStars);
 
-        boolean won = myScore > opponentScore;
+        boolean won = opponentAbandoned || (!abandonedMatch && myScore > opponentScore);
 
-        if (myScore > opponentScore) {
+        if (opponentAbandoned) {
+            tvResult.setText("Opponent left - You Win!");
+        } else if (abandonedMatch) {
+            tvResult.setText("You Lose!");
+        } else if (myScore > opponentScore) {
             tvResult.setText("You Win! 🏆");
         } else if (myScore < opponentScore) {
             tvResult.setText("You Lose!");
@@ -47,7 +54,9 @@ public class GameResultActivity extends AppCompatActivity {
 
         tvScores.setText("Your score: " + myScore + "\nOpponent score: " + opponentScore);
 
-        if (isGuest) {
+        if (abandonedMatch) {
+            tvStars.setText("You left the game - no stars awarded");
+        } else if (isGuest) {
             tvStars.setText("Guest match - no stars awarded");
         } else if (!isFriendly) {
             updateStarsAndTokens(won, myScore, tvStars);
@@ -106,6 +115,7 @@ public class GameResultActivity extends AppCompatActivity {
                                     tvStars.append("\n+" + tokensEarned + " token(s) earned!");
                                 }
                                 notificationFactory.sendReward(this, currentUid, starsDelta, tokensEarned);
+                                RankingRepository.recordRankedMatch(starsDelta);
                                 if (newLeague != oldLeague) {
                                     notificationFactory.sendLeagueChange(this, currentUid, oldLeague, newLeague);
                                 }

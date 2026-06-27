@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import com.example.slagalica.ChatActivity;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.ranking.LeaderboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -64,6 +65,9 @@ public class SlagalicaMessagingService extends FirebaseMessagingService {
         }
         if (AppNotification.ACTION_OPEN_PROFILE.equals(actionType)) {
             return new Intent(this, ProfileActivity.class);
+        }
+        if (AppNotification.ACTION_OPEN_RANKING.equals(actionType)) {
+            return new Intent(this, LeaderboardActivity.class);
         }
         return new Intent(this, NotificationCenterActivity.class);
     }

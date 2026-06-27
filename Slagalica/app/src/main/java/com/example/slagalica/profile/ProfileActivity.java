@@ -34,6 +34,7 @@ import com.example.slagalica.ResetPasswordActivity;
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.friends.FriendsActivity;
+import com.example.slagalica.ranking.LeaderboardActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -172,7 +173,7 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, FriendsActivity.class)));
 
         findViewById(R.id.navLeaderboard).setOnClickListener(v ->
-                Toast.makeText(this, "Leaderboard screen coming soon", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(ProfileActivity.this, LeaderboardActivity.class)));
     }
 
     private void loadOverviewStatistics() {
