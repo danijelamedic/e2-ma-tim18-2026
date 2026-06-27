@@ -66,6 +66,9 @@ public class SlagalicaMessagingService extends FirebaseMessagingService {
         if (AppNotification.ACTION_OPEN_PROFILE.equals(actionType)) {
             return new Intent(this, ProfileActivity.class);
         }
+        if (AppNotification.ACTION_OPEN_REWARDS.equals(actionType)) {
+            return new Intent(this, RewardsNotificationsActivity.class);
+        }
         if (AppNotification.ACTION_OPEN_RANKING.equals(actionType)) {
             return new Intent(this, LeaderboardActivity.class);
         }

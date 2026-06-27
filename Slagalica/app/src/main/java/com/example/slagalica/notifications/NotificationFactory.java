@@ -29,6 +29,34 @@ public class NotificationFactory {
                 new Intent(context, RewardsNotificationsActivity.class));
     }
 
+    public void sendTournamentReward(Context context, String uid, String message) {
+        AppNotification notification = new AppNotification(
+                uid,
+                AppNotification.TYPE_REWARD,
+                "Tournament reward",
+                message,
+                AppNotification.ACTION_OPEN_REWARDS,
+                null
+        );
+        repository.create(uid, notification);
+        LocalNotificationSender.show(context, notification,
+                new Intent(context, RewardsNotificationsActivity.class));
+    }
+
+    public void sendTournamentReward(Context context, String uid, String notificationId, String message) {
+        AppNotification notification = new AppNotification(
+                uid,
+                AppNotification.TYPE_REWARD,
+                "Tournament reward",
+                message,
+                AppNotification.ACTION_OPEN_REWARDS,
+                null
+        );
+        repository.create(uid, notificationId, notification);
+        LocalNotificationSender.show(context, notification,
+                new Intent(context, RewardsNotificationsActivity.class));
+    }
+
     public void sendLeagueChange(Context context, String uid, long oldLeague, long newLeague) {
         String title;
 

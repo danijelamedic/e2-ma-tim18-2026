@@ -53,6 +53,19 @@ public class NotificationRepository {
                 .add(notification.toMap());
     }
 
+    public void create(String uid, String notificationId, AppNotification notification) {
+        notification.userId = uid;
+        if (notification.createdAt == 0L) {
+            notification.createdAt = System.currentTimeMillis();
+        }
+
+        db.collection("users")
+                .document(uid)
+                .collection("notifications")
+                .document(notificationId)
+                .set(notification.toMap());
+    }
+
     public void markAsRead(String uid, String notificationId) {
         db.collection("users")
                 .document(uid)

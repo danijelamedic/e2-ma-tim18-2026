@@ -15,6 +15,7 @@ import com.example.slagalica.games.quiz.QuizActivity;
 import com.example.slagalica.games.matching.MatchingActivity;
 import com.example.slagalica.games.associations.AssociationsActivity;
 import com.example.slagalica.games.skocko.SkockoActivity;
+import com.example.slagalica.tournament.TournamentResultActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -456,11 +457,19 @@ public class GameActivity extends AppCompatActivity {
                                     long myScore = currentUid.equals(player1) ? score1 : score2;
                                     long opponentScore = currentUid.equals(player1) ? score2 : score1;
 
-                                    Intent intent = new Intent(this, GameResultActivity.class);
+                                    boolean isTournament = Boolean.TRUE.equals(snapshot.getBoolean("isTournament"));
+                                    Intent intent = new Intent(this, isTournament
+                                            ? TournamentResultActivity.class
+                                            : GameResultActivity.class);
                                     intent.putExtra("myScore", myScore);
                                     intent.putExtra("opponentScore", opponentScore);
                                     intent.putExtra("isFriendly", false);
                                     intent.putExtra("abandonedMatch", true);
+                                    if (isTournament) {
+                                        intent.putExtra("gameId", gameId);
+                                        intent.putExtra("tournamentId", snapshot.getString("tournamentId"));
+                                        intent.putExtra("tournamentRound", snapshot.getString("tournamentRound"));
+                                    }
                                     startActivity(intent);
                                     finish();
                                 })
@@ -513,29 +522,38 @@ public class GameActivity extends AppCompatActivity {
         String player1 = snapshot.getString("player1");
         String player2 = snapshot.getString("player2");
 
-        if (player1 != null) {
-            db.collection("users").document(player1).update("inGame", false);
-        }
+        boolean isFriendly = Boolean.TRUE.equals(snapshot.getBoolean("isFriendly"));
+        boolean isTournament = Boolean.TRUE.equals(snapshot.getBoolean("isTournament"));
 
-        if (player2 != null) {
-            db.collection("users").document(player2).update("inGame", false);
+        if (!isTournament) {
+            if (player1 != null) {
+                db.collection("users").document(player1).update("inGame", false);
+            }
+
+            if (player2 != null) {
+                db.collection("users").document(player2).update("inGame", false);
+            }
         }
 
         db.collection("games").document(gameId)
                 .update("status", "completed");
-
-        boolean isFriendly = Boolean.TRUE.equals(snapshot.getBoolean("isFriendly"));
 
         long myScore = currentUid.equals(player1) ? score1 : score2;
         long opponentScore = currentUid.equals(player1) ? score2 : score1;
 
         String abandonedBy = snapshot.getString("abandonedBy");
 
-        Intent intent = new Intent(this, GameResultActivity.class);
+        Intent intent = new Intent(this, isTournament
+                ? TournamentResultActivity.class
+                : GameResultActivity.class);
         intent.putExtra("myScore", myScore);
         intent.putExtra("opponentScore", opponentScore);
         intent.putExtra("isFriendly", isFriendly);
         intent.putExtra("gameId", gameId);
+        if (isTournament) {
+            intent.putExtra("tournamentId", snapshot.getString("tournamentId"));
+            intent.putExtra("tournamentRound", snapshot.getString("tournamentRound"));
+        }
         if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
             intent.putExtra("opponentAbandoned", true);
         }
