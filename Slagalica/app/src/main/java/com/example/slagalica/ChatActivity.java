@@ -9,6 +9,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.slagalica.daily.DailyMission;
+import com.example.slagalica.daily.DailyMissionRepository;
 import com.example.slagalica.notifications.AppNotification;
 import com.example.slagalica.notifications.LocalNotificationSender;
 import com.example.slagalica.notifications.NotificationChannelManager;
@@ -31,6 +33,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private DatabaseReference chatRef;
     private FirebaseFirestore db;
+    private DailyMissionRepository dailyMissionRepository;
     private NotificationRepository notificationRepository;
     private String currentUid;
     private String currentUsername;
@@ -51,6 +54,7 @@ public class ChatActivity extends AppCompatActivity {
         NotificationChannelManager.createChannels(this);
 
         db = FirebaseFirestore.getInstance();
+        dailyMissionRepository = new DailyMissionRepository();
         notificationRepository = new NotificationRepository();
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -101,9 +105,11 @@ public class ChatActivity extends AppCompatActivity {
         message.put("timestamp", timestamp);
         message.put("timeMillis", System.currentTimeMillis());
 
-        chatRef.push().setValue(message);
-        createChatNotificationsForRegion(text);
-        etMessage.setText("");
+        chatRef.push().setValue(message).addOnSuccessListener(unused -> {
+            dailyMissionRepository.completeMission(this, currentUid, DailyMission.SEND_CHAT_MESSAGE);
+            createChatNotificationsForRegion(text);
+            etMessage.setText("");
+        });
     }
 
     private void createChatNotificationsForRegion(String text) {

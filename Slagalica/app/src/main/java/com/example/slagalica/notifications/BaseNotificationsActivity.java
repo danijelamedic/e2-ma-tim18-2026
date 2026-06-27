@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.slagalica.ChatActivity;
 import com.example.slagalica.R;
+import com.example.slagalica.daily.DailyMissionsActivity;
 import com.example.slagalica.friends.FriendsActivity;
 import com.example.slagalica.profile.ProfileActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
@@ -322,6 +323,9 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
                 break;
             case AppNotification.ACTION_OPEN_RANKING:
                 startActivity(new Intent(this, LeaderboardActivity.class));
+                break;
+            case AppNotification.ACTION_OPEN_DAILY_MISSIONS:
+                startActivity(new Intent(this, DailyMissionsActivity.class));
                 break;
             case AppNotification.ACTION_FRIEND_INVITE:
                 showInviteDialog(notification);

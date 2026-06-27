@@ -15,6 +15,7 @@ public class AppNotification {
     public static final String ACTION_OPEN_PROFILE = "OPEN_PROFILE";
     public static final String ACTION_OPEN_REWARDS = "OPEN_REWARDS";
     public static final String ACTION_OPEN_RANKING = "OPEN_RANKING";
+    public static final String ACTION_OPEN_DAILY_MISSIONS = "OPEN_DAILY_MISSIONS";
     public static final String ACTION_FRIEND_INVITE = "FRIEND_INVITE";
     public static final String ACTION_NONE = "NONE";
 

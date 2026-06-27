@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.slagalica.data.FirebaseSeeder;
+import com.example.slagalica.daily.DailyMissionsActivity;
 import com.example.slagalica.friends.FriendsActivity;
 import com.example.slagalica.leagues.LeagueActivity;
 import com.example.slagalica.notifications.AppNotification;
@@ -24,6 +25,7 @@ import com.example.slagalica.notifications.LocalNotificationSender;
 import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.notifications.NotificationChannelManager;
 import com.example.slagalica.notifications.NotificationRepository;
+import com.example.slagalica.notifications.RewardsNotificationsActivity;
 import com.example.slagalica.profile.ProfileActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
 import com.example.slagalica.ranking.RankingRepository;
@@ -60,6 +62,7 @@ public class HomeActivity extends AppCompatActivity {
     private View btnChallenge;
     private View btnTournament;
     private View btnChat;
+    private View btnDailyMissions;
     private FirebaseFirestore db;
     private String currentUid;
     private TextView tvWelcomeUsername;
@@ -153,7 +156,7 @@ public class HomeActivity extends AppCompatActivity {
                 AppNotification.ACTION_OPEN_RANKING,
                 new HashMap<>()
         );
-        notificationRepository.create(currentUid, notification);
+        notificationRepository.create(currentUid, "defense_ranking_preview", notification);
 
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
             if (!isFinishing() && !isDestroyed()) {
@@ -221,8 +224,7 @@ public class HomeActivity extends AppCompatActivity {
                         for (AppNotification n : notifications) {
                             if (n.read || n.id == null) continue;
                             if (seenNotificationIds.add(n.id)) {
-                                Intent intent = new Intent(HomeActivity.this, NotificationCenterActivity.class);
-                                LocalNotificationSender.show(HomeActivity.this, n, intent);
+                                LocalNotificationSender.show(HomeActivity.this, n, intentForNotification(n));
                             }
                         }
                     }
@@ -232,6 +234,29 @@ public class HomeActivity extends AppCompatActivity {
                         Log.w(TAG, "Failed to listen for notifications", exception);
                     }
                 });
+    }
+
+    private Intent intentForNotification(AppNotification notification) {
+        if (notification == null || notification.actionType == null) {
+            return new Intent(this, NotificationCenterActivity.class);
+        }
+
+        switch (notification.actionType) {
+            case AppNotification.ACTION_OPEN_CHAT:
+                return new Intent(this, ChatActivity.class);
+            case AppNotification.ACTION_OPEN_PROFILE:
+                return new Intent(this, ProfileActivity.class);
+            case AppNotification.ACTION_OPEN_REWARDS:
+                return new Intent(this, RewardsNotificationsActivity.class);
+            case AppNotification.ACTION_OPEN_RANKING:
+                return new Intent(this, LeaderboardActivity.class);
+            case AppNotification.ACTION_OPEN_DAILY_MISSIONS:
+                return new Intent(this, DailyMissionsActivity.class);
+            case AppNotification.ACTION_FRIEND_INVITE:
+            case AppNotification.ACTION_NONE:
+            default:
+                return new Intent(this, NotificationCenterActivity.class);
+        }
     }
 
     @Override
@@ -251,6 +276,7 @@ public class HomeActivity extends AppCompatActivity {
         btnChallenge      = findViewById(R.id.btnChallenge);
         btnTournament     = findViewById(R.id.btnTournament);
         btnChat = findViewById(R.id.btnChat);
+        btnDailyMissions = findViewById(R.id.btnDailyMissions);
         btnLogout         = findViewById(R.id.btnLogout);
         navHome           = findViewById(R.id.navHome);
         navLeaderboard    = findViewById(R.id.navLeaderboard);
@@ -277,6 +303,10 @@ public class HomeActivity extends AppCompatActivity {
         if (btnChat != null) {
             btnChat.setOnClickListener(v ->
                     startActivity(new Intent(this, ChatActivity.class)));
+        }
+        if (btnDailyMissions != null) {
+            btnDailyMissions.setOnClickListener(v ->
+                    startActivity(new Intent(this, DailyMissionsActivity.class)));
         }
 
         btnLogout.setOnClickListener(v -> {
