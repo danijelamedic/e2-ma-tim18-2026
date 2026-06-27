@@ -299,9 +299,15 @@ public class QuizActivity extends AppCompatActivity {
             }
 
             saveMultiplayerAnswer(index, selectedAnswer, isCorrect);
+
+            if (opponentAlreadyLeft) {
+                tvQuizTimer.postDelayed(
+                        () -> checkAndScoreCurrentQuestion(true),
+                        400
+                );
+            }
             return;
         }
-
         if (isCorrect) {
             playerScore += 10;
             correctAnswersCount++;
@@ -355,7 +361,7 @@ public class QuizActivity extends AppCompatActivity {
 
         if (isMultiplayer && gameId != null) {
             if (!questionFinished) {
-                checkAndScoreCurrentQuestion(false);
+                checkAndScoreCurrentQuestion(opponentAlreadyLeft);
                 return;
             }
 

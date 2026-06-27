@@ -507,14 +507,8 @@ public class MatchingActivity extends AppCompatActivity {
                     }
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                        if (matchingListener != null) { matchingListener.remove(); matchingListener = null; }
-                        if (timer != null) { timer.cancel(); timer = null; }
-                        Intent r = new Intent();
-                        r.putExtra("points", 0);
-                        setResult(RESULT_OK, r);
-                        finish();
-                        return;
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        opponentAlreadyLeft = true;
                     }
 
                     matchingRound = snapshot.getLong("matchingRound") != null
@@ -561,8 +555,8 @@ public class MatchingActivity extends AppCompatActivity {
                     lastSeenMatchingPhase = matchingPhase != null ? matchingPhase : "";
                     lastSeenCurrentPlayerUid = matchingCurrentPlayerUid != null ? matchingCurrentPlayerUid : "";
 
-                    isMyTurn = currentUid != null && currentUid.equals(matchingCurrentPlayerUid);
-
+                    isMyTurn = opponentAlreadyLeft
+                            || (currentUid != null && currentUid.equals(matchingCurrentPlayerUid));
                     updateTurnUi();
 
                     if (isMyTurn && timer == null && timeLeftMillis > 0) {
@@ -688,12 +682,13 @@ public class MatchingActivity extends AppCompatActivity {
                     }
 
                     String player1 = snapshot.getString("player1");
+                    String starter = opponentAlreadyLeft ? currentUid : player1;
 
                     Map<String, Object> updates = new HashMap<>();
                     updates.put("matchingRound", 1);
                     updates.put("matchingPhase", "starter");
-                    updates.put("matchingStarterUid", player1);
-                    updates.put("matchingCurrentPlayerUid", player1);
+                    updates.put("matchingStarterUid", starter);
+                    updates.put("matchingCurrentPlayerUid", starter);
 
                     db.collection("games")
                             .document(gameId)

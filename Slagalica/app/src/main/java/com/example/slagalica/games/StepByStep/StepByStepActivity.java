@@ -332,9 +332,12 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive() || snapshot == null) return;
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        opponentAlreadyLeft = true;
                         if (gameListener != null) { gameListener.remove(); gameListener = null; }
-                        finishAndReturn(0);
+                        String usedId = snapshot.getString(
+                                "stepByStepQuestionId_r" + (currentRound == 1 ? 2 : 1));
+                        loadQuestionRandom(usedId);
                         return;
                     }
 
@@ -363,9 +366,10 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive() || snapshot == null) return;
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        opponentAlreadyLeft = true;
                         if (gameListener != null) { gameListener.remove(); gameListener = null; }
-                        finishAndReturn(0);
+                        startBonusChance();
                         return;
                     }
 

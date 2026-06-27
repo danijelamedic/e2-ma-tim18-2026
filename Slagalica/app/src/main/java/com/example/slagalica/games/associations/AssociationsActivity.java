@@ -232,9 +232,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
                     loadPlayerPanels();
                     listenForAssociationsState();
-                    if (!opponentAlreadyLeft) {
-                        listenForAbandon();
-                    }
+                    listenForAbandon();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to load players.", Toast.LENGTH_SHORT).show();
@@ -490,7 +488,7 @@ public class AssociationsActivity extends AppCompatActivity {
     }
 
     private void updateActiveState() {
-        boolean myTurn = currentUid != null && currentUid.equals(activeUid);
+        boolean myTurn = opponentAlreadyLeft || (currentUid != null && currentUid.equals(activeUid));
         boolean opponentTurn = opponentUid != null && opponentUid.equals(activeUid);
 
         tvPlayerAvatar.setBackgroundResource(myTurn
@@ -671,7 +669,7 @@ public class AssociationsActivity extends AppCompatActivity {
     }
 
     private void promptColumnGuess(int column) {
-        if (isMultiplayer && !currentUid.equals(activeUid)) {
+        if (isMultiplayer && !opponentAlreadyLeft && !currentUid.equals(activeUid)) {
             return;
         }
 
@@ -697,7 +695,7 @@ public class AssociationsActivity extends AppCompatActivity {
     }
 
     private void promptFinalGuess() {
-        if (isMultiplayer && !currentUid.equals(activeUid)) {
+        if (isMultiplayer && !opponentAlreadyLeft && !currentUid.equals(activeUid)) {
             return;
         }
 
@@ -749,7 +747,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
     @SuppressWarnings("unchecked")
     private void revealMultiplayerClue(int column, int row) {
-        if (!gameLoaded || !currentUid.equals(activeUid) || !canOpenClue
+        if (!gameLoaded || (!opponentAlreadyLeft && !currentUid.equals(activeUid)) || !canOpenClue
                 || solvedColumns[column] || openedClues[column][row]) {
             return;
         }
@@ -1086,15 +1084,7 @@ public class AssociationsActivity extends AppCompatActivity {
                     if (snapshot == null || !snapshot.exists()) return;
                     String abandonedBy = snapshot.getString("abandonedBy");
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                        if (abandonListener != null) { abandonListener.remove(); abandonListener = null; }
-                        if (timer != null) { timer.cancel(); timer = null; }
-                        multiplayerResultSent = true;
-                        int myScore = (int) getScoreFor(currentUid);
-                        Intent r = new Intent();
-                        r.putExtra("score", myScore);
-                        r.putExtra("points", myScore);
-                        setResult(RESULT_OK, r);
-                        finish();
+                        opponentAlreadyLeft = true;
                     }
                 });
     }

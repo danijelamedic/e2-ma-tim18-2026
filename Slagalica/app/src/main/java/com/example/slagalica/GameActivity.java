@@ -158,11 +158,7 @@ public class GameActivity extends AppCompatActivity {
                     }
 
                     if (Boolean.TRUE.equals(myDone)) {
-                        if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                            forceAdvanceSolo(currentGame);
-                        } else {
-                            tvGameInfo.setText("Waiting for opponent...");
-                        }
+                        tvGameInfo.setText("Waiting for opponent...");
                         return;
                     }
 
@@ -474,37 +470,6 @@ public class GameActivity extends AppCompatActivity {
                                     finish();
                                 })
                 );
-    }
-
-    private void forceAdvanceSolo(int gameNumber) {
-        DocumentReference gameRef = db.collection("games").document(gameId);
-        db.runTransaction(transaction -> {
-            com.google.firebase.firestore.DocumentSnapshot snapshot = transaction.get(gameRef);
-            if (snapshot == null || !snapshot.exists()) return null;
-
-            Long cg = snapshot.getLong("currentGame");
-            long currentGame = cg != null ? cg : 1;
-            if (currentGame != gameNumber) return null;
-
-            Map<String, Object> updates = new HashMap<>();
-            long nextGame = currentGame + 1;
-            if (nextGame > TOTAL_GAMES) {
-                updates.put("status", "finished");
-                updates.put("currentTurnUid", null);
-            } else {
-                updates.put("currentGame", nextGame);
-                updates.put("currentTurnUid", currentUid);
-                updates.put("player1done_game" + nextGame, false);
-                updates.put("player2done_game" + nextGame, false);
-                if (gameNumber == GAME_MY_NUMBER) updates.put("myNumberRound", 1L);
-                if (gameNumber == GAME_STEP_BY_STEP) {
-                    updates.put("stepByStepRound", 1L);
-                    updates.put("stepByStepStatus", "");
-                }
-            }
-            transaction.update(gameRef, updates);
-            return null;
-        });
     }
 
     private void showResults(com.google.firebase.firestore.DocumentSnapshot snapshot) {
