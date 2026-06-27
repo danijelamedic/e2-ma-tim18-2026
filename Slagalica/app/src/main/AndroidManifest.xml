@@ -61,6 +61,7 @@
         <activity android:name=".ChallengeResultActivity" android:exported="false"/>
         <activity android:name=".leagues.LeagueActivity" android:exported="false" />
         <activity android:name=".friends.FriendsActivity" android:exported="false" />
+        <activity android:name=".ranking.LeaderboardActivity" android:exported="false" />
 
         <service
             android:name=".notifications.SlagalicaMessagingService"

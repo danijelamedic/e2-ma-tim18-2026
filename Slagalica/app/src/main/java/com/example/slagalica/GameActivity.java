@@ -47,6 +47,7 @@ public class GameActivity extends AppCompatActivity {
     private int pendingLaunchGame = -1;
     private int lastCompletedGame = 0;
     private boolean opponentLeftNotified = false;
+    private boolean opponentAlreadyLeft = false;
     private android.widget.Button btnLeaveMatch;
 
     @Override
@@ -96,6 +97,7 @@ public class GameActivity extends AppCompatActivity {
                     Boolean isFriendly = snapshot.getBoolean("isFriendly");
 
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        opponentAlreadyLeft = true;
                         if (Boolean.TRUE.equals(isFriendly)) {
                             isFinishing = true;
 
@@ -254,6 +256,7 @@ public class GameActivity extends AppCompatActivity {
         }
         intent.putExtra("gameId", gameId);
         intent.putExtra("isMultiplayer", true);
+        intent.putExtra("opponentAlreadyLeft", opponentAlreadyLeft);
         startActivityForResult(intent, gameNumber);
     }
 
@@ -396,7 +399,7 @@ public class GameActivity extends AppCompatActivity {
                             updates.put("currentTurnUid", null);
                         } else {
                             updates.put("currentGame", nextGame);
-                            updates.put("currentTurnUid", player1);
+                            updates.put("currentTurnUid", opponentGone ? currentUid : player1);
                             updates.put("player1done_game" + nextGame, false);
                             updates.put("player2done_game" + nextGame, false);
                             if (gameNumber == GAME_MY_NUMBER) {
@@ -447,10 +450,17 @@ public class GameActivity extends AppCompatActivity {
                                         return;
                                     }
 
+                                    String player1 = snapshot.getString("player1");
+                                    long score1 = snapshot.getLong("score1") != null ? snapshot.getLong("score1") : 0;
+                                    long score2 = snapshot.getLong("score2") != null ? snapshot.getLong("score2") : 0;
+                                    long myScore = currentUid.equals(player1) ? score1 : score2;
+                                    long opponentScore = currentUid.equals(player1) ? score2 : score1;
+
                                     Intent intent = new Intent(this, GameResultActivity.class);
-                                    intent.putExtra("myScore", (long) 0);
-                                    intent.putExtra("opponentScore", (long) 999);
+                                    intent.putExtra("myScore", myScore);
+                                    intent.putExtra("opponentScore", opponentScore);
                                     intent.putExtra("isFriendly", false);
+                                    intent.putExtra("abandonedMatch", true);
                                     startActivity(intent);
                                     finish();
                                 })
@@ -467,7 +477,6 @@ public class GameActivity extends AppCompatActivity {
             long currentGame = cg != null ? cg : 1;
             if (currentGame != gameNumber) return null;
 
-            String player1 = snapshot.getString("player1");
             Map<String, Object> updates = new HashMap<>();
             long nextGame = currentGame + 1;
             if (nextGame > TOTAL_GAMES) {
@@ -475,7 +484,7 @@ public class GameActivity extends AppCompatActivity {
                 updates.put("currentTurnUid", null);
             } else {
                 updates.put("currentGame", nextGame);
-                updates.put("currentTurnUid", player1);
+                updates.put("currentTurnUid", currentUid);
                 updates.put("player1done_game" + nextGame, false);
                 updates.put("player2done_game" + nextGame, false);
                 if (gameNumber == GAME_MY_NUMBER) updates.put("myNumberRound", 1L);
@@ -521,15 +530,15 @@ public class GameActivity extends AppCompatActivity {
         long opponentScore = currentUid.equals(player1) ? score2 : score1;
 
         String abandonedBy = snapshot.getString("abandonedBy");
-        if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
-            opponentScore = myScore > 0 ? myScore - 1 : 0;
-        }
 
         Intent intent = new Intent(this, GameResultActivity.class);
         intent.putExtra("myScore", myScore);
         intent.putExtra("opponentScore", opponentScore);
         intent.putExtra("isFriendly", isFriendly);
         intent.putExtra("gameId", gameId);
+        if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+            intent.putExtra("opponentAbandoned", true);
+        }
         startActivity(intent);
         finish();
     }

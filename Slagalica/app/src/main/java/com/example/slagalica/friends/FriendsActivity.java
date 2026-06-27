@@ -20,6 +20,7 @@ import com.example.slagalica.leagues.LeagueManager;
 import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.notifications.NotificationFactory;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.ranking.LeaderboardActivity;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -441,7 +442,7 @@ public class FriendsActivity extends AppCompatActivity {
                 startActivity(new Intent(FriendsActivity.this, ProfileActivity.class)));
 
         findViewById(R.id.navLeaderboard).setOnClickListener(v ->
-                Toast.makeText(this, "Leaderboard screen coming soon", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(FriendsActivity.this, LeaderboardActivity.class)));
     }
 
     private int dpToPx(int dp) {

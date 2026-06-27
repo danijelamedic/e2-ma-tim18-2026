@@ -60,6 +60,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     private static final int SHAKE_THRESHOLD = 800;
 
     private boolean isMultiplayer = false;
+    private boolean opponentAlreadyLeft = false;
     private String  gameId;
     private String  currentUid;
     private boolean isPlayer1 = false;
@@ -88,6 +89,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         db            = FirebaseFirestore.getInstance();
         currentUid    = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         gameId        = getIntent().getStringExtra("gameId");
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -137,7 +139,9 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
             cancelAllTimers();
             if (gameListener  != null) { gameListener.remove();  gameListener  = null; }
             if (scoreListener != null) { scoreListener.remove(); scoreListener = null; }
-            setResult(RESULT_CANCELED);
+            Intent result = new Intent();
+            result.putExtra("battleLost", true);
+            setResult(RESULT_OK, result);
             finish();
         });
 
@@ -438,6 +442,9 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
                     isStopper = (currentRound == 1 && isPlayer1)
                             || (currentRound == 2 && !isPlayer1);
+                    if (opponentAlreadyLeft) {
+                        isStopper = true;
+                    }
 
                     Long       sharedTarget  = snapshot.getLong("myNumberTarget_r" + currentRound);
                     List<Long> sharedNumbers = (List<Long>) snapshot.get("myNumberNumbers_r" + currentRound);
@@ -690,6 +697,11 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     }
 
     private void waitForOpponentResult() {
+        if (opponentAlreadyLeft) {
+            calculateAndSavePoints(myResult, 0);
+            return;
+        }
+
         String oppResField = isPlayer1
                 ? "myNumberResult2_r" + currentRound
                 : "myNumberResult1_r" + currentRound;

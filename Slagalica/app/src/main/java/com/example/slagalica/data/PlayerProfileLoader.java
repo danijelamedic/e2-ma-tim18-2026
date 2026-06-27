@@ -1,6 +1,8 @@
 package com.example.slagalica.data;
 
 import com.example.slagalica.R;
+import com.example.slagalica.leagues.League;
+import com.example.slagalica.leagues.LeagueManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class PlayerProfileLoader {
@@ -36,15 +38,18 @@ public class PlayerProfileLoader {
                     long tokensValue = tokens != null ? tokens : 0;
                     long starsValue = stars != null ? stars : 0;
                     long leagueValue = league != null ? league : 0;
+                    League leagueInfo = LeagueManager.getLeague(leagueValue);
 
                     callback.onLoaded(new PlayerSummary(
                             username != null ? username : "Player",
-                            "\uD83E\uDE99" + tokensValue + " \u2B50" + starsValue + " L" + leagueValue,
+                            "\uD83E\uDE99 " + tokensValue
+                                    + "  \u2B50 " + starsValue
+                                    + "\n" + leagueInfo.getIcon() + " " + leagueInfo.getName(),
                             getAvatarResource(avatar)
                     ));
                 })
                 .addOnFailureListener(e -> callback.onLoaded(
-                        new PlayerSummary("Player", "\uD83E\uDE990 \u2B500 L0", R.drawable.avatar_owl)
+                        new PlayerSummary("Player", "\uD83E\uDE99 0  \u2B50 0\nBeginner League", R.drawable.avatar_owl)
                 ));
     }
 

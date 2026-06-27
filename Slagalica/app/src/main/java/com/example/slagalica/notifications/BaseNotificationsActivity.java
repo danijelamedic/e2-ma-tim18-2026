@@ -21,6 +21,7 @@ import com.example.slagalica.ChatActivity;
 import com.example.slagalica.R;
 import com.example.slagalica.friends.FriendsActivity;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.ranking.LeaderboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -320,7 +321,7 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
                 showRewardDialog(notification);
                 break;
             case AppNotification.ACTION_OPEN_RANKING:
-                showSimpleDialog("Ranking", notification.message);
+                startActivity(new Intent(this, LeaderboardActivity.class));
                 break;
             case AppNotification.ACTION_FRIEND_INVITE:
                 showInviteDialog(notification);
@@ -537,7 +538,7 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
                 startActivity(new Intent(this, FriendsActivity.class)));
 
         findViewById(R.id.navLeaderboard).setOnClickListener(v ->
-                Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(this, LeaderboardActivity.class)));
     }
 
     private void expireInvite(String requestId) {

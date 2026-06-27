@@ -77,8 +77,8 @@
 
                 <ImageView
                     android:id="@+id/tvSkockoYourAvatar"
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
                     android:background="@drawable/bg_active_player_avatar"
                     android:contentDescription="Player avatar"
                     android:gravity="center"
@@ -89,7 +89,7 @@
                 <TextView
                     android:id="@+id/tvSkockoPlayerName"
                     android:layout_width="wrap_content"
-                    android:layout_height="22dp"
+                    android:layout_height="20dp"
                     android:gravity="center"
                     android:text="@string/player_you_name"
                     android:textColor="#2D1B5E"
@@ -99,7 +99,7 @@
                 <TextView
                     android:id="@+id/tvSkockoPlayerScore"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
+                    android:layout_height="22dp"
                     android:gravity="center"
                     android:text="@string/player_you_score"
                     android:textColor="#5B2FC4"
@@ -109,12 +109,12 @@
                 <TextView
                     android:id="@+id/tvSkockoPlayerInfo"
                     android:layout_width="match_parent"
-                    android:layout_height="18dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:singleLine="true"
+                    android:maxLines="2"
                     android:text="🪙0 ⭐0 L0"
                     android:textColor="#5B2FC4"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -169,8 +169,8 @@
 
                 <ImageView
                     android:id="@+id/tvSkockoOpponentAvatar"
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
                     android:background="@drawable/bg_inactive_player_avatar"
                     android:contentDescription="Opponent avatar"
                     android:gravity="center"
@@ -181,7 +181,7 @@
                 <TextView
                     android:id="@+id/tvSkockoOpponentName"
                     android:layout_width="wrap_content"
-                    android:layout_height="22dp"
+                    android:layout_height="20dp"
                     android:gravity="center"
                     android:text="@string/player_opponent_name"
                     android:textColor="#2D1B5E"
@@ -191,7 +191,7 @@
                 <TextView
                     android:id="@+id/tvSkockoOpponentScore"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
+                    android:layout_height="22dp"
                     android:gravity="center"
                     android:text="@string/player_opponent_score"
                     android:textColor="#5B2FC4"
@@ -201,12 +201,12 @@
                 <TextView
                     android:id="@+id/tvSkockoOpponentInfo"
                     android:layout_width="match_parent"
-                    android:layout_height="18dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:singleLine="true"
+                    android:maxLines="2"
                     android:text="🪙0 ⭐0 L0"
                     android:textColor="#5B2FC4"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>

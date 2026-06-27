@@ -25,6 +25,9 @@ import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.notifications.NotificationChannelManager;
 import com.example.slagalica.notifications.NotificationRepository;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.ranking.LeaderboardActivity;
+import com.example.slagalica.ranking.RankingRepository;
+import com.example.slagalica.ranking.RankingRewardDialog;
 import com.example.slagalica.leagues.League;
 import com.example.slagalica.leagues.LeagueManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +39,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -110,6 +114,9 @@ public class HomeActivity extends AppCompatActivity {
         loadCurrentUserName();
         saveFcmToken();
         startNotificationListener();
+        // Defense demo: uncomment to preview ranking notification and animated reward dialog.
+        // sendRankingNotificationPreview();
+        new RankingRepository().checkPreviousCycleRewards(currentUid, this::showRankingRewardIfAny);
     }
 
     private void loadCurrentUserName() {
@@ -125,6 +132,33 @@ public class HomeActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to load user data", Toast.LENGTH_SHORT).show()
                 );
+    }
+
+    private void showRankingRewardIfAny(String message) {
+        if (message == null || message.isEmpty() || isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        RankingRewardDialog.show(this, message);
+    }
+
+    private void sendRankingNotificationPreview() {
+        AppNotification notification = new AppNotification(
+                currentUid,
+                AppNotification.TYPE_RANKING,
+                "Ranking update",
+                "You entered the weekly leaderboard at position #3.",
+                AppNotification.ACTION_OPEN_RANKING,
+                new HashMap<>()
+        );
+        notificationRepository.create(currentUid, notification);
+
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            if (!isFinishing() && !isDestroyed()) {
+                RankingRewardDialog.show(this,
+                        "You finished #3 in the weekly ranking and earned 2 token(s).");
+            }
+        }, 800);
     }
 
     private void checkDailyTokens() {
@@ -263,7 +297,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         navLeaderboard.setOnClickListener(v ->
-                Toast.makeText(this, "Leaderboard screen will be added later", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(this, LeaderboardActivity.class)));
 
         navNotifications.setOnClickListener(v ->
                 startActivity(new Intent(this, NotificationCenterActivity.class)));

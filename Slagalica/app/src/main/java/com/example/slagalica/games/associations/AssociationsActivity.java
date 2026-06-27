@@ -68,6 +68,7 @@ public class AssociationsActivity extends AppCompatActivity {
     private boolean gameLoaded = false;
     private boolean isBattleMode;
     private boolean isMultiplayer;
+    private boolean opponentAlreadyLeft;
     private boolean multiplayerResultSent = false;
     private boolean multiplayerTimeoutHandled = false;
     private boolean multiplayerPhaseAdvanceStarted = false;
@@ -94,6 +95,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         db = FirebaseFirestore.getInstance();
         currentUid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
@@ -113,6 +115,7 @@ public class AssociationsActivity extends AppCompatActivity {
         setupBoard();
         setupFinalButton();
         setBoardEnabled(false);
+        loadCurrentPlayerPanel();
         tvTurn.setText("Loading association...");
         if (isMultiplayer && gameId != null && currentUid != null) {
             loadMultiplayerContext();
@@ -142,9 +145,28 @@ public class AssociationsActivity extends AppCompatActivity {
         btnLeave.setOnClickListener(v -> new AlertDialog.Builder(this)
                 .setTitle("Leave Game")
                 .setMessage("Are you sure you want to leave the game?")
-                .setPositiveButton("YES", (dialog, which) -> finish())
+                .setPositiveButton("YES", (dialog, which) -> leaveGame())
                 .setNegativeButton("NO", (dialog, which) -> dialog.dismiss())
                 .show());
+    }
+
+    private void leaveGame() {
+        pauseTimer();
+        if (associationsStateListener != null) {
+            associationsStateListener.remove();
+            associationsStateListener = null;
+        }
+        if (abandonListener != null) {
+            abandonListener.remove();
+            abandonListener = null;
+        }
+
+        if (isBattleMode || isMultiplayer) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("battleLost", true);
+            setResult(RESULT_OK, resultIntent);
+        }
+        finish();
     }
 
     private void setupInfoButton() {
@@ -210,7 +232,9 @@ public class AssociationsActivity extends AppCompatActivity {
 
                     loadPlayerPanels();
                     listenForAssociationsState();
-                    listenForAbandon();
+                    if (!opponentAlreadyLeft) {
+                        listenForAbandon();
+                    }
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to load players.", Toast.LENGTH_SHORT).show();
@@ -232,6 +256,18 @@ public class AssociationsActivity extends AppCompatActivity {
         });
     }
 
+    private void loadCurrentPlayerPanel() {
+        if (currentUid == null) {
+            return;
+        }
+
+        PlayerProfileLoader.load(currentUid, summary -> {
+            tvPlayerName.setText(summary.username);
+            tvPlayerInfo.setText(summary.info);
+            tvPlayerAvatar.setImageResource(summary.avatarResId);
+        });
+    }
+
     private void setupPassButton() {
         btnPass.setOnClickListener(v -> {
             if (isMultiplayer && currentUid != null && currentUid.equals(activeUid) && !canOpenClue) {
@@ -247,8 +283,8 @@ public class AssociationsActivity extends AppCompatActivity {
             }
 
             if (snapshot == null || !snapshot.exists()) {
-                if (currentUid.equals(player1Uid)) {
-                    createAssociationRound(1, player1Uid, null);
+                if (currentUid.equals(player1Uid) || opponentAlreadyLeft) {
+                    createAssociationRound(1, opponentAlreadyLeft ? currentUid : player1Uid, null);
                 } else {
                     tvTurn.setText("Waiting for game...");
                 }
@@ -524,7 +560,7 @@ public class AssociationsActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 tvTimer.setText(getString(R.string.associations_timer_format, 0, 0));
-                if (currentUid.equals(player1Uid) && !multiplayerPhaseAdvanceStarted) {
+                if ((currentUid.equals(player1Uid) || opponentAlreadyLeft) && !multiplayerPhaseAdvanceStarted) {
                     multiplayerPhaseAdvanceStarted = true;
                     advanceAfterResultPhase(phase);
                 }
@@ -555,7 +591,7 @@ public class AssociationsActivity extends AppCompatActivity {
             @SuppressWarnings("unchecked")
             Map<String, Object> rawScores = (Map<String, Object>) snapshot.get("scores");
             Map<String, Long> scores = toLongScoreMap(rawScores);
-            createAssociationRound(2, player2Uid, scores);
+            createAssociationRound(2, opponentAlreadyLeft ? currentUid : player2Uid, scores);
         });
     }
 
@@ -838,7 +874,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
     private void passMultiplayerTurn() {
         Map<String, Object> updates = new HashMap<>();
-        updates.put("activeUid", opponentUid);
+        updates.put("activeUid", opponentAlreadyLeft ? currentUid : opponentUid);
         updates.put("canOpenClue", true);
         associationsStateRef.update(updates);
     }
@@ -1051,8 +1087,12 @@ public class AssociationsActivity extends AppCompatActivity {
                     String abandonedBy = snapshot.getString("abandonedBy");
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
                         if (abandonListener != null) { abandonListener.remove(); abandonListener = null; }
+                        if (timer != null) { timer.cancel(); timer = null; }
+                        multiplayerResultSent = true;
+                        int myScore = (int) getScoreFor(currentUid);
                         Intent r = new Intent();
-                        r.putExtra("points", 0);
+                        r.putExtra("score", myScore);
+                        r.putExtra("points", myScore);
                         setResult(RESULT_OK, r);
                         finish();
                     }
