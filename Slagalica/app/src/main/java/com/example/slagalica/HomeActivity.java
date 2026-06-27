@@ -70,6 +70,7 @@ public class HomeActivity extends AppCompatActivity {
     private NotificationRepository notificationRepository;
     private ListenerRegistration notificationListener;
     private final Set<String> seenNotificationIds = new HashSet<>();
+    private static final Set<String> shownPopupNotificationIds = new HashSet<>();
     private boolean notificationFirstLoad = true;
 
     private View navStatistics;
@@ -224,7 +225,7 @@ public class HomeActivity extends AppCompatActivity {
                         for (AppNotification n : notifications) {
                             if (n.read || n.id == null) continue;
                             if (seenNotificationIds.add(n.id)) {
-                                LocalNotificationSender.show(HomeActivity.this, n, intentForNotification(n));
+                                showPopupOnce(n);
                             }
                         }
                     }
@@ -234,6 +235,15 @@ public class HomeActivity extends AppCompatActivity {
                         Log.w(TAG, "Failed to listen for notifications", exception);
                     }
                 });
+    }
+
+    private void showPopupOnce(AppNotification notification) {
+        synchronized (shownPopupNotificationIds) {
+            if (!shownPopupNotificationIds.add(notification.id)) {
+                return;
+            }
+        }
+        LocalNotificationSender.show(this, notification, intentForNotification(notification));
     }
 
     private Intent intentForNotification(AppNotification notification) {
