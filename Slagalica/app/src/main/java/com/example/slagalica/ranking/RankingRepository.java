@@ -55,11 +55,22 @@ public class RankingRepository {
             return;
         }
 
+        recordRankedMatchForUser(user.getUid(), starsDelta);
+    }
+
+    public static void recordRankedMatchForUser(String uid, long starsDelta) {
+        if (uid == null) {
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String uid = user.getUid();
 
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(snapshot -> {
+                    if (snapshot == null || !snapshot.exists()) {
+                        return;
+                    }
+
                     String username = snapshot.getString("username");
                     String avatar = snapshot.getString("avatar");
                     long stars = valueOrZero(snapshot.getLong("stars"));

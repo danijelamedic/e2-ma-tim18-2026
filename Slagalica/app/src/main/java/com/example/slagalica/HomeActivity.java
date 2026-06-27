@@ -28,6 +28,7 @@ import com.example.slagalica.profile.ProfileActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
 import com.example.slagalica.ranking.RankingRepository;
 import com.example.slagalica.ranking.RankingRewardDialog;
+import com.example.slagalica.tournament.TournamentActivity;
 import com.example.slagalica.leagues.League;
 import com.example.slagalica.leagues.LeagueManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,6 +58,7 @@ public class HomeActivity extends AppCompatActivity {
     private View navNotifications;
     private View navProfile;
     private View btnChallenge;
+    private View btnTournament;
     private View btnChat;
     private FirebaseFirestore db;
     private String currentUid;
@@ -247,6 +249,7 @@ public class HomeActivity extends AppCompatActivity {
     private void initializeViews() {
         btnPlay           = findViewById(R.id.btnPlay);
         btnChallenge      = findViewById(R.id.btnChallenge);
+        btnTournament     = findViewById(R.id.btnTournament);
         btnChat = findViewById(R.id.btnChat);
         btnLogout         = findViewById(R.id.btnLogout);
         navHome           = findViewById(R.id.navHome);
@@ -266,6 +269,10 @@ public class HomeActivity extends AppCompatActivity {
         if (btnChallenge != null) {
             btnChallenge.setOnClickListener(v ->
                     startActivity(new Intent(this, ChallengeActivity.class)));
+        }
+        if (btnTournament != null) {
+            btnTournament.setOnClickListener(v ->
+                    startActivity(new Intent(this, TournamentActivity.class)));
         }
         if (btnChat != null) {
             btnChat.setOnClickListener(v ->
