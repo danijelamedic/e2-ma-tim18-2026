@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -18,6 +19,10 @@ import com.example.slagalica.GameActivity;
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
 import com.example.slagalica.data.PlayerProfileLoader;
+import com.example.slagalica.friends.FriendsActivity;
+import com.example.slagalica.notifications.NotificationCenterActivity;
+import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.ranking.LeaderboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -37,6 +42,7 @@ public class TournamentActivity extends AppCompatActivity {
     private TextView helperText;
     private Button primaryButton;
     private Button secondaryButton;
+    private LinearLayout bottomNavigation;
     private boolean gameStarted = false;
     private boolean canUseBackToHome = false;
 
@@ -55,13 +61,16 @@ public class TournamentActivity extends AppCompatActivity {
     }
 
     private void buildLayout() {
+        FrameLayout frame = new FrameLayout(this);
+        frame.setBackgroundColor(0xFFF6F3FF);
+
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
         scroll.setBackgroundColor(0xFFF6F3FF);
 
         content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(20), dp(16), dp(20), dp(16));
+        content.setPadding(dp(20), dp(16), dp(20), dp(110));
         scroll.addView(content);
 
         title = new TextView(this);
@@ -93,11 +102,15 @@ public class TournamentActivity extends AppCompatActivity {
         content.addView(primaryButton);
         content.addView(secondaryButton);
 
-        setContentView(scroll);
+        bottomNavigation = bottomNavigation();
+        frame.addView(scroll);
+        frame.addView(bottomNavigation);
+        setContentView(frame);
     }
 
     private void showJoinState() {
         canUseBackToHome = true;
+        setBottomNavigationVisible(true);
         clearBracketViews();
         status.setText("Entry costs 3 tokens. Four players are matched into two semifinals, and the winners meet in the final.");
         helperText.setText("");
@@ -129,6 +142,7 @@ public class TournamentActivity extends AppCompatActivity {
     private void listenQueue() {
         if (queueListener != null) queueListener.remove();
         canUseBackToHome = true;
+        setBottomNavigationVisible(true);
         status.setText("Waiting for 4 active players...");
         helperText.setText("If you cancel before the bracket is formed, your 3 tournament tokens will be refunded.");
         repository.checkForReadyTournament();
@@ -205,25 +219,25 @@ public class TournamentActivity extends AppCompatActivity {
 
         if ("finished".equals(tournamentStatus)) {
             canUseBackToHome = true;
+            setBottomNavigationVisible(true);
             String winnerUid = tournament.getString("winnerUid");
             status.setText(currentUid.equals(winnerUid)
                     ? "Tournament complete. You are the champion."
                     : "Tournament complete.");
-            secondaryButton.setVisibility(View.VISIBLE);
-            secondaryButton.setText("Home");
-            secondaryButton.setOnClickListener(v -> goHome());
+            secondaryButton.setVisibility(View.GONE);
         } else if (isEliminated(tournament)) {
             canUseBackToHome = true;
+            setBottomNavigationVisible(true);
             status.setText("You are eliminated. You can return home.");
-            secondaryButton.setVisibility(View.VISIBLE);
-            secondaryButton.setText("Home");
-            secondaryButton.setOnClickListener(v -> goHome());
+            secondaryButton.setVisibility(View.GONE);
         } else if (gameId == null) {
             canUseBackToHome = false;
+            setBottomNavigationVisible(false);
             status.setText("Waiting for the next tournament match.");
             secondaryButton.setVisibility(View.GONE);
         } else {
             canUseBackToHome = false;
+            setBottomNavigationVisible(false);
             status.setText("Your tournament match is ready.");
             secondaryButton.setVisibility(View.GONE);
         }
@@ -363,6 +377,47 @@ public class TournamentActivity extends AppCompatActivity {
         lp.setMargins(0, dp(10), 0, 0);
         button.setLayoutParams(lp);
         return button;
+    }
+
+    private LinearLayout bottomNavigation() {
+        LinearLayout nav = new LinearLayout(this);
+        nav.setOrientation(LinearLayout.HORIZONTAL);
+        nav.setGravity(Gravity.CENTER);
+        nav.setPadding(dp(6), dp(8), dp(6), dp(8));
+        nav.setBackgroundResource(R.drawable.bg_profile_card);
+        nav.setElevation(dp(12));
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                dp(86),
+                Gravity.BOTTOM);
+        nav.setLayoutParams(params);
+
+        addNavItem(nav, "🏠", v -> goHome());
+        addNavItem(nav, "🔔", v -> startActivity(new Intent(this, NotificationCenterActivity.class)));
+        addNavItem(nav, "👥", v -> startActivity(new Intent(this, FriendsActivity.class)));
+        addNavItem(nav, "🏆", v -> startActivity(new Intent(this, LeaderboardActivity.class)));
+        addNavItem(nav, "📊", v -> startActivity(new Intent(this, ProfileActivity.class)));
+        addNavItem(nav, "👤", v -> startActivity(new Intent(this, ProfileActivity.class)));
+        return nav;
+    }
+
+    private void addNavItem(LinearLayout nav, String icon, View.OnClickListener listener) {
+        TextView item = new TextView(this);
+        item.setText(icon);
+        item.setTextSize(24);
+        item.setGravity(Gravity.CENTER);
+        item.setClickable(true);
+        item.setFocusable(true);
+        item.setOnClickListener(listener);
+        nav.addView(item, new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.MATCH_PARENT, 1f));
+    }
+
+    private void setBottomNavigationVisible(boolean visible) {
+        if (bottomNavigation != null) {
+            bottomNavigation.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     private LinearLayout.LayoutParams matchWrap() {

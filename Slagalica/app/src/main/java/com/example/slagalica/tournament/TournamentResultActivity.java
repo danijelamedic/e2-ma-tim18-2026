@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalica.HomeActivity;
 import com.example.slagalica.R;
+import com.example.slagalica.daily.DailyMission;
+import com.example.slagalica.daily.DailyMissionRepository;
 import com.example.slagalica.notifications.NotificationFactory;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -28,6 +30,7 @@ public class TournamentResultActivity extends AppCompatActivity {
     private boolean abandonedMatch;
     private boolean rewardNotificationSent = false;
     private long myScore;
+    private final DailyMissionRepository dailyMissionRepository = new DailyMissionRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +125,11 @@ public class TournamentResultActivity extends AppCompatActivity {
 
         repository.reportMatchResult(gameId, new TournamentRepository.MatchReportCallback() {
             @Override
-            public void onComplete(boolean rewardsApplied) {
+            public void onComplete(TournamentRepository.MatchReportResult result) {
+                if (result.resultRecorded && won && !abandonedMatch) {
+                    dailyMissionRepository.completeMission(TournamentResultActivity.this,
+                            currentUid, DailyMission.WIN_TOURNAMENT_MATCH);
+                }
                 sendRewardNotificationIfNeeded();
                 enableContinue();
             }

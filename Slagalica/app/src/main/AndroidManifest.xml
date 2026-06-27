@@ -59,6 +59,7 @@
         <activity android:name=".ChallengeActivity" android:exported="false"/>
         <activity android:name=".ChallengeGameActivity" android:exported="false"/>
         <activity android:name=".ChallengeResultActivity" android:exported="false"/>
+        <activity android:name=".daily.DailyMissionsActivity" android:exported="false"/>
         <activity android:name=".tournament.TournamentActivity" android:exported="false"/>
         <activity android:name=".tournament.TournamentResultActivity" android:exported="false"/>
         <activity android:name=".leagues.LeagueActivity" android:exported="false" />

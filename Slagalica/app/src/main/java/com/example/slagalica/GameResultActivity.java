@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.slagalica.daily.DailyMission;
+import com.example.slagalica.daily.DailyMissionRepository;
 import com.example.slagalica.notifications.NotificationFactory;
 import com.example.slagalica.ranking.RankingRepository;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,6 +19,7 @@ public class GameResultActivity extends AppCompatActivity {
     private String currentUid;
     private boolean isGuest;
     private NotificationFactory notificationFactory;
+    private DailyMissionRepository dailyMissionRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,7 @@ public class GameResultActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         notificationFactory = new NotificationFactory();
+        dailyMissionRepository = new DailyMissionRepository();
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isGuest = FirebaseAuth.getInstance().getCurrentUser().isAnonymous();
 
@@ -62,6 +66,9 @@ public class GameResultActivity extends AppCompatActivity {
             updateStarsAndTokens(won, myScore, tvStars);
         } else {
             tvStars.setText("Friendly match - no stars awarded");
+            if (!isGuest) {
+                dailyMissionRepository.completeMission(this, currentUid, DailyMission.PLAY_FRIENDLY_MATCH);
+            }
         }
 
         findViewById(R.id.btnHome).setOnClickListener(v -> {
@@ -116,6 +123,9 @@ public class GameResultActivity extends AppCompatActivity {
                                 }
                                 notificationFactory.sendReward(this, currentUid, starsDelta, tokensEarned);
                                 RankingRepository.recordRankedMatch(starsDelta);
+                                if (won) {
+                                    dailyMissionRepository.completeMission(this, currentUid, DailyMission.WIN_MATCH);
+                                }
                                 if (newLeague != oldLeague) {
                                     notificationFactory.sendLeagueChange(this, currentUid, oldLeague, newLeague);
                                 }

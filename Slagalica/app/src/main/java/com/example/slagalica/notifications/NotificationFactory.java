@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.slagalica.ChatActivity;
+import com.example.slagalica.daily.DailyMissionsActivity;
 import com.example.slagalica.leagues.LeagueManager;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.ranking.LeaderboardActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +57,25 @@ public class NotificationFactory {
         repository.create(uid, notificationId, notification);
         LocalNotificationSender.show(context, notification,
                 new Intent(context, RewardsNotificationsActivity.class));
+    }
+
+    public void sendDailyMissionReward(Context context, String uid, int starsDelta,
+                                       int tokensDelta, boolean allCompletedBonus) {
+        String message = allCompletedBonus
+                ? "All daily missions completed. You received +" + starsDelta
+                + " stars and +" + tokensDelta + " tokens."
+                : "Daily mission completed. You received +" + starsDelta + " stars.";
+        AppNotification notification = new AppNotification(
+                uid,
+                AppNotification.TYPE_REWARD,
+                "Daily mission reward",
+                message,
+                AppNotification.ACTION_OPEN_DAILY_MISSIONS,
+                null
+        );
+        repository.create(uid, notification);
+        LocalNotificationSender.show(context, notification,
+                new Intent(context, DailyMissionsActivity.class));
     }
 
     public void sendLeagueChange(Context context, String uid, long oldLeague, long newLeague) {
@@ -108,7 +129,7 @@ public class NotificationFactory {
         );
         repository.create(uid, notification);
         LocalNotificationSender.show(context, notification,
-                new Intent(context, RankingNotificationsActivity.class));
+                new Intent(context, LeaderboardActivity.class));
     }
 
     public void sendFriendInvite(Context context, String toUid, String fromUsername, String inviteId) {

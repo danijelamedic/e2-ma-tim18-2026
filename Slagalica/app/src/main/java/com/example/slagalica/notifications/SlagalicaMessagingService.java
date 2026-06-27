@@ -3,6 +3,7 @@ package com.example.slagalica.notifications;
 import android.content.Intent;
 
 import com.example.slagalica.ChatActivity;
+import com.example.slagalica.daily.DailyMissionsActivity;
 import com.example.slagalica.profile.ProfileActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -68,6 +69,9 @@ public class SlagalicaMessagingService extends FirebaseMessagingService {
         }
         if (AppNotification.ACTION_OPEN_REWARDS.equals(actionType)) {
             return new Intent(this, RewardsNotificationsActivity.class);
+        }
+        if (AppNotification.ACTION_OPEN_DAILY_MISSIONS.equals(actionType)) {
+            return new Intent(this, DailyMissionsActivity.class);
         }
         if (AppNotification.ACTION_OPEN_RANKING.equals(actionType)) {
             return new Intent(this, LeaderboardActivity.class);

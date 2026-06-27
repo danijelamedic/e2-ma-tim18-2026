@@ -32,8 +32,18 @@ public class TournamentRepository {
     }
 
     public interface MatchReportCallback {
-        void onComplete(boolean rewardsApplied);
+        void onComplete(MatchReportResult result);
         void onError(String message);
+    }
+
+    public static class MatchReportResult {
+        public final boolean rewardsApplied;
+        public final boolean resultRecorded;
+
+        MatchReportResult(boolean rewardsApplied, boolean resultRecorded) {
+            this.rewardsApplied = rewardsApplied;
+            this.resultRecorded = resultRecorded;
+        }
     }
 
     public interface TournamentSnapshotCallback {
@@ -257,11 +267,14 @@ public class TournamentRepository {
 
         db.runTransaction(transaction -> {
             DocumentSnapshot tournament = transaction.get(tournamentRef);
-            if (tournament == null || !tournament.exists()) return false;
+            if (tournament == null || !tournament.exists()) {
+                return new MatchReportResult(false, false);
+            }
 
             String winnerField = matchId + "Winner";
-            if (tournament.getString(winnerField) != null) {
-                return false;
+            String recordedWinner = tournament.getString(winnerField);
+            if (recordedWinner != null) {
+                return new MatchReportResult(false, recordedWinner.equals(winnerUid));
             }
 
             Map<String, Object> updates = new HashMap<>();
@@ -292,13 +305,12 @@ public class TournamentRepository {
             }
 
             transaction.update(tournamentRef, updates);
-            return true;
-        }).addOnSuccessListener(didApply -> {
-            boolean rewardsApplied = Boolean.TRUE.equals(didApply);
-            if (rewardsApplied) {
+            return new MatchReportResult(true, true);
+        }).addOnSuccessListener(result -> {
+            if (result.rewardsApplied) {
                 grantRewards(round, winnerUid, loserUid, winnerScore, loserScore, abandonedBy);
             }
-            callback.onComplete(rewardsApplied);
+            callback.onComplete(result);
         }).addOnFailureListener(e -> callback.onError("Failed to save tournament result."));
     }
 
