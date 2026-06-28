@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import com.example.slagalica.models.MatchingPair;
 import java.util.ArrayList;
 import java.util.List;
+import android.view.View;
 
 public class MatchingActivity extends AppCompatActivity {
 
@@ -80,6 +81,11 @@ public class MatchingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_matching);
+
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View playersCard = findViewById(R.id.layoutPlayersCard);
+            if (playersCard != null) playersCard.setVisibility(android.view.View.GONE);
+        }
 
         db = FirebaseFirestore.getInstance();
 
@@ -242,6 +248,7 @@ public class MatchingActivity extends AppCompatActivity {
                 findViewById(R.id.rightItem4),
                 findViewById(R.id.rightItem5)
         };
+
     }
 
     private void setupMatchingClicks() {

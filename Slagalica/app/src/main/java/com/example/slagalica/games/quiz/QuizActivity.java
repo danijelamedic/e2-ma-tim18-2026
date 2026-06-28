@@ -75,6 +75,11 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View playersCard = findViewById(R.id.layoutPlayersCard);
+            if (playersCard != null) playersCard.setVisibility(android.view.View.GONE);
+        }
         db = FirebaseFirestore.getInstance();
 
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -125,6 +130,8 @@ public class QuizActivity extends AppCompatActivity {
                 findViewById(R.id.btnAnswer2),
                 findViewById(R.id.btnAnswer3),
                 findViewById(R.id.btnAnswer4)
+
+
         };
 
         findViewById(R.id.btnQuizInfo).setOnClickListener(v -> showInfoDialog());
@@ -272,8 +279,10 @@ public class QuizActivity extends AppCompatActivity {
         hasAnsweredCurrentQuestion = true;
         selectedAnswerIndex = index;
 
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
+        if (isMultiplayer && gameId != null) {
+            if (countDownTimer != null) countDownTimer.cancel();
+        } else {
+            tvQuizTimer.postDelayed(() -> moveToNextQuestion(), 1000);
         }
 
         for (TextView answerView : answerViews) {

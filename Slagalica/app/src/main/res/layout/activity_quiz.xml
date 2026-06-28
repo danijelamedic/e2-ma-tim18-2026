@@ -54,6 +54,7 @@
 
         <!-- GAME STATUS CARD -->
         <LinearLayout
+            android:id="@+id/layoutPlayersCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -229,16 +230,16 @@
         </LinearLayout>
 
         <!-- QUESTION CARD -->
-<!--        <TextView-->
-<!--            android:id="@+id/tvQuestionCounter"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/quiz_question_counter"-->
-<!--            android:textColor="#5B2FC4"-->
-<!--            android:textSize="14sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_marginBottom="8dp" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/tvQuestionCounter"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@string/quiz_question_counter"-->
+        <!--            android:textColor="#5B2FC4"-->
+        <!--            android:textSize="14sp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            android:gravity="center"-->
+        <!--            android:layout_marginBottom="8dp" />-->
 
         <TextView
             android:id="@+id/tvQuestion"

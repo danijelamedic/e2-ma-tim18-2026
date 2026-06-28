@@ -36,7 +36,6 @@ public class StepByStepActivity extends AppCompatActivity {
     private static final int POINTS_LOSS_PER_STEP = 2;
     private static final int OPPONENT_BONUS_MS    = 10_000;
 
-    // Premium palette
     private static final int GOLD_TOP   = 0xFFF7D667;
     private static final int GOLD_BOT   = 0xFFD9A33A;
     private static final int GOLD_TEXT  = 0xFF3A2A00;
@@ -90,6 +89,11 @@ public class StepByStepActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_by_step);
+
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View playersCard = findViewById(R.id.layoutPlayersCard);
+            if (playersCard != null) playersCard.setVisibility(android.view.View.GONE);
+        }
 
         db            = FirebaseFirestore.getInstance();
         currentUid    = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -163,9 +167,9 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive()) return;
                     if (myDoc.exists()) {
                         String name  = myDoc.getString("username");
-                        Long   coins = myDoc.getLong("coins");
+                        Long   coins = myDoc.getLong("tokens");
                         Long   stars = myDoc.getLong("stars");
-                        Long   level = myDoc.getLong("level");
+                        Long   level = myDoc.getLong("league");
                         if (name != null) tvPlayerName.setText(name);
                         imgYourAvatar.setImageResource(
                                 com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(myDoc.getString("avatar")));
@@ -184,9 +188,9 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive()) return;
                     if (doc.exists()) {
                         String name  = doc.getString("username");
-                        Long   coins = doc.getLong("coins");
+                        Long   coins = doc.getLong("tokens");
                         Long   stars = doc.getLong("stars");
-                        Long   level = doc.getLong("level");
+                        Long   level = doc.getLong("league");
                         if (name != null) tvOpponentName.setText(name);
                         imgOpponentAvatar.setImageResource(
                                 com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(doc.getString("avatar")));

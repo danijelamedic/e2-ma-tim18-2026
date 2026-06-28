@@ -90,6 +90,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
         }
 
         intent.putExtra("isMultiplayer", false);
+        intent.putExtra("isBattleMode", true);
         startActivityForResult(intent, currentGameNumber);
     }
 

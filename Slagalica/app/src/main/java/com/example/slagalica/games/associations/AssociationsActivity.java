@@ -93,6 +93,11 @@ public class AssociationsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_associations);
 
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View playersCard = findViewById(R.id.layoutPlayersCard);
+            if (playersCard != null) playersCard.setVisibility(android.view.View.GONE);
+        }
+
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
@@ -138,7 +143,11 @@ public class AssociationsActivity extends AppCompatActivity {
         tvTurn = findViewById(R.id.tvAssociationsTurn);
         tvFinalSolution = findViewById(R.id.tvFinalSolution);
         btnPass = findViewById(R.id.btnPassAssociations);
+        boolean isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
+
     }
+
+
 
     private void setupLeaveButton() {
         Button btnLeave = findViewById(R.id.btnLeaveAssociations);

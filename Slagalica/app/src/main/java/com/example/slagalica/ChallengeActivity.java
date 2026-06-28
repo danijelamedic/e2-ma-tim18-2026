@@ -109,12 +109,25 @@ public class ChallengeActivity extends AppCompatActivity {
                     db.collection("challenges").add(challenge)
                             .addOnSuccessListener(ref -> {
                                 myChallengeId = ref.getId();
-                                Toast.makeText(this, "Challenge posted! Waiting for players...",
-                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Challenge posted! Waiting for players...", Toast.LENGTH_SHORT).show();
                                 etStars.setText("");
                                 etTokens.setText("");
-                                listenForMyChallengeStart(myChallengeId, stars, tokens);
-                            });
+                                btnPostChallenge.setText("▶ START CHALLENGE");
+                                btnPostChallenge.setOnClickListener(v -> startMyChallenge(myChallengeId));
+                                                  });
+                });
+    }
+    private void startMyChallenge(String challengeId) {
+        db.collection("challenges").document(challengeId).get()
+                .addOnSuccessListener(snapshot -> {
+                    List<String> participants = (List<String>) snapshot.get("participants");
+                    if (participants == null || participants.size() < 2) {
+                        Toast.makeText(this, "Need at least 1 other player!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    db.collection("challenges").document(challengeId)
+                            .update("status", "started")
+                            .addOnSuccessListener(unused -> openChallengeGame(challengeId));
                 });
     }
 
@@ -278,18 +291,25 @@ public class ChallengeActivity extends AppCompatActivity {
                                 Map<String, Object> update = new HashMap<>();
                                 update.put("participants", updatedParticipants);
 
-                                if (updatedParticipants.size() >= 2) {
-                                    update.put("status", "started");
-                                }
-
                                 db.collection("challenges").document(challengeId)
                                         .update(update)
                                         .addOnSuccessListener(unused -> {
-                                            Toast.makeText(this, "Challenge accepted! Starting...",
-                                                    Toast.LENGTH_SHORT).show();
-                                            openChallengeGame(challengeId);
+                                            Toast.makeText(this, "Challenge accepted! Waiting for start...", Toast.LENGTH_SHORT).show();
+                                            listenForChallengeStart(challengeId);
                                         });
                             });
+                });
+    }
+
+    private void listenForChallengeStart(String challengeId) {
+        myChallengeListener = db.collection("challenges").document(challengeId)
+                .addSnapshotListener((snapshot, e) -> {
+                    if (snapshot == null) return;
+                    String status = snapshot.getString("status");
+                    if ("started".equals(status)) {
+                        if (myChallengeListener != null) myChallengeListener.remove();
+                        openChallengeGame(challengeId);
+                    }
                 });
     }
 

@@ -96,6 +96,11 @@ public class SkockoActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_skocko);
 
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View playersCard = findViewById(R.id.layoutPlayersCard);
+            if (playersCard != null) playersCard.setVisibility(android.view.View.GONE);
+        }
+
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
