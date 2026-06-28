@@ -243,6 +243,7 @@
     <string name="skocko_bonus_success_message">The opponent used the 10-second bonus turn and solved the combination for 10 points.</string>
     <string name="skocko_bonus_fail_message">The opponent missed the 10-second bonus turn. No bonus points were awarded.</string>
     <string name="skocko_bonus_timeout_message">The opponent ran out of time during the 10-second bonus turn.</string>
+    <string name="skocko_challenge_no_solve_message">You did not crack the code. No points this round.</string>
 
     <string name="notifications_title">NOTIFICATION CENTER</string>
     <string name="notifications_history_title">All notifications</string>

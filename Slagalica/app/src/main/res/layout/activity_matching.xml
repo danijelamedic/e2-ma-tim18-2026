@@ -87,6 +87,7 @@
 
         <!-- YOU -->
         <LinearLayout
+            android:id="@+id/layoutPlayerPanel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -134,6 +135,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tvVsLabel"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -146,6 +148,7 @@
 
         <!-- OPPONENT -->
         <LinearLayout
+            android:id="@+id/layoutOpponentPanel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

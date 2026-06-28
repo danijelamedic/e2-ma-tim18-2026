@@ -97,8 +97,19 @@ public class SkockoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_skocko);
 
         if (getIntent().getBooleanExtra("isBattleMode", false)) {
-            android.view.View playersCard = findViewById(R.id.layoutPlayersCard);
-            if (playersCard != null) playersCard.setVisibility(android.view.View.GONE);
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvSkockoPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
         }
 
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
@@ -715,6 +726,11 @@ public class SkockoActivity extends AppCompatActivity {
         }
 
         if (attemptIndex == 6) {
+            if (isBattleMode) {
+                revealSolution();
+                showEndDialog(getString(R.string.skocko_challenge_no_solve_message));
+                return;
+            }
             startOpponentBonusTurn();
             return;
         }
@@ -991,6 +1007,9 @@ public class SkockoActivity extends AppCompatActivity {
                     btnSubmit.setEnabled(false);
                     revealSolution();
                     showEndDialog(getString(R.string.skocko_bonus_timeout_message));
+                } else if (isBattleMode) {
+                    revealSolution();
+                    showEndDialog(getString(R.string.skocko_challenge_no_solve_message));
                 } else {
                     startOpponentBonusTurn();
                 }

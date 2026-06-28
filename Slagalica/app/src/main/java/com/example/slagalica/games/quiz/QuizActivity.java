@@ -77,8 +77,19 @@ public class QuizActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quiz);
 
         if (getIntent().getBooleanExtra("isBattleMode", false)) {
-            android.view.View playersCard = findViewById(R.id.layoutPlayersCard);
-            if (playersCard != null) playersCard.setVisibility(android.view.View.GONE);
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
         }
         db = FirebaseFirestore.getInstance();
 

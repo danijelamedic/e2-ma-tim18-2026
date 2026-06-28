@@ -87,8 +87,19 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         setContentView(R.layout.activity_my_number);
 
         if (getIntent().getBooleanExtra("isBattleMode", false)) {
-            android.view.View playersCard = findViewById(R.id.layoutPlayersCard);
-            if (playersCard != null) playersCard.setVisibility(android.view.View.GONE);
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
         }
 
         db            = FirebaseFirestore.getInstance();
@@ -781,16 +792,17 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                     String scoreField = currentUid.equals(player1Uid) ? "score1" : "score2";
                     long   current    = snapshot.getLong(scoreField) != null
                             ? snapshot.getLong(scoreField) : 0;
+                    long   totalScore = current + points;
 
                     Map<String, Object> updates = new HashMap<>();
-                    updates.put(scoreField, current + points);
+                    updates.put(scoreField, totalScore);
 
                     db.collection("games").document(gameId).update(updates)
                             .addOnSuccessListener(unused -> {
                                 if (currentRound == 1) {
                                     advanceToRound2();
                                 } else {
-                                    finishGame(points);
+                                    finishGame((int) totalScore);
                                 }
                             });
                 });
@@ -817,16 +829,16 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                 });
     }
 
-    private void finishGame(int lastRoundPoints) {
+    private void finishGame(int totalGamePoints) {
         if (scoreListener != null) { scoreListener.remove(); scoreListener = null; }
 
         StatisticsRepository.saveMyNumberResult(
-                lastRoundPoints,
+                totalGamePoints,
                 myResult == targetNumber
         );
 
         Intent result = new Intent();
-        result.putExtra("points", lastRoundPoints);
+        result.putExtra("points", totalGamePoints);
         result.putExtra("myNumberRound", currentRound);
         setResult(RESULT_OK, result);
         finish();
