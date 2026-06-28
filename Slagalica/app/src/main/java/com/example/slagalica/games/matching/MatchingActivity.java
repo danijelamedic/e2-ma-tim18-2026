@@ -216,7 +216,7 @@ public class MatchingActivity extends AppCompatActivity {
                             timer.cancel();
                         }
 
-                        if (isBattleMode) {
+                        if (isBattleMode || isMultiplayer) {
                             Intent resultIntent = new Intent();
                             resultIntent.putExtra("battleLost", true);
                             setResult(RESULT_OK, resultIntent);

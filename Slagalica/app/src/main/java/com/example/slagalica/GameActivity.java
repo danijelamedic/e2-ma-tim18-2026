@@ -26,12 +26,12 @@ import java.util.Map;
 
 public class GameActivity extends AppCompatActivity {
 
-    private static final int GAME_QUIZ         = 1;
-    private static final int GAME_MATCHING     = 2;
-    private static final int GAME_ASSOCIATIONS = 3;
-    private static final int GAME_SKOCKO       = 4;
-    private static final int GAME_STEP_BY_STEP = 5;
-    private static final int GAME_MY_NUMBER    = 6;
+    private static final int GAME_QUIZ         = 2;
+    private static final int GAME_MATCHING     = 3;
+    private static final int GAME_ASSOCIATIONS = 4;
+    private static final int GAME_SKOCKO       = 5;
+    private static final int GAME_STEP_BY_STEP = 6;
+    private static final int GAME_MY_NUMBER    = 1;
     private static final int TOTAL_GAMES       = 6;
 
     private FirebaseFirestore db;

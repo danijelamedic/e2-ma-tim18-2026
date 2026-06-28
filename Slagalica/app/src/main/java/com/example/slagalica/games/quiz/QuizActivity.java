@@ -454,7 +454,9 @@ public class QuizActivity extends AppCompatActivity {
                         countDownTimer.cancel();
                     }
 
-                    if (isBattleMode) {
+                    if (isBattleMode || isMultiplayer) {
+                        // Challenge OR multiplayer match: return to GameActivity so it
+                        // records abandonedBy (otherwise the remaining player gets stuck).
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("battleLost", true);
                         setResult(RESULT_OK, resultIntent);
@@ -611,13 +613,18 @@ public class QuizActivity extends AppCompatActivity {
 
                     String abandonedBy = snapshot.getString("abandonedBy");
                     if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                        if (quizListener != null) { quizListener.remove(); quizListener = null; }
-                        if (countDownTimer != null) { countDownTimer.cancel(); countDownTimer = null; }
-                        Intent r = new Intent();
-                        r.putExtra("points", 0);
-                        setResult(RESULT_OK, r);
-                        finish();
-                        return;
+                        // Opponent left mid-game. Per REQ3f I keep playing this game SOLO
+                        // to the end (no longer waiting for the opponent's answers).
+                        opponentAlreadyLeft = true;
+                        Toast.makeText(this,
+                                "Opponent left — finish this game solo.",
+                                Toast.LENGTH_SHORT).show();
+                        // If I'd already answered and was waiting for the opponent,
+                        // score the current question now so the quiz can advance.
+                        if (hasAnsweredCurrentQuestion) {
+                            checkAndScoreCurrentQuestion(true);
+                        }
+                        // fall through: continue handling this snapshot normally
                     }
 
                     Long questionIndex =

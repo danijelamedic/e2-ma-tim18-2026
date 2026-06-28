@@ -1104,12 +1104,27 @@ public class AssociationsActivity extends AppCompatActivity {
                 .addSnapshotListener((snapshot, e) -> {
                     if (snapshot == null || !snapshot.exists()) return;
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)
+                            && !opponentAlreadyLeft) {
                         opponentAlreadyLeft = true;
+                        Toast.makeText(this,
+                                "Opponent left — finish this game solo.",
+                                Toast.LENGTH_SHORT).show();
+                        if (associationsStateRef != null
+                                && !currentUid.equals(activeUid)) {
+                            Map<String, Object> takeover = new HashMap<>();
+                            takeover.put("activeUid", currentUid);
+                            takeover.put("canOpenClue", true);
+                            associationsStateRef.update(takeover);
+                        } else {
+                            // Already my turn: just refresh controls locally.
+                            updateActiveState();
+                            setMultiplayerControls(true);
+                            setBoardEnabled(true);
+                        }
                     }
                 });
     }
-
     @Override
     protected void onDestroy() {
         if (timer != null) {
