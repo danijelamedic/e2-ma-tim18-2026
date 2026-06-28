@@ -1,57 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_profile_screen">
+    android:background="@drawable/bg_challenge_result_screen">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Decorative floating confetti emojis (positioned absolutely, animated in code) -->
+    <TextView
+        android:id="@+id/confetti1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="32dp">
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="40dp"
+        android:text="🎉"
+        android:textSize="26sp"
+        android:alpha="0" />
 
-        <TextView
-            android:id="@+id/tvChallengeResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:textColor="#2D1B5E"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginBottom="16dp"/>
+    <TextView
+        android:id="@+id/confetti2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="64dp"
+        android:text="✨"
+        android:textSize="22sp"
+        android:alpha="0" />
 
-        <TextView
-            android:id="@+id/tvChallengeMyScore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="#5B2FC4"
-            android:layout_marginBottom="24dp"/>
+    <TextView
+        android:id="@+id/confetti3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:text="🎊"
+        android:textSize="24sp"
+        android:alpha="0" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Final Rankings"
-            android:textSize="16sp"
-            android:textColor="#2D1B5E"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+    <TextView
+        android:id="@+id/confetti4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="120dp"
+        android:text="⭐"
+        android:textSize="20sp"
+        android:alpha="0" />
+
+    <TextView
+        android:id="@+id/confetti5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="60dp"
+        android:layout_marginTop="150dp"
+        android:text="🎈"
+        android:textSize="22sp"
+        android:alpha="0" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true">
 
         <LinearLayout
-            android:id="@+id/scoresList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginBottom="32dp"/>
+            android:paddingStart="24dp"
+            android:paddingTop="36dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="28dp">
 
-        <Button
-            android:id="@+id/btnBackHome"
-            android:layout_width="200dp"
-            android:layout_height="56dp"
-            android:text="Back to Home"
-            android:textColor="@android:color/white"
-            android:background="@drawable/bg_button_selector"/>
+            <!-- Hero section -->
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
 
-    </LinearLayout>
-</ScrollView>
+                <View
+                    android:id="@+id/trophyGlow"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_trophy_glow" />
+
+                <TextView
+                    android:id="@+id/tvTrophyEmoji"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="🏆"
+                    android:textSize="72sp" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvChallengeResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:alpha="0" />
+
+            <TextView
+                android:id="@+id/tvChallengeMyScore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:textColor="#FFE9A8"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:alpha="0" />
+
+            <!-- Rankings card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/bg_card_premium"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="Final Rankings"
+                        android:textColor="#2D1B5E"
+                        android:textSize="17sp"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🏅"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/scoresList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnBackHome"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="22dp"
+                android:background="@drawable/bg_button_selector"
+                android:elevation="6dp"
+                android:fontFamily="sans-serif-black"
+                android:text="🏠  Back to Home"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

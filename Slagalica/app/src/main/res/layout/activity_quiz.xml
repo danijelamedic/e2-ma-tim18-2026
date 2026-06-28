@@ -54,6 +54,7 @@
 
         <!-- GAME STATUS CARD -->
         <LinearLayout
+            android:id="@+id/layoutPlayersCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -86,6 +87,7 @@
 
                 <!-- YOU -->
                 <LinearLayout
+                    android:id="@+id/layoutPlayerPanel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -133,6 +135,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tvVsLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
@@ -145,6 +148,7 @@
 
                 <!-- OPPONENT -->
                 <LinearLayout
+                    android:id="@+id/layoutOpponentPanel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -229,16 +233,16 @@
         </LinearLayout>
 
         <!-- QUESTION CARD -->
-<!--        <TextView-->
-<!--            android:id="@+id/tvQuestionCounter"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/quiz_question_counter"-->
-<!--            android:textColor="#5B2FC4"-->
-<!--            android:textSize="14sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_marginBottom="8dp" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/tvQuestionCounter"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@string/quiz_question_counter"-->
+        <!--            android:textColor="#5B2FC4"-->
+        <!--            android:textSize="14sp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            android:gravity="center"-->
+        <!--            android:layout_marginBottom="8dp" />-->
 
         <TextView
             android:id="@+id/tvQuestion"

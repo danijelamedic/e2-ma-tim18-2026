@@ -75,6 +75,22 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
+        }
         db = FirebaseFirestore.getInstance();
 
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -125,6 +141,8 @@ public class QuizActivity extends AppCompatActivity {
                 findViewById(R.id.btnAnswer2),
                 findViewById(R.id.btnAnswer3),
                 findViewById(R.id.btnAnswer4)
+
+
         };
 
         findViewById(R.id.btnQuizInfo).setOnClickListener(v -> showInfoDialog());
@@ -272,8 +290,10 @@ public class QuizActivity extends AppCompatActivity {
         hasAnsweredCurrentQuestion = true;
         selectedAnswerIndex = index;
 
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
+        if (isMultiplayer && gameId != null) {
+            if (countDownTimer != null) countDownTimer.cancel();
+        } else {
+            tvQuizTimer.postDelayed(() -> moveToNextQuestion(), 1000);
         }
 
         for (TextView answerView : answerViews) {
@@ -299,9 +319,15 @@ public class QuizActivity extends AppCompatActivity {
             }
 
             saveMultiplayerAnswer(index, selectedAnswer, isCorrect);
+
+            if (opponentAlreadyLeft) {
+                tvQuizTimer.postDelayed(
+                        () -> checkAndScoreCurrentQuestion(true),
+                        400
+                );
+            }
             return;
         }
-
         if (isCorrect) {
             playerScore += 10;
             correctAnswersCount++;
@@ -355,7 +381,7 @@ public class QuizActivity extends AppCompatActivity {
 
         if (isMultiplayer && gameId != null) {
             if (!questionFinished) {
-                checkAndScoreCurrentQuestion(false);
+                checkAndScoreCurrentQuestion(opponentAlreadyLeft);
                 return;
             }
 

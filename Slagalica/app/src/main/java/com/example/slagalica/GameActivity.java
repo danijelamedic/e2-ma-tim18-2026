@@ -97,7 +97,19 @@ public class GameActivity extends AppCompatActivity {
 
                     Boolean isFriendly = snapshot.getBoolean("isFriendly");
 
+                    // Check terminal states FIRST so a finished match always shows
+                    // results, even when the opponent had abandoned earlier.
+                    if ("declined".equals(status)) {
+                        handleInviteDeclined();
+                        return;
+                    }
+                    if ("finished".equals(status)) {
+                        showResults(snapshot);
+                        return;
+                    }
+
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        boolean wasAlreadyLeft = opponentAlreadyLeft;
                         opponentAlreadyLeft = true;
                         if (Boolean.TRUE.equals(isFriendly)) {
                             isFinishing = true;
@@ -123,16 +135,38 @@ public class GameActivity extends AppCompatActivity {
                                     "Opponent left — you finish the match alone.",
                                     Toast.LENGTH_LONG).show();
                         }
-                    }
 
-                    if ("declined".equals(status)) {
-                        handleInviteDeclined();
-                        return;
-                    }
+                        // Opponent left. Per REQ3f the remaining player continues SOLO
+                        // with no waiting. Re-evaluate every snapshot (not just once) so
+                        // we never get stuck, regardless of which phase we are in.
+                        if (interGameTimer != null) {
+                            interGameTimer.cancel();
+                            interGameTimer = null;
+                        }
+                        // Clear BOTH guards so the solo (re)launch below can proceed.
+                        gameAlreadyLaunched = false;
+                        pendingLaunchGame = -1;
 
-                    if ("finished".equals(status)) {
-                        showResults(snapshot);
-                        return;
+                        Long soloGameLong = snapshot.getLong("currentGame");
+                        int soloGame = soloGameLong != null ? soloGameLong.intValue() : 1;
+                        String soloPlayer1 = snapshot.getString("player1");
+                        boolean soloIsPlayer1 = currentUid.equals(soloPlayer1);
+                        String soloMyDoneField = soloIsPlayer1
+                                ? "player1done_game" + soloGame
+                                : "player2done_game" + soloGame;
+                        Boolean soloMyDone = snapshot.getBoolean(soloMyDoneField);
+
+                        if (Boolean.TRUE.equals(soloMyDone)) {
+                            // I already finished this game and was waiting -> advance now.
+                            if (soloGame > lastCompletedGame) {
+                                saveScoreAndAdvance(0, soloGame);
+                            }
+                            return;
+                        } else {
+                            // I have not finished this game yet -> start/continue it solo.
+                            startInterGameCountdown(soloGame);
+                            return;
+                        }
                     }
 
                     Long currentGameLong = snapshot.getLong("currentGame");
@@ -152,16 +186,20 @@ public class GameActivity extends AppCompatActivity {
                     tvMyScore.setText("Your score: " + myScore);
                     tvOpponentScore.setText("Opponent score: " + opponentScore);
 
-                    if (currentGame <= lastCompletedGame) {
+                    if (currentGame < lastCompletedGame) {
                         tvGameInfo.setText("Waiting for next game...");
                         return;
                     }
 
                     if (Boolean.TRUE.equals(myDone)) {
-                        if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                            forceAdvanceSolo(currentGame);
-                        } else {
+                        if (!opponentAlreadyLeft) {
                             tvGameInfo.setText("Waiting for opponent...");
+                            return;
+                        }
+                        tvGameInfo.setText("Opponent left — you continue alone!");
+                        if (!gameAlreadyLaunched) {
+                            gameAlreadyLaunched = true;
+                            saveScoreAndAdvance(0, currentGame);
                         }
                         return;
                     }
@@ -186,7 +224,8 @@ public class GameActivity extends AppCompatActivity {
 
         tvGameName.setText("Next game: " + getGameName(gameNumber));
 
-        interGameTimer = new CountDownTimer(10000, 1000) {
+        long countdownMs = opponentAlreadyLeft ? 1000 : 10000;
+        interGameTimer = new CountDownTimer(countdownMs, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 int seconds = (int) Math.ceil(millisUntilFinished / 1000.0);
@@ -349,6 +388,7 @@ public class GameActivity extends AppCompatActivity {
             }
             intent.putExtra("gameId", gameId);
             intent.putExtra("isMultiplayer", true);
+            intent.putExtra("opponentAlreadyLeft", opponentAlreadyLeft);
             startActivityForResult(intent, gameType);
         });
     }
@@ -416,7 +456,11 @@ public class GameActivity extends AppCompatActivity {
                     transaction.update(gameRef, updates);
                     return null;
                 })
-                .addOnSuccessListener(unused -> listenForGameUpdates());
+                .addOnSuccessListener(unused -> {
+                    gameAlreadyLaunched = false;
+                    pendingLaunchGame = -1;
+                    listenForGameUpdates();
+                });
     }
 
     @SuppressWarnings("MissingSuperCall")
@@ -474,37 +518,6 @@ public class GameActivity extends AppCompatActivity {
                                     finish();
                                 })
                 );
-    }
-
-    private void forceAdvanceSolo(int gameNumber) {
-        DocumentReference gameRef = db.collection("games").document(gameId);
-        db.runTransaction(transaction -> {
-            com.google.firebase.firestore.DocumentSnapshot snapshot = transaction.get(gameRef);
-            if (snapshot == null || !snapshot.exists()) return null;
-
-            Long cg = snapshot.getLong("currentGame");
-            long currentGame = cg != null ? cg : 1;
-            if (currentGame != gameNumber) return null;
-
-            Map<String, Object> updates = new HashMap<>();
-            long nextGame = currentGame + 1;
-            if (nextGame > TOTAL_GAMES) {
-                updates.put("status", "finished");
-                updates.put("currentTurnUid", null);
-            } else {
-                updates.put("currentGame", nextGame);
-                updates.put("currentTurnUid", currentUid);
-                updates.put("player1done_game" + nextGame, false);
-                updates.put("player2done_game" + nextGame, false);
-                if (gameNumber == GAME_MY_NUMBER) updates.put("myNumberRound", 1L);
-                if (gameNumber == GAME_STEP_BY_STEP) {
-                    updates.put("stepByStepRound", 1L);
-                    updates.put("stepByStepStatus", "");
-                }
-            }
-            transaction.update(gameRef, updates);
-            return null;
-        });
     }
 
     private void showResults(com.google.firebase.firestore.DocumentSnapshot snapshot) {

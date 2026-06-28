@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -73,7 +74,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
     private int myResult = -1;
 
-    // On-screen keypad (numbers + operators)
     private TextView[] numKeys = new TextView[6];
     private boolean[] numUsed  = new boolean[6];
 
@@ -86,11 +86,28 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_number);
 
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
+        }
+
         db            = FirebaseFirestore.getInstance();
         currentUid    = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         gameId        = getIntent().getStringExtra("gameId");
+
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -116,6 +133,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         tvOpponentInfo  = findViewById(R.id.tvOpponentInfo);
         imgYourAvatar     = findViewById(R.id.tvYourAvatar);
         imgOpponentAvatar = findViewById(R.id.tvOpponentAvatar);
+
 
         numberTiles = new TextView[]{
                 findViewById(R.id.tvNum1), findViewById(R.id.tvNum2),
@@ -180,7 +198,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     }
 
 
-    // ---------------- Premium styling + on-screen keypad ----------------
 
     private int dp(float v) {
         return Math.round(v * getResources().getDisplayMetrics().density);
@@ -194,13 +211,13 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     }
 
     private void styleKeyByIndex(TextView v, int index) {
-        if (index == 5) {                 // big number → gold
+        if (index == 5) {
             v.setBackground(grad(dp(14), 0xFFF7D667, 0xFFD9A33A));
             v.setTextColor(0xFF3A2A00);
-        } else if (index == 4) {          // medium number → indigo
+        } else if (index == 4) {
             v.setBackground(grad(dp(14), 0xFF4F46E5, 0xFF3730A3));
             v.setTextColor(0xFFFFFFFF);
-        } else {                          // single digits → violet
+        } else {
             v.setBackground(grad(dp(14), 0xFF7C3AED, 0xFF5B21B6));
             v.setTextColor(0xFFFFFFFF);
         }
@@ -233,7 +250,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         title.setTypeface(null, Typeface.BOLD);
         pad.addView(title);
 
-        // Row of the 6 given numbers
         LinearLayout numRow = new LinearLayout(this);
         LinearLayout.LayoutParams nrp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -246,7 +262,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         }
         pad.addView(numRow);
 
-        // Operator rows
         pad.addView(opRow(new String[]{"(", ")", "+", "-"}));
         pad.addView(opRow(new String[]{"*", "/", "⌫", "C"}));
 
@@ -350,7 +365,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                     return;
                 }
             }
-            // else just delete one trailing character (operator/bracket)
             etExpression.setText(s.substring(0, s.length() - 1));
             etExpression.setSelection(etExpression.getText().length());
             return;
@@ -365,9 +379,9 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                 .addOnSuccessListener(myDoc -> {
                     if (myDoc.exists()) {
                         String name  = myDoc.getString("username");
-                        Long   coins = myDoc.getLong("coins");
+                        Long   coins = myDoc.getLong("tokens");
                         Long   stars = myDoc.getLong("stars");
-                        Long   level = myDoc.getLong("level");
+                        Long   level = myDoc.getLong("league");
                         if (name != null) tvPlayerName.setText(name);
                         imgYourAvatar.setImageResource(
                                 com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(myDoc.getString("avatar")));
@@ -385,9 +399,9 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
                         String name  = doc.getString("username");
-                        Long   coins = doc.getLong("coins");
+                        Long   coins = doc.getLong("tokens");
                         Long   stars = doc.getLong("stars");
-                        Long   level = doc.getLong("level");
+                        Long   level = doc.getLong("league");
                         if (name != null) tvOpponentName.setText(name);
                         imgOpponentAvatar.setImageResource(
                                 com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(doc.getString("avatar")));
@@ -616,10 +630,14 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                     tvTimer.setTextColor(0xFFE53935);
                 }
             }
-            @Override public void onFinish() {
+            @Override
+            public void onFinish() {
                 tvTimer.setText("⏱ 0s");
                 tvTimer.clearAnimation();
-                submitExpression();
+                if (myResult == -1) {
+                    myResult = 0;
+                    saveMyResult();
+                }
             }
         }.start();
     }
@@ -628,13 +646,12 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     private void submitExpression() {
         if (myResult != -1) return;
 
-        cancelAllTimers();
-        setButtonEnabled(btnConfirm, false);
-        etExpression.setEnabled(false);
-
         String expr = etExpression.getText().toString().trim();
 
         if (expr.isEmpty()) {
+            cancelAllTimers();
+            setButtonEnabled(btnConfirm, false);
+            etExpression.setEnabled(false);
             myResult = 0;
             saveMyResult();
             return;
@@ -644,10 +661,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
             Toast.makeText(this,
                     "Expression contains numbers not in the given set!",
                     Toast.LENGTH_LONG).show();
-            myResult = -1; // reset so they can try again
-            setButtonEnabled(btnConfirm, true);
-            etExpression.setEnabled(true);
-            startGameTimer();
             return;
         }
 
@@ -655,14 +668,13 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         try {
             result = evaluate(expr);
         } catch (Exception e) {
-            Toast.makeText(this, "Invalid expression: " + e.getMessage(),
-                    Toast.LENGTH_LONG).show();
-            myResult = -1;
-            setButtonEnabled(btnConfirm, true);
-            etExpression.setEnabled(true);
+            Toast.makeText(this, "Invalid expression", Toast.LENGTH_LONG).show();
             return;
         }
 
+        cancelAllTimers();
+        setButtonEnabled(btnConfirm, false);
+        etExpression.setEnabled(false);
         myResult = (int) Math.round(result);
         saveMyResult();
     }
@@ -670,7 +682,6 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
     private void saveMyResult() {
         if (!isMultiplayer) {
-            // Singleplayer: instant result
             int points = (myResult == targetNumber) ? 10 : 0;
             Toast.makeText(this,
                     points == 10 ? "Correct! 10 points." :
@@ -781,16 +792,17 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                     String scoreField = currentUid.equals(player1Uid) ? "score1" : "score2";
                     long   current    = snapshot.getLong(scoreField) != null
                             ? snapshot.getLong(scoreField) : 0;
+                    long   totalScore = current + points;
 
                     Map<String, Object> updates = new HashMap<>();
-                    updates.put(scoreField, current + points);
+                    updates.put(scoreField, totalScore);
 
                     db.collection("games").document(gameId).update(updates)
                             .addOnSuccessListener(unused -> {
                                 if (currentRound == 1) {
                                     advanceToRound2();
                                 } else {
-                                    finishGame(points);
+                                    finishGame((int) totalScore);
                                 }
                             });
                 });
@@ -817,16 +829,16 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
                 });
     }
 
-    private void finishGame(int lastRoundPoints) {
+    private void finishGame(int totalGamePoints) {
         if (scoreListener != null) { scoreListener.remove(); scoreListener = null; }
 
         StatisticsRepository.saveMyNumberResult(
-                lastRoundPoints,
+                totalGamePoints,
                 myResult == targetNumber
         );
 
         Intent result = new Intent();
-        result.putExtra("points", lastRoundPoints);
+        result.putExtra("points", totalGamePoints);
         result.putExtra("myNumberRound", currentRound);
         setResult(RESULT_OK, result);
         finish();

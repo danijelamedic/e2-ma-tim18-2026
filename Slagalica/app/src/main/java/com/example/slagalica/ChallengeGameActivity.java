@@ -90,6 +90,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
         }
 
         intent.putExtra("isMultiplayer", false);
+        intent.putExtra("isBattleMode", true);
         startActivityForResult(intent, currentGameNumber);
     }
 
@@ -205,12 +206,13 @@ public class ChallengeGameActivity extends AppCompatActivity {
         intent.putExtra("resultMsg", resultMsg);
         intent.putExtra("challengeId", challengeId);
 
-        ArrayList<String> playerIds = new ArrayList<>(participants);
-        intent.putStringArrayListExtra("playerIds", playerIds);
+        ArrayList<String> playerIds = new ArrayList<>();
         ArrayList<Long> playerScores = new ArrayList<>();
         for (Map.Entry<String, Long> entry : sorted) {
+            playerIds.add(entry.getKey());
             playerScores.add(entry.getValue());
         }
+        intent.putStringArrayListExtra("playerIds", playerIds);
         intent.putExtra("playerScores", playerScores.stream()
                 .mapToLong(Long::longValue).toArray());
 
