@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
+        android:name=".SlagalicaApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -39,6 +40,7 @@
         <activity android:name=".games.quiz.QuizActivity" android:exported="false" />
         <activity android:name=".profile.ProfileActivity" android:exported="false" />
         <activity android:name=".notifications.NotificationCenterActivity" android:exported="false" />
+        <activity android:name=".notifications.NotificationActionActivity" android:exported="false" />
         <activity android:name=".notifications.ChatNotificationsActivity" android:exported="false" />
         <activity android:name=".notifications.RankingNotificationsActivity" android:exported="false" />
         <activity android:name=".notifications.RewardsNotificationsActivity" android:exported="false" />

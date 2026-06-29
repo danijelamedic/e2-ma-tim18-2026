@@ -23,6 +23,7 @@ import com.example.slagalica.daily.DailyMissionsActivity;
 import com.example.slagalica.friends.FriendsActivity;
 import com.example.slagalica.profile.ProfileActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
+import com.example.slagalica.ranking.RankingRewardDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -468,6 +469,11 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
     }
 
     private void showRewardDialog(AppNotification notification) {
+        if ("Ranking reward".equals(notification.title)) {
+            RankingRewardDialog.show(this, notification.message);
+            return;
+        }
+
         View dialogView = LayoutInflater.from(this)
                 .inflate(R.layout.dialog_reward_notification, null);
         TextView title = dialogView.findViewById(R.id.tvRewardDialogTitle);

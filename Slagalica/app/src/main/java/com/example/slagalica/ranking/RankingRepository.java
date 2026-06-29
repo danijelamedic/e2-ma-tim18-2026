@@ -195,11 +195,81 @@ public class RankingRepository {
                         String message = "";
                         if (reward > 0) {
                             message = grantReward(uid, cycle, rank, reward);
+                        } else if (TYPE_MONTHLY.equals(cycle.type)) {
+                            applyMonthlyNonPlacementPenalty(uid, cycle);
                         }
                         finished.onResult(message);
                     })
                     .addOnFailureListener(e -> finished.onResult(""));
         }).addOnFailureListener(e -> finished.onResult(""));
+    }
+
+    private void applyMonthlyNonPlacementPenalty(String uid, Cycle cycle) {
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(user -> {
+                    if (user == null || !user.exists()) return;
+
+                    long currentStars = valueOrZero(user.getLong("stars"));
+                    long newStars = Math.max(0L, Math.round(currentStars * 0.70));
+                    long penalty = currentStars - newStars;
+                    if (penalty <= 0) return;
+
+                    applyStarsPenaltyAndLeague(uid, newStars);
+
+                    notificationRepository.create(uid, new AppNotification(
+                            uid,
+                            AppNotification.TYPE_RANKING,
+                            "Monthly ranking penalty",
+                            "You did not place in the monthly ranking for "
+                                    + cycle.label + " and lost " + penalty + " stars.",
+                            AppNotification.ACTION_OPEN_RANKING,
+                            new HashMap<>()
+                    ));
+                });
+    }
+
+    private void applyStarsPenaltyAndLeague(String uid, long newStars) {
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot == null || !snapshot.exists()) return;
+
+                    long oldLeague = valueOrZero(snapshot.getLong("league"));
+                    long safeStars = Math.max(0L, newStars);
+                    long newLeague = LeagueManager.getLeagueForStars((int) safeStars).getLevel();
+
+                    db.collection("users").document(uid)
+                            .update("stars", safeStars, "league", newLeague)
+                            .addOnSuccessListener(unused -> {
+                                if (oldLeague != newLeague) {
+                                    createLeagueNotification(uid, oldLeague, newLeague);
+                                }
+                            });
+                });
+    }
+
+    private void createLeagueNotification(String uid, long oldLeague, long newLeague) {
+        boolean promoted = newLeague > oldLeague;
+        String title = promoted ? "League promotion" : "League demotion";
+        String message = promoted
+                ? "Congratulations! You advanced from "
+                + LeagueManager.getLeague(oldLeague).getName()
+                + " to "
+                + LeagueManager.getLeague(newLeague).getName()
+                + "."
+                : "You dropped from "
+                + LeagueManager.getLeague(oldLeague).getName()
+                + " to "
+                + LeagueManager.getLeague(newLeague).getName()
+                + ".";
+
+        notificationRepository.create(uid, new AppNotification(
+                uid,
+                AppNotification.TYPE_OTHER,
+                title,
+                message,
+                AppNotification.ACTION_OPEN_PROFILE,
+                new HashMap<>()
+        ));
     }
 
     private String grantReward(String uid, Cycle cycle, int rank, int tokens) {

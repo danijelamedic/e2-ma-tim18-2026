@@ -1,7 +1,12 @@
 package com.example.slagalica.tournament;
 
+import android.content.Context;
+import android.content.Intent;
+
+import com.example.slagalica.notifications.LocalNotificationSender;
 import com.example.slagalica.notifications.AppNotification;
 import com.example.slagalica.notifications.NotificationRepository;
+import com.example.slagalica.profile.ProfileActivity;
 import com.example.slagalica.ranking.RankingRepository;
 import com.example.slagalica.leagues.LeagueManager;
 import com.google.firebase.firestore.DocumentReference;
@@ -25,6 +30,15 @@ public class TournamentRepository {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final NotificationRepository notificationRepository = new NotificationRepository();
+    private final Context appContext;
+
+    public TournamentRepository() {
+        this.appContext = null;
+    }
+
+    public TournamentRepository(Context context) {
+        this.appContext = context != null ? context.getApplicationContext() : null;
+    }
 
     public interface SimpleCallback {
         void onSuccess(String id);
@@ -388,6 +402,11 @@ public class TournamentRepository {
                 null
         );
         notificationRepository.create(uid, notification);
+        if (appContext != null && uid.equals(com.google.firebase.auth.FirebaseAuth.getInstance().getUid())) {
+            Intent intent = new Intent(appContext, ProfileActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            LocalNotificationSender.show(appContext, notification, intent);
+        }
     }
 
     private long valueOrZero(Long value) {
