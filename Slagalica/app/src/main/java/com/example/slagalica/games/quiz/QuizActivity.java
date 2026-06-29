@@ -150,11 +150,7 @@ public class QuizActivity extends AppCompatActivity {
         findViewById(R.id.btnQuizInfo).setOnClickListener(v -> showInfoDialog());
         findViewById(R.id.btnLeaveQuiz).setOnClickListener(v -> showLeaveDialog());
         android.view.View btnNextQuestion = findViewById(R.id.btnNextQuestion);
-        btnNextQuestion.setOnClickListener(v -> goToNextQuestion());
-
-        if (isMultiplayer) {
-            btnNextQuestion.setVisibility(android.view.View.GONE);
-        }
+        btnNextQuestion.setVisibility(View.GONE);
 
 
         for (int i = 0; i < answerViews.length; i++) {
