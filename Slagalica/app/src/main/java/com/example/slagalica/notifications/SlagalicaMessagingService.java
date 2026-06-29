@@ -11,7 +11,11 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class SlagalicaMessagingService extends FirebaseMessagingService {
@@ -36,6 +40,7 @@ public class SlagalicaMessagingService extends FirebaseMessagingService {
         String title = valueOrDefault(data.get("title"), "Slagalica");
         String body = valueOrDefault(data.get("message"), "");
         String actionType = valueOrDefault(data.get("actionType"), AppNotification.ACTION_NONE);
+        String notificationId = data.get("notificationId");
 
         AppNotification notification = new AppNotification(
                 FirebaseAuth.getInstance().getCurrentUser() != null
@@ -45,8 +50,9 @@ public class SlagalicaMessagingService extends FirebaseMessagingService {
                 title,
                 body,
                 actionType,
-                new HashMap<>()
+                actionDataFromJson(data.get("actionData"))
         );
+        notification.id = notificationId;
 
         if (!"true".equals(data.get("stored"))) {
             String uid = FirebaseAuth.getInstance().getCurrentUser() != null
@@ -81,5 +87,24 @@ public class SlagalicaMessagingService extends FirebaseMessagingService {
 
     private String valueOrDefault(String value, String fallback) {
         return value != null ? value : fallback;
+    }
+
+    private Map<String, Object> actionDataFromJson(String json) {
+        Map<String, Object> actionData = new HashMap<>();
+        if (json == null || json.isEmpty()) {
+            return actionData;
+        }
+
+        try {
+            JSONObject object = new JSONObject(json);
+            Iterator<String> keys = object.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                actionData.put(key, object.optString(key));
+            }
+        } catch (JSONException ignored) {
+            // Notification actions still work for types that do not need actionData.
+        }
+        return actionData;
     }
 }

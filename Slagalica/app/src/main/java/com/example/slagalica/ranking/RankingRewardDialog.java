@@ -17,6 +17,10 @@ import com.example.slagalica.R;
 public class RankingRewardDialog {
 
     public static void show(Context context, String message) {
+        show(context, message, null);
+    }
+
+    public static void show(Context context, String message, Runnable onDismiss) {
         View dialogView = LayoutInflater.from(context)
                 .inflate(R.layout.dialog_reward_notification, null);
         TextView title = dialogView.findViewById(R.id.tvRewardDialogTitle);
@@ -30,6 +34,9 @@ public class RankingRewardDialog {
                 .setView(dialogView)
                 .create();
         ok.setOnClickListener(v -> dialog.dismiss());
+        if (onDismiss != null) {
+            dialog.setOnDismissListener(d -> onDismiss.run());
+        }
         dialog.setOnShowListener(d -> {
             dialogView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.bounce_in));
             playNotificationSound(context);

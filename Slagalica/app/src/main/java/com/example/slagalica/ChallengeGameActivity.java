@@ -12,7 +12,15 @@ import com.example.slagalica.games.quiz.QuizActivity;
 import com.example.slagalica.games.matching.MatchingActivity;
 import com.example.slagalica.games.associations.AssociationsActivity;
 import com.example.slagalica.games.skocko.SkockoActivity;
+import com.example.slagalica.leagues.LeagueManager;
+import com.example.slagalica.notifications.AppNotification;
+import com.example.slagalica.notifications.LocalNotificationSender;
+import com.example.slagalica.notifications.NotificationRepository;
+import com.example.slagalica.notifications.RewardsNotificationsActivity;
+import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.ranking.RankingRepository;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -33,6 +41,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
     private static final int TOTAL_GAMES       = 6;
 
     private FirebaseFirestore db;
+    private NotificationRepository notificationRepository;
     private String challengeId;
     private String currentUid;
     private ListenerRegistration challengeListener;
@@ -47,6 +56,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         db = FirebaseFirestore.getInstance();
+        notificationRepository = new NotificationRepository();
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         challengeId = getIntent().getStringExtra("challengeId");
 
@@ -170,21 +180,6 @@ public class ChallengeGameActivity extends AppCompatActivity {
         String winnerId = sorted.get(0).getKey();
         String secondId = sorted.size() > 1 ? sorted.get(1).getKey() : null;
 
-        db.collection("users").document(winnerId)
-                .update("stars",  FieldValue.increment(winnerStars),
-                        "tokens", FieldValue.increment(winnerTokens));
-
-        if (secondId != null) {
-            db.collection("users").document(secondId)
-                    .update("stars",  FieldValue.increment(secondStars),
-                            "tokens", FieldValue.increment(secondTokens));
-        }
-
-        db.collection("challenges").document(challengeId)
-                .update("status", "finished",
-                        "winnerId", winnerId,
-                        "finalScores", scores);
-
         long myScore = 0;
         Object myScoreObj = scores.get(currentUid);
         if (myScoreObj instanceof Number) myScore = ((Number) myScoreObj).longValue();
@@ -201,6 +196,57 @@ public class ChallengeGameActivity extends AppCompatActivity {
             resultMsg = "You didn't place. Better luck next time!";
         }
 
+        String winnerMessage = "You won the challenge and received +" + winnerStars
+                + " stars and +" + winnerTokens + " tokens.";
+        String secondMessage = "You finished 2nd in the challenge and received your stake back: +"
+                + secondStars + " stars and +" + secondTokens + " tokens.";
+
+        String notificationIdPrefix = "challenge_reward_" + challengeId + "_";
+        DocumentReference challengeRef = db.collection("challenges").document(challengeId);
+        long finalMyScore = myScore;
+        String finalResultMsg = resultMsg;
+
+        challengeRef.getFirestore().runTransaction(transaction -> {
+            com.google.firebase.firestore.DocumentSnapshot latest = transaction.get(challengeRef);
+            Boolean rewardsApplied = latest.getBoolean("rewardsApplied");
+            String status = latest.getString("status");
+            if (Boolean.TRUE.equals(rewardsApplied) || "finished".equals(status)) {
+                return false;
+            }
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("status", "finished");
+            updates.put("winnerId", winnerId);
+            updates.put("secondId", secondId);
+            updates.put("finalScores", scores);
+            updates.put("rewardsApplied", true);
+            updates.put("rewardsAppliedAt", System.currentTimeMillis());
+            transaction.update(challengeRef, updates);
+            return true;
+        }).addOnSuccessListener(rewardsAppliedByThisClient -> {
+            if (rewardsAppliedByThisClient) {
+                applyChallengeReward(winnerId, winnerStars, winnerTokens,
+                        notificationIdPrefix + winnerId, winnerMessage);
+                if (secondId != null) {
+                    applyChallengeReward(secondId, secondStars, secondTokens,
+                            notificationIdPrefix + secondId, secondMessage);
+                }
+            } else {
+                if (iWon) {
+                    showLocalChallengeReward(winnerMessage);
+                } else if (iSecond) {
+                    showLocalChallengeReward(secondMessage);
+                }
+            }
+
+            openResultScreen(finalMyScore, finalResultMsg, sorted);
+        }).addOnFailureListener(error -> {
+            Toast.makeText(this, "Challenge rewards could not be applied.", Toast.LENGTH_SHORT).show();
+            openResultScreen(finalMyScore, finalResultMsg, sorted);
+        });
+    }
+
+    private void openResultScreen(long myScore, String resultMsg, List<Map.Entry<String, Long>> sorted) {
         Intent intent = new Intent(this, ChallengeResultActivity.class);
         intent.putExtra("myScore", myScore);
         intent.putExtra("resultMsg", resultMsg);
@@ -218,6 +264,101 @@ public class ChallengeGameActivity extends AppCompatActivity {
 
         startActivity(intent);
         finish();
+    }
+
+    private void applyChallengeReward(String uid, long starsDelta, long tokensDelta,
+                                      String notificationId, String message) {
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot == null || !snapshot.exists()) {
+                        return;
+                    }
+
+                    long oldStars = valueOrZero(snapshot.getLong("stars"));
+                    long oldLeague = valueOrZero(snapshot.getLong("league"));
+                    long newStars = Math.max(0L, oldStars + starsDelta);
+                    long newLeague = LeagueManager.getLeagueForStars((int) newStars).getLevel();
+
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("stars", newStars);
+                    updates.put("tokens", FieldValue.increment(tokensDelta));
+                    updates.put("league", newLeague);
+
+                    db.collection("users").document(uid)
+                            .update(updates)
+                            .addOnSuccessListener(unused -> {
+                                if (starsDelta != 0) {
+                                    RankingRepository.recordRankedMatchForUser(uid, starsDelta);
+                                }
+                                createChallengeRewardNotification(uid, notificationId, message);
+                                if (oldLeague != newLeague) {
+                                    createLeagueNotification(uid, oldLeague, newLeague);
+                                }
+                            });
+                });
+    }
+
+    private void createChallengeRewardNotification(String uid, String notificationId, String message) {
+        AppNotification notification = new AppNotification(
+                uid,
+                AppNotification.TYPE_REWARD,
+                "Challenge reward",
+                message,
+                AppNotification.ACTION_OPEN_REWARDS,
+                new HashMap<>()
+        );
+        notificationRepository.create(uid, notificationId, notification);
+        if (uid.equals(currentUid)) {
+            LocalNotificationSender.show(this, notification,
+                    new Intent(this, RewardsNotificationsActivity.class));
+        }
+    }
+
+    private void showLocalChallengeReward(String message) {
+        AppNotification notification = new AppNotification(
+                currentUid,
+                AppNotification.TYPE_REWARD,
+                "Challenge reward",
+                message,
+                AppNotification.ACTION_OPEN_REWARDS,
+                new HashMap<>()
+        );
+        LocalNotificationSender.show(this, notification,
+                new Intent(this, RewardsNotificationsActivity.class));
+    }
+
+    private void createLeagueNotification(String uid, long oldLeague, long newLeague) {
+        boolean promoted = newLeague > oldLeague;
+        String title = promoted ? "League promotion" : "League demotion";
+        String message = promoted
+                ? "Congratulations! You advanced from "
+                + LeagueManager.getLeague(oldLeague).getName()
+                + " to "
+                + LeagueManager.getLeague(newLeague).getName()
+                + "."
+                : "You dropped from "
+                + LeagueManager.getLeague(oldLeague).getName()
+                + " to "
+                + LeagueManager.getLeague(newLeague).getName()
+                + ".";
+
+        AppNotification notification = new AppNotification(
+                uid,
+                AppNotification.TYPE_OTHER,
+                title,
+                message,
+                AppNotification.ACTION_OPEN_PROFILE,
+                new HashMap<>()
+        );
+        notificationRepository.create(uid, notification);
+        if (uid.equals(currentUid)) {
+            LocalNotificationSender.show(this, notification,
+                    new Intent(this, ProfileActivity.class));
+        }
+    }
+
+    private long valueOrZero(Long value) {
+        return value != null ? value : 0L;
     }
 
     @Override
