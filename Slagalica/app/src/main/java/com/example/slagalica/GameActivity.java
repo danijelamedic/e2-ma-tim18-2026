@@ -26,12 +26,12 @@ import java.util.Map;
 
 public class GameActivity extends AppCompatActivity {
 
-    private static final int GAME_QUIZ         = 2;
-    private static final int GAME_MATCHING     = 3;
-    private static final int GAME_ASSOCIATIONS = 4;
-    private static final int GAME_SKOCKO       = 5;
-    private static final int GAME_STEP_BY_STEP = 6;
-    private static final int GAME_MY_NUMBER    = 1;
+    private static final int GAME_QUIZ         = 1;
+    private static final int GAME_MATCHING     = 2;
+    private static final int GAME_ASSOCIATIONS = 3;
+    private static final int GAME_SKOCKO       = 4;
+    private static final int GAME_STEP_BY_STEP = 5;
+    private static final int GAME_MY_NUMBER    = 6;
     private static final int TOTAL_GAMES       = 6;
 
     private FirebaseFirestore db;
@@ -44,6 +44,7 @@ public class GameActivity extends AppCompatActivity {
     private TextView tvOpponentScore;
     private CountDownTimer interGameTimer;
     private boolean gameAlreadyLaunched = false;
+    private boolean gameScreenOpen = false;
     private boolean isFinishing = false;
     private int pendingLaunchGame = -1;
     private int lastCompletedGame = 0;
@@ -182,10 +183,17 @@ public class GameActivity extends AppCompatActivity {
                     long myScore = isPlayer1 ? score1 : score2;
                     long opponentScore = isPlayer1 ? score2 : score1;
 
-                    tvGameName.setText("Next game: " + getGameName(currentGame));
+                    // Always safe to refresh the score.
                     tvMyScore.setText("Your score: " + myScore);
                     tvOpponentScore.setText("Opponent score: " + opponentScore);
 
+                    // Stale cached snapshot guard FIRST (before showing any game name),
+                    // so we never flash "Next game: <already-played game>".
+                    // If currentGame is one I've already played, wait for the advance.
+                    if (currentGame <= lastCompletedGame && !Boolean.TRUE.equals(myDone)) {
+                        tvGameInfo.setText("Loading next game...");
+                        return;
+                    }
                     if (currentGame < lastCompletedGame) {
                         tvGameInfo.setText("Waiting for next game...");
                         return;
@@ -203,6 +211,9 @@ public class GameActivity extends AppCompatActivity {
                         }
                         return;
                     }
+
+                    // Validated: show the upcoming game name only now.
+                    tvGameName.setText("Next game: " + getGameName(currentGame));
 
                     if (!gameAlreadyLaunched && shouldLaunchForCurrentPlayer(currentGame, currentTurnUid)) {
                         startInterGameCountdown(currentGame);
@@ -265,6 +276,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void launchGame(int gameNumber) {
+        // Guard: a game screen is already open -> never stack another on top.
+        if (gameScreenOpen) {
+            return;
+        }
+        gameScreenOpen = true;
         if (gameListener != null) {
             gameListener.remove();
             gameListener = null;
@@ -304,8 +320,21 @@ public class GameActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        gameScreenOpen = false;
         gameAlreadyLaunched = false;
         pendingLaunchGame = -1;
+        // Show the upcoming game name immediately (we know it = requestCode + 1)
+        // instead of a generic loading text, so there is no visible delay while
+        // the next Firestore snapshot arrives. The listener will confirm/correct it.
+        int nextGuess = requestCode + 1;
+        if (tvGameName != null) {
+            if (nextGuess <= TOTAL_GAMES) {
+                tvGameName.setText("Next game: " + getGameName(nextGuess));
+            } else {
+                tvGameName.setText("");
+            }
+        }
+        if (tvGameInfo != null) tvGameInfo.setText("Starting...");
         if (interGameTimer != null) {
             interGameTimer.cancel();
             interGameTimer = null;
