@@ -61,6 +61,7 @@ public class StepByStepActivity extends AppCompatActivity {
     private int currentStep = 0;
 
     private boolean isMultiplayer = false;
+    private boolean isFriendly = false;
     private boolean opponentAlreadyLeft = false;
     private String gameId;
     private String currentUid;
@@ -109,6 +110,7 @@ public class StepByStepActivity extends AppCompatActivity {
         db            = FirebaseFirestore.getInstance();
         currentUid    = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         gameId        = getIntent().getStringExtra("gameId");
 
@@ -668,10 +670,12 @@ public class StepByStepActivity extends AppCompatActivity {
 
         int guessedStep = points > 0 ? currentStep + 1 : 0;
 
-        StatisticsRepository.saveStepByStepResult(
-                points,
-                guessedStep
-        );
+        if (!isFriendly) {
+            StatisticsRepository.saveStepByStepResult(
+                    points,
+                    guessedStep
+            );
+        }
 
         Intent result = new Intent();
         result.putExtra("points", points);

@@ -69,6 +69,7 @@ public class AssociationsActivity extends AppCompatActivity {
     private boolean isBattleMode;
     private boolean isMultiplayer;
     private boolean opponentAlreadyLeft;
+    private boolean isFriendly;
     private boolean multiplayerResultSent = false;
     private boolean multiplayerTimeoutHandled = false;
     private boolean multiplayerPhaseAdvanceStarted = false;
@@ -110,6 +111,7 @@ public class AssociationsActivity extends AppCompatActivity {
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         db = FirebaseFirestore.getInstance();
         currentUid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
@@ -413,7 +415,10 @@ public class AssociationsActivity extends AppCompatActivity {
                 int myScore = (int) getScoreFor(currentUid);
                 boolean solvedNumber = myScore > 0;
 
-                StatisticsRepository.saveAssociationsResult(myScore, solvedNumber);
+                // Friendly matches do not count towards statistics.
+                if (!isFriendly) {
+                    StatisticsRepository.saveAssociationsResult(myScore, solvedNumber);
+                }
             }
 
             Intent resultIntent = new Intent();
@@ -1106,10 +1111,15 @@ public class AssociationsActivity extends AppCompatActivity {
                     String abandonedBy = snapshot.getString("abandonedBy");
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)
                             && !opponentAlreadyLeft) {
+                        // Opponent left. Per REQ3f I continue this game SOLO.
                         opponentAlreadyLeft = true;
                         Toast.makeText(this,
                                 "Opponent left — finish this game solo.",
                                 Toast.LENGTH_SHORT).show();
+                        // If the opponent was the active player, take over the turn so
+                        // the board unlocks. Writing activeUid triggers the state
+                        // listener which refreshes the UI (updateActiveState +
+                        // setMultiplayerControls), letting me open clues and guess.
                         if (associationsStateRef != null
                                 && !currentUid.equals(activeUid)) {
                             Map<String, Object> takeover = new HashMap<>();
@@ -1125,6 +1135,7 @@ public class AssociationsActivity extends AppCompatActivity {
                     }
                 });
     }
+
     @Override
     protected void onDestroy() {
         if (timer != null) {

@@ -50,6 +50,7 @@ public class GameActivity extends AppCompatActivity {
     private int lastCompletedGame = 0;
     private boolean opponentLeftNotified = false;
     private boolean opponentAlreadyLeft = false;
+    private boolean isFriendlyMatch = false;
     private android.widget.Button btnLeaveMatch;
 
     @Override
@@ -97,6 +98,7 @@ public class GameActivity extends AppCompatActivity {
                     String abandonedBy = snapshot.getString("abandonedBy");
 
                     Boolean isFriendly = snapshot.getBoolean("isFriendly");
+                    isFriendlyMatch = Boolean.TRUE.equals(isFriendly);
 
                     // Check terminal states FIRST so a finished match always shows
                     // results, even when the opponent had abandoned earlier.
@@ -112,22 +114,14 @@ public class GameActivity extends AppCompatActivity {
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
                         boolean wasAlreadyLeft = opponentAlreadyLeft;
                         opponentAlreadyLeft = true;
-                        if (Boolean.TRUE.equals(isFriendly)) {
-                            isFinishing = true;
+                        if (!opponentLeftNotified) {
+                            opponentLeftNotified = true;
 
-                            if (gameListener != null) {
-                                gameListener.remove();
-                                gameListener = null;
-                            }
-
-                            Toast.makeText(this, "Friend left the match.", Toast.LENGTH_LONG).show();
-
-                            db.collection("users").document(currentUid).update("inGame", false);
-
-                            startActivity(new Intent(this, HomeActivity.class)
-                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                            finish();
-                            return;
+                            Toast.makeText(this,
+                                    isFriendlyMatch
+                                            ? "Friend left — you can finish the match alone."
+                                            : "Opponent left — you finish the match alone.",
+                                    Toast.LENGTH_LONG).show();
                         }
 
                         if (!opponentLeftNotified) {
@@ -313,6 +307,7 @@ public class GameActivity extends AppCompatActivity {
         intent.putExtra("gameId", gameId);
         intent.putExtra("isMultiplayer", true);
         intent.putExtra("opponentAlreadyLeft", opponentAlreadyLeft);
+        intent.putExtra("isFriendly", isFriendlyMatch);
         startActivityForResult(intent, gameNumber);
     }
 
@@ -418,6 +413,7 @@ public class GameActivity extends AppCompatActivity {
             intent.putExtra("gameId", gameId);
             intent.putExtra("isMultiplayer", true);
             intent.putExtra("opponentAlreadyLeft", opponentAlreadyLeft);
+            intent.putExtra("isFriendly", isFriendlyMatch);
             startActivityForResult(intent, gameType);
         });
     }

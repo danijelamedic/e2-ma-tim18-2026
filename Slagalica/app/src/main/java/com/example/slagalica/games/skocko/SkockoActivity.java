@@ -73,6 +73,7 @@ public class SkockoActivity extends AppCompatActivity {
     private boolean isBattleMode;
     private boolean isMultiplayer;
     private boolean opponentAlreadyLeft;
+    private boolean isFriendly;
     private boolean multiplayerResultSent = false;
     private boolean multiplayerTimeoutHandled = false;
     private FirebaseFirestore db;
@@ -115,6 +116,7 @@ public class SkockoActivity extends AppCompatActivity {
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         db = FirebaseFirestore.getInstance();
         currentUid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
@@ -452,7 +454,10 @@ public class SkockoActivity extends AppCompatActivity {
                 int myScore = (int) getScoreFor(currentUid);
                 int guessedAttempt = getMySolvedAttempt();
 
-                StatisticsRepository.saveSkockoResult(myScore, guessedAttempt);
+                // Friendly matches do not count towards statistics.
+                if (!isFriendly) {
+                    StatisticsRepository.saveSkockoResult(myScore, guessedAttempt);
+                }
             }
 
             Intent resultIntent = new Intent();

@@ -57,6 +57,7 @@ public class MatchingActivity extends AppCompatActivity {
     private String gameId;
     private boolean isMultiplayer;
     private boolean opponentAlreadyLeft;
+    private boolean isFriendly;
     private String currentUid;
     private String currentTurnUid;
     private boolean isMyTurn = false;
@@ -103,6 +104,7 @@ public class MatchingActivity extends AppCompatActivity {
         gameId = getIntent().getStringExtra("gameId");
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
@@ -393,7 +395,10 @@ public class MatchingActivity extends AppCompatActivity {
 
         boolean won = correctMatchesCount >= 3;
         int matchingOnlyScore = playerScore - initialScore;
-        StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, matchingOnlyScore, won);
+        // Friendly matches do not count towards statistics.
+        if (!isFriendly) {
+            StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, matchingOnlyScore, won);
+        }
 
         if (isBattleMode || isMultiplayer) {
             Intent resultIntent = new Intent();

@@ -56,6 +56,7 @@ public class QuizActivity extends AppCompatActivity {
     private String gameId;
     private boolean isMultiplayer;
     private boolean opponentAlreadyLeft;
+    private boolean isFriendly;
     private ListenerRegistration quizListener;
     private String currentUid;
     private String currentTurnUid;
@@ -98,6 +99,7 @@ public class QuizActivity extends AppCompatActivity {
         gameId = getIntent().getStringExtra("gameId");
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -482,7 +484,10 @@ public class QuizActivity extends AppCompatActivity {
         boolean won = correctAnswersCount >= Math.ceil(questions.size() / 2.0);
 
         int quizOnlyScore = playerScore - initialScore;
-        StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), quizOnlyScore, won);
+        // Friendly matches do not count towards statistics.
+        if (!isFriendly) {
+            StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), quizOnlyScore, won);
+        }
 
         if (countDownTimer != null) {
             countDownTimer.cancel();

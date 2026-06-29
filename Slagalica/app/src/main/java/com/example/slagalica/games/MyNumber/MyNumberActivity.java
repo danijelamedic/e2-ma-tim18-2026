@@ -61,6 +61,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     private static final int SHAKE_THRESHOLD = 800;
 
     private boolean isMultiplayer = false;
+    private boolean isFriendly = false;
     private boolean opponentAlreadyLeft = false;
     private String  gameId;
     private String  currentUid;
@@ -105,6 +106,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
         db            = FirebaseFirestore.getInstance();
         currentUid    = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         gameId        = getIntent().getStringExtra("gameId");
 
@@ -709,7 +711,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
     private void waitForOpponentResult() {
         if (opponentAlreadyLeft) {
-            calculateAndSavePoints(myResult, 0);
+            calculateAndSavePoints(myResult, -1);
             return;
         }
 
@@ -725,8 +727,11 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
                     String abandonedBy = snapshot.getString("abandonedBy");
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                        if (gameListener != null) { gameListener.remove(); gameListener = null; }
-                        calculateAndSavePoints(myResult, 0);
+                        if (gameListener != null) {
+                            gameListener.remove();
+                            gameListener = null;
+                        }
+                        calculateAndSavePoints(myResult, -1);
                         return;
                     }
 
@@ -748,6 +753,15 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
 
         int myPoints;
         String msg;
+        if (oppRes == -1) {
+            myPoints = (myRes == targetNumber) ? 10 : 0;
+            msg = myPoints == 10
+                    ? "Correct! 10 points."
+                    : "Opponent left the match.";
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            savePointsAndAdvance(myPoints);
+            return;
+        }
 
         if (myExact && oppExact) {
             myPoints = 10;
@@ -832,10 +846,13 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     private void finishGame(int totalGamePoints) {
         if (scoreListener != null) { scoreListener.remove(); scoreListener = null; }
 
-        StatisticsRepository.saveMyNumberResult(
-                totalGamePoints,
-                myResult == targetNumber
-        );
+        // Friendly matches do not count towards statistics.
+        if (!isFriendly) {
+            StatisticsRepository.saveMyNumberResult(
+                    totalGamePoints,
+                    myResult == targetNumber
+            );
+        }
 
         Intent result = new Intent();
         result.putExtra("points", totalGamePoints);
