@@ -68,6 +68,7 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     private boolean isPlayer1 = false;
     private boolean isStopper = false;
     private int     currentRound = 1;
+    private int     multiplayerGamePoints = 0;
 
     private FirebaseFirestore    db;
     private ListenerRegistration gameListener;
@@ -800,26 +801,12 @@ public class MyNumberActivity extends AppCompatActivity implements SensorEventLi
     }
 
     private void savePointsAndAdvance(int points) {
-        db.collection("games").document(gameId).get()
-                .addOnSuccessListener(snapshot -> {
-                    String player1Uid = snapshot.getString("player1");
-                    String scoreField = currentUid.equals(player1Uid) ? "score1" : "score2";
-                    long   current    = snapshot.getLong(scoreField) != null
-                            ? snapshot.getLong(scoreField) : 0;
-                    long   totalScore = current + points;
-
-                    Map<String, Object> updates = new HashMap<>();
-                    updates.put(scoreField, totalScore);
-
-                    db.collection("games").document(gameId).update(updates)
-                            .addOnSuccessListener(unused -> {
-                                if (currentRound == 1) {
-                                    advanceToRound2();
-                                } else {
-                                    finishGame((int) totalScore);
-                                }
-                            });
-                });
+        multiplayerGamePoints += points;
+        if (currentRound == 1) {
+            advanceToRound2();
+        } else {
+            finishGame(multiplayerGamePoints);
+        }
     }
 
 

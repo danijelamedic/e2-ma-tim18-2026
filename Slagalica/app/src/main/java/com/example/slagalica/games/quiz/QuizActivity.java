@@ -491,7 +491,8 @@ public class QuizActivity extends AppCompatActivity {
 
         if (isBattleMode || isMultiplayer) {
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("points", playerScore);
+            int resultPoints = isMultiplayer && gameId != null ? 0 : quizOnlyScore;
+            resultIntent.putExtra("points", resultPoints);
             setResult(RESULT_OK, resultIntent);
             finish();
             return;

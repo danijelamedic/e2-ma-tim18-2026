@@ -402,7 +402,7 @@ public class MatchingActivity extends AppCompatActivity {
 
         if (isBattleMode || isMultiplayer) {
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("points", playerScore);
+            resultIntent.putExtra("points", matchingOnlyScore);
             setResult(RESULT_OK, resultIntent);
             finish();
             return;
