@@ -73,6 +73,7 @@ public class SkockoActivity extends AppCompatActivity {
     private boolean isBattleMode;
     private boolean isMultiplayer;
     private boolean opponentAlreadyLeft;
+    private boolean isFriendly;
     private boolean multiplayerResultSent = false;
     private boolean multiplayerTimeoutHandled = false;
     private FirebaseFirestore db;
@@ -96,9 +97,26 @@ public class SkockoActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_skocko);
 
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvSkockoPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
+        }
+
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         db = FirebaseFirestore.getInstance();
         currentUid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
@@ -285,9 +303,7 @@ public class SkockoActivity extends AppCompatActivity {
 
                     loadPlayerPanels();
                     listenForSkockoState();
-                    if (!opponentAlreadyLeft) {
-                        listenForAbandon();
-                    }
+                    listenForAbandon();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to load players.", Toast.LENGTH_SHORT).show();
@@ -412,7 +428,7 @@ public class SkockoActivity extends AppCompatActivity {
             updateCurrentGuess();
         }
 
-        boolean myTurnNow = currentUid.equals(activeUid);
+        boolean myTurnNow = opponentAlreadyLeft || currentUid.equals(activeUid);
         tvCurrentGuessTitle.setText(myTurnNow ? "Your guess" : "Opponent guess");
         tvAttempts.setText("bonus_turn".equals(phase)
                 ? getString(R.string.skocko_bonus_attempt_label)
@@ -438,7 +454,10 @@ public class SkockoActivity extends AppCompatActivity {
                 int myScore = (int) getScoreFor(currentUid);
                 int guessedAttempt = getMySolvedAttempt();
 
-                StatisticsRepository.saveSkockoResult(myScore, guessedAttempt);
+                // Friendly matches do not count towards statistics.
+                if (!isFriendly) {
+                    StatisticsRepository.saveSkockoResult(myScore, guessedAttempt);
+                }
             }
 
             Intent resultIntent = new Intent();
@@ -632,7 +651,7 @@ public class SkockoActivity extends AppCompatActivity {
         if (!gameLoaded) {
             return;
         }
-        if (isMultiplayer && !currentUid.equals(activeUid)) {
+        if (isMultiplayer && !opponentAlreadyLeft && !currentUid.equals(activeUid)) {
             return;
         }
 
@@ -655,7 +674,7 @@ public class SkockoActivity extends AppCompatActivity {
     }
 
     private void syncDraftGuess() {
-        if (!isMultiplayer || skockoStateRef == null || !currentUid.equals(activeUid)) {
+        if (!isMultiplayer || skockoStateRef == null || (!opponentAlreadyLeft && !currentUid.equals(activeUid))) {
             return;
         }
         skockoStateRef.update("draftGuess", intArrayToList(currentGuess));
@@ -712,6 +731,11 @@ public class SkockoActivity extends AppCompatActivity {
         }
 
         if (attemptIndex == 6) {
+            if (isBattleMode) {
+                revealSolution();
+                showEndDialog(getString(R.string.skocko_challenge_no_solve_message));
+                return;
+            }
             startOpponentBonusTurn();
             return;
         }
@@ -720,7 +744,7 @@ public class SkockoActivity extends AppCompatActivity {
     }
 
     private void submitMultiplayerGuess() {
-        if (!gameLoaded || !isGuessComplete() || !currentUid.equals(activeUid)) {
+        if (!gameLoaded || !isGuessComplete() || (!opponentAlreadyLeft && !currentUid.equals(activeUid))) {
             return;
         }
 
@@ -988,6 +1012,9 @@ public class SkockoActivity extends AppCompatActivity {
                     btnSubmit.setEnabled(false);
                     revealSolution();
                     showEndDialog(getString(R.string.skocko_bonus_timeout_message));
+                } else if (isBattleMode) {
+                    revealSolution();
+                    showEndDialog(getString(R.string.skocko_challenge_no_solve_message));
                 } else {
                     startOpponentBonusTurn();
                 }
@@ -1123,15 +1150,7 @@ public class SkockoActivity extends AppCompatActivity {
                     if (snapshot == null || !snapshot.exists()) return;
                     String abandonedBy = snapshot.getString("abandonedBy");
                     if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                        if (abandonListener != null) { abandonListener.remove(); abandonListener = null; }
-                        if (timer != null) { timer.cancel(); timer = null; }
-                        multiplayerResultSent = true;
-                        int myScore = (int) getScoreFor(currentUid);
-                        Intent r = new Intent();
-                        r.putExtra("score", myScore);
-                        r.putExtra("points", myScore);
-                        setResult(RESULT_OK, r);
-                        finish();
+                        opponentAlreadyLeft = true;
                     }
                 });
     }

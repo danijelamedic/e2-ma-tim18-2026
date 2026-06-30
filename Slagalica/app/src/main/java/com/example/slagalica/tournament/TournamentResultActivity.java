@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class TournamentResultActivity extends AppCompatActivity {
 
-    private final TournamentRepository repository = new TournamentRepository();
+    private TournamentRepository repository;
     private String tournamentId;
     private String round;
     private String currentUid;
@@ -35,6 +35,7 @@ public class TournamentResultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        repository = new TournamentRepository(this);
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         tournamentId = getIntent().getStringExtra("tournamentId");
         round = getIntent().getStringExtra("tournamentRound");

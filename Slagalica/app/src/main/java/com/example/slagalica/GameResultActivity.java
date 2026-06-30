@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalica.daily.DailyMission;
 import com.example.slagalica.daily.DailyMissionRepository;
+import com.example.slagalica.leagues.LeagueManager;
 import com.example.slagalica.notifications.NotificationFactory;
 import com.example.slagalica.ranking.RankingRepository;
 import com.google.firebase.auth.FirebaseAuth;
@@ -110,10 +111,11 @@ public class GameResultActivity extends AppCompatActivity {
                     long newStars = Math.max(0, currentStars + starsDelta);
 
                     long tokensEarned = newStars / 50 - currentStars / 50;
-                    int newLeague = calculateLeague(newStars);
+                    int newLeague = LeagueManager.getLeagueForStars((int) newStars).getLevel();
 
                     db.collection("users").document(currentUid)
                             .update("stars", newStars,
+                                    "monthlyStars", FieldValue.increment(starsDelta),
                                     "tokens", FieldValue.increment(tokensEarned),
                                     "gamesPlayed", FieldValue.increment(1),
                                     "league", newLeague)
@@ -131,15 +133,5 @@ public class GameResultActivity extends AppCompatActivity {
                                 }
                             });
                 });
-    }
-
-    private int calculateLeague(long stars) {
-        int[] leagueThresholds = {0, 100, 200, 400, 800, 1600};
-        for (int i = leagueThresholds.length - 1; i >= 0; i--) {
-            if (stars >= leagueThresholds[i]) {
-                return i;
-            }
-        }
-        return 0;
     }
 }

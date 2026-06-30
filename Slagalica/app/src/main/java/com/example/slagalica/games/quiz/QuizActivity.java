@@ -56,6 +56,7 @@ public class QuizActivity extends AppCompatActivity {
     private String gameId;
     private boolean isMultiplayer;
     private boolean opponentAlreadyLeft;
+    private boolean isFriendly;
     private ListenerRegistration quizListener;
     private String currentUid;
     private String currentTurnUid;
@@ -75,6 +76,22 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
+        }
         db = FirebaseFirestore.getInstance();
 
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -82,6 +99,7 @@ public class QuizActivity extends AppCompatActivity {
         gameId = getIntent().getStringExtra("gameId");
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -125,16 +143,14 @@ public class QuizActivity extends AppCompatActivity {
                 findViewById(R.id.btnAnswer2),
                 findViewById(R.id.btnAnswer3),
                 findViewById(R.id.btnAnswer4)
+
+
         };
 
         findViewById(R.id.btnQuizInfo).setOnClickListener(v -> showInfoDialog());
         findViewById(R.id.btnLeaveQuiz).setOnClickListener(v -> showLeaveDialog());
         android.view.View btnNextQuestion = findViewById(R.id.btnNextQuestion);
-        btnNextQuestion.setOnClickListener(v -> goToNextQuestion());
-
-        if (isMultiplayer) {
-            btnNextQuestion.setVisibility(android.view.View.GONE);
-        }
+        btnNextQuestion.setVisibility(View.GONE);
 
 
         for (int i = 0; i < answerViews.length; i++) {
@@ -272,8 +288,10 @@ public class QuizActivity extends AppCompatActivity {
         hasAnsweredCurrentQuestion = true;
         selectedAnswerIndex = index;
 
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
+        if (isMultiplayer && gameId != null) {
+            if (countDownTimer != null) countDownTimer.cancel();
+        } else {
+            tvQuizTimer.postDelayed(() -> moveToNextQuestion(), 1000);
         }
 
         for (TextView answerView : answerViews) {
@@ -299,9 +317,15 @@ public class QuizActivity extends AppCompatActivity {
             }
 
             saveMultiplayerAnswer(index, selectedAnswer, isCorrect);
+
+            if (opponentAlreadyLeft) {
+                tvQuizTimer.postDelayed(
+                        () -> checkAndScoreCurrentQuestion(true),
+                        400
+                );
+            }
             return;
         }
-
         if (isCorrect) {
             playerScore += 10;
             correctAnswersCount++;
@@ -355,7 +379,7 @@ public class QuizActivity extends AppCompatActivity {
 
         if (isMultiplayer && gameId != null) {
             if (!questionFinished) {
-                checkAndScoreCurrentQuestion(false);
+                checkAndScoreCurrentQuestion(opponentAlreadyLeft);
                 return;
             }
 
@@ -428,7 +452,9 @@ public class QuizActivity extends AppCompatActivity {
                         countDownTimer.cancel();
                     }
 
-                    if (isBattleMode) {
+                    if (isBattleMode || isMultiplayer) {
+                        // Challenge OR multiplayer match: return to GameActivity so it
+                        // records abandonedBy (otherwise the remaining player gets stuck).
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("battleLost", true);
                         setResult(RESULT_OK, resultIntent);
@@ -454,7 +480,10 @@ public class QuizActivity extends AppCompatActivity {
         boolean won = correctAnswersCount >= Math.ceil(questions.size() / 2.0);
 
         int quizOnlyScore = playerScore - initialScore;
-        StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), quizOnlyScore, won);
+        // Friendly matches do not count towards statistics.
+        if (!isFriendly) {
+            StatisticsRepository.saveQuizResult(correctAnswersCount, questions.size(), quizOnlyScore, won);
+        }
 
         if (countDownTimer != null) {
             countDownTimer.cancel();
@@ -462,7 +491,8 @@ public class QuizActivity extends AppCompatActivity {
 
         if (isBattleMode || isMultiplayer) {
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("points", playerScore);
+            int resultPoints = isMultiplayer && gameId != null ? 0 : quizOnlyScore;
+            resultIntent.putExtra("points", resultPoints);
             setResult(RESULT_OK, resultIntent);
             finish();
             return;
@@ -585,13 +615,18 @@ public class QuizActivity extends AppCompatActivity {
 
                     String abandonedBy = snapshot.getString("abandonedBy");
                     if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                        if (quizListener != null) { quizListener.remove(); quizListener = null; }
-                        if (countDownTimer != null) { countDownTimer.cancel(); countDownTimer = null; }
-                        Intent r = new Intent();
-                        r.putExtra("points", 0);
-                        setResult(RESULT_OK, r);
-                        finish();
-                        return;
+                        // Opponent left mid-game. Per REQ3f I keep playing this game SOLO
+                        // to the end (no longer waiting for the opponent's answers).
+                        opponentAlreadyLeft = true;
+                        Toast.makeText(this,
+                                "Opponent left — finish this game solo.",
+                                Toast.LENGTH_SHORT).show();
+                        // If I'd already answered and was waiting for the opponent,
+                        // score the current question now so the quiz can advance.
+                        if (hasAnsweredCurrentQuestion) {
+                            checkAndScoreCurrentQuestion(true);
+                        }
+                        // fall through: continue handling this snapshot normally
                     }
 
                     Long questionIndex =

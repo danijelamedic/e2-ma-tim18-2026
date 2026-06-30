@@ -36,7 +36,6 @@ public class StepByStepActivity extends AppCompatActivity {
     private static final int POINTS_LOSS_PER_STEP = 2;
     private static final int OPPONENT_BONUS_MS    = 10_000;
 
-    // Premium palette
     private static final int GOLD_TOP   = 0xFFF7D667;
     private static final int GOLD_BOT   = 0xFFD9A33A;
     private static final int GOLD_TEXT  = 0xFF3A2A00;
@@ -62,6 +61,7 @@ public class StepByStepActivity extends AppCompatActivity {
     private int currentStep = 0;
 
     private boolean isMultiplayer = false;
+    private boolean isFriendly = false;
     private boolean opponentAlreadyLeft = false;
     private String gameId;
     private String currentUid;
@@ -91,9 +91,26 @@ public class StepByStepActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_by_step);
 
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
+        }
+
         db            = FirebaseFirestore.getInstance();
         currentUid    = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
         gameId        = getIntent().getStringExtra("gameId");
 
@@ -163,9 +180,9 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive()) return;
                     if (myDoc.exists()) {
                         String name  = myDoc.getString("username");
-                        Long   coins = myDoc.getLong("coins");
+                        Long   coins = myDoc.getLong("tokens");
                         Long   stars = myDoc.getLong("stars");
-                        Long   level = myDoc.getLong("level");
+                        Long   level = myDoc.getLong("league");
                         if (name != null) tvPlayerName.setText(name);
                         imgYourAvatar.setImageResource(
                                 com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(myDoc.getString("avatar")));
@@ -184,9 +201,9 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive()) return;
                     if (doc.exists()) {
                         String name  = doc.getString("username");
-                        Long   coins = doc.getLong("coins");
+                        Long   coins = doc.getLong("tokens");
                         Long   stars = doc.getLong("stars");
-                        Long   level = doc.getLong("level");
+                        Long   level = doc.getLong("league");
                         if (name != null) tvOpponentName.setText(name);
                         imgOpponentAvatar.setImageResource(
                                 com.example.slagalica.data.PlayerProfileLoader.getAvatarResource(doc.getString("avatar")));
@@ -332,9 +349,12 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive() || snapshot == null) return;
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        opponentAlreadyLeft = true;
                         if (gameListener != null) { gameListener.remove(); gameListener = null; }
-                        finishAndReturn(0);
+                        String usedId = snapshot.getString(
+                                "stepByStepQuestionId_r" + (currentRound == 1 ? 2 : 1));
+                        loadQuestionRandom(usedId);
                         return;
                     }
 
@@ -363,9 +383,10 @@ public class StepByStepActivity extends AppCompatActivity {
                     if (!isAlive() || snapshot == null) return;
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        opponentAlreadyLeft = true;
                         if (gameListener != null) { gameListener.remove(); gameListener = null; }
-                        finishAndReturn(0);
+                        startBonusChance();
                         return;
                     }
 
@@ -649,10 +670,12 @@ public class StepByStepActivity extends AppCompatActivity {
 
         int guessedStep = points > 0 ? currentStep + 1 : 0;
 
-        StatisticsRepository.saveStepByStepResult(
-                points,
-                guessedStep
-        );
+        if (!isFriendly) {
+            StatisticsRepository.saveStepByStepResult(
+                    points,
+                    guessedStep
+            );
+        }
 
         Intent result = new Intent();
         result.putExtra("points", points);

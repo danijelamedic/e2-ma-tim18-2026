@@ -6,7 +6,12 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.CAMERA"/>
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <application
+        android:name=".SlagalicaApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -39,6 +44,7 @@
         <activity android:name=".games.quiz.QuizActivity" android:exported="false" />
         <activity android:name=".profile.ProfileActivity" android:exported="false" />
         <activity android:name=".notifications.NotificationCenterActivity" android:exported="false" />
+        <activity android:name=".notifications.NotificationActionActivity" android:exported="false" />
         <activity android:name=".notifications.ChatNotificationsActivity" android:exported="false" />
         <activity android:name=".notifications.RankingNotificationsActivity" android:exported="false" />
         <activity android:name=".notifications.RewardsNotificationsActivity" android:exported="false" />
@@ -50,6 +56,7 @@
         <activity android:name=".profile.statistics.MatchingStatisticsActivity" android:exported="false" />
         <activity android:name=".profile.statistics.QuizStatisticsActivity" android:exported="false" />
         <activity android:name=".profile.ChangeAvatarActivity" android:exported="false"/>
+        <activity android:name=".profile.statistics.StatisticsDashboardActivity" android:exported="false" />
         <activity android:name=".GameSessionActivity" android:exported="false"/>
         <activity android:name=".BattleResultActivity" android:exported="false" />
         <activity android:name=".MatchmakingActivity" android:exported="false"/>
@@ -65,6 +72,7 @@
         <activity android:name=".leagues.LeagueActivity" android:exported="false" />
         <activity android:name=".friends.FriendsActivity" android:exported="false" />
         <activity android:name=".ranking.LeaderboardActivity" android:exported="false" />
+        <activity android:name=".regions.RegionsActivity" android:exported="false" />
 
         <service
             android:name=".notifications.SlagalicaMessagingService"

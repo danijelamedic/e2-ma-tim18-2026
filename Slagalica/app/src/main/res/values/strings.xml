@@ -153,8 +153,8 @@
     <string name="player_you_score">0 pts</string>
     <string name="player_opponent_score">0 pts</string>
     <string name="player_you_name">Ana</string>
-    <string name="player_opponent_name">Marko</string>
-    <string name="opponent_avatar_icon">🧑</string>
+    <string name="player_opponent_name"></string>
+    <string name="opponent_avatar_icon"></string>
     <string name="info_icon">ⓘ</string>
     <string name="matching_rules_title">How to play</string>
     <string name="matching_rules_message">Connect each term from the left column with the correct term from the right column. Each correct pair gives 2 points.</string>
@@ -243,6 +243,7 @@
     <string name="skocko_bonus_success_message">The opponent used the 10-second bonus turn and solved the combination for 10 points.</string>
     <string name="skocko_bonus_fail_message">The opponent missed the 10-second bonus turn. No bonus points were awarded.</string>
     <string name="skocko_bonus_timeout_message">The opponent ran out of time during the 10-second bonus turn.</string>
+    <string name="skocko_challenge_no_solve_message">You did not crack the code. No points this round.</string>
 
     <string name="notifications_title">NOTIFICATION CENTER</string>
     <string name="notifications_history_title">All notifications</string>
@@ -332,7 +333,7 @@
     <string name="detail_mark_all_read">Mark all as read</string>
 
     <string name="home_title">BRAINBATTLE</string>
-    <string name="home_welcome_title">Welcome back, Ana!</string>
+    <string name="home_welcome_title">Welcome back, !</string>
     <string name="home_welcome_subtitle">Choose a game, check your profile, or continue your battle.</string>
     <string name="games_menu_title">GAMES</string>
     <string name="home_notifications_button">Notification center</string>

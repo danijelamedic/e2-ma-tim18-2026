@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import com.example.slagalica.models.MatchingPair;
 import java.util.ArrayList;
 import java.util.List;
+import android.view.View;
 
 public class MatchingActivity extends AppCompatActivity {
 
@@ -56,6 +57,7 @@ public class MatchingActivity extends AppCompatActivity {
     private String gameId;
     private boolean isMultiplayer;
     private boolean opponentAlreadyLeft;
+    private boolean isFriendly;
     private String currentUid;
     private String currentTurnUid;
     private boolean isMyTurn = false;
@@ -81,11 +83,28 @@ public class MatchingActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_matching);
 
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerScoreView = findViewById(R.id.tvPlayerScore);
+            if (playerScoreView != null) playerScoreView.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
+        }
+
         db = FirebaseFirestore.getInstance();
 
         gameId = getIntent().getStringExtra("gameId");
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
@@ -199,7 +218,7 @@ public class MatchingActivity extends AppCompatActivity {
                             timer.cancel();
                         }
 
-                        if (isBattleMode) {
+                        if (isBattleMode || isMultiplayer) {
                             Intent resultIntent = new Intent();
                             resultIntent.putExtra("battleLost", true);
                             setResult(RESULT_OK, resultIntent);
@@ -242,6 +261,7 @@ public class MatchingActivity extends AppCompatActivity {
                 findViewById(R.id.rightItem4),
                 findViewById(R.id.rightItem5)
         };
+
     }
 
     private void setupMatchingClicks() {
@@ -375,11 +395,14 @@ public class MatchingActivity extends AppCompatActivity {
 
         boolean won = correctMatchesCount >= 3;
         int matchingOnlyScore = playerScore - initialScore;
-        StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, matchingOnlyScore, won);
+        // Friendly matches do not count towards statistics.
+        if (!isFriendly) {
+            StatisticsRepository.saveMatchingResult(correctMatchesCount, 5, matchingOnlyScore, won);
+        }
 
         if (isBattleMode || isMultiplayer) {
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("points", playerScore);
+            resultIntent.putExtra("points", matchingOnlyScore);
             setResult(RESULT_OK, resultIntent);
             finish();
             return;
@@ -507,14 +530,8 @@ public class MatchingActivity extends AppCompatActivity {
                     }
 
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (!opponentAlreadyLeft && abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                        if (matchingListener != null) { matchingListener.remove(); matchingListener = null; }
-                        if (timer != null) { timer.cancel(); timer = null; }
-                        Intent r = new Intent();
-                        r.putExtra("points", 0);
-                        setResult(RESULT_OK, r);
-                        finish();
-                        return;
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
+                        opponentAlreadyLeft = true;
                     }
 
                     matchingRound = snapshot.getLong("matchingRound") != null
@@ -561,8 +578,8 @@ public class MatchingActivity extends AppCompatActivity {
                     lastSeenMatchingPhase = matchingPhase != null ? matchingPhase : "";
                     lastSeenCurrentPlayerUid = matchingCurrentPlayerUid != null ? matchingCurrentPlayerUid : "";
 
-                    isMyTurn = currentUid != null && currentUid.equals(matchingCurrentPlayerUid);
-
+                    isMyTurn = opponentAlreadyLeft
+                            || (currentUid != null && currentUid.equals(matchingCurrentPlayerUid));
                     updateTurnUi();
 
                     if (isMyTurn && timer == null && timeLeftMillis > 0) {
@@ -688,12 +705,13 @@ public class MatchingActivity extends AppCompatActivity {
                     }
 
                     String player1 = snapshot.getString("player1");
+                    String starter = opponentAlreadyLeft ? currentUid : player1;
 
                     Map<String, Object> updates = new HashMap<>();
                     updates.put("matchingRound", 1);
                     updates.put("matchingPhase", "starter");
-                    updates.put("matchingStarterUid", player1);
-                    updates.put("matchingCurrentPlayerUid", player1);
+                    updates.put("matchingStarterUid", starter);
+                    updates.put("matchingCurrentPlayerUid", starter);
 
                     db.collection("games")
                             .document(gameId)

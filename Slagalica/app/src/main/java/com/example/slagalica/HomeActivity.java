@@ -27,9 +27,11 @@ import com.example.slagalica.notifications.NotificationChannelManager;
 import com.example.slagalica.notifications.NotificationRepository;
 import com.example.slagalica.notifications.RewardsNotificationsActivity;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.profile.statistics.StatisticsDashboardActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
 import com.example.slagalica.ranking.RankingRepository;
 import com.example.slagalica.ranking.RankingRewardDialog;
+import com.example.slagalica.regions.RegionsActivity;
 import com.example.slagalica.tournament.TournamentActivity;
 import com.example.slagalica.leagues.League;
 import com.example.slagalica.leagues.LeagueManager;
@@ -63,6 +65,7 @@ public class HomeActivity extends AppCompatActivity {
     private View btnTournament;
     private View btnChat;
     private View btnDailyMissions;
+    private View btnRegions;
     private FirebaseFirestore db;
     private String currentUid;
     private TextView tvWelcomeUsername;
@@ -296,6 +299,7 @@ public class HomeActivity extends AppCompatActivity {
         navStatistics     = findViewById(R.id.navStatistics);
         navFriends        = findViewById(R.id.navFriends);
         txtHomeStatus = findViewById(R.id.txtHomeStatus);
+        btnRegions = findViewById(R.id.btnRegions);
     }
 
     private void setupClickListeners() {
@@ -317,6 +321,11 @@ public class HomeActivity extends AppCompatActivity {
         if (btnDailyMissions != null) {
             btnDailyMissions.setOnClickListener(v ->
                     startActivity(new Intent(this, DailyMissionsActivity.class)));
+        }
+
+        if (btnRegions != null) {
+            btnRegions.setOnClickListener(v ->
+                    startActivity(new Intent(this, RegionsActivity.class)));
         }
 
         btnLogout.setOnClickListener(v -> {
@@ -353,7 +362,7 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ProfileActivity.class)));
 
         navStatistics.setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class)));
+                startActivity(new Intent(this, StatisticsDashboardActivity.class)));
 
         navFriends.setOnClickListener(v ->
                 startActivity(new Intent(this, FriendsActivity.class)));

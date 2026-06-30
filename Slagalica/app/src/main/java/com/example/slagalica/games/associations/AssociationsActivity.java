@@ -69,6 +69,7 @@ public class AssociationsActivity extends AppCompatActivity {
     private boolean isBattleMode;
     private boolean isMultiplayer;
     private boolean opponentAlreadyLeft;
+    private boolean isFriendly;
     private boolean multiplayerResultSent = false;
     private boolean multiplayerTimeoutHandled = false;
     private boolean multiplayerPhaseAdvanceStarted = false;
@@ -93,9 +94,24 @@ public class AssociationsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_associations);
 
+        if (getIntent().getBooleanExtra("isBattleMode", false)) {
+            android.view.View opponentPanel = findViewById(R.id.layoutOpponentPanel);
+            if (opponentPanel != null) opponentPanel.setVisibility(android.view.View.GONE);
+            android.view.View vsLabel = findViewById(R.id.tvVsLabel);
+            if (vsLabel != null) vsLabel.setVisibility(android.view.View.GONE);
+            android.view.View playerPanel = findViewById(R.id.layoutPlayerPanel);
+            if (playerPanel != null && playerPanel.getLayoutParams() instanceof android.widget.LinearLayout.LayoutParams) {
+                android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) playerPanel.getLayoutParams();
+                lp.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+                lp.weight = 0f;
+                playerPanel.setLayoutParams(lp);
+            }
+        }
+
         isBattleMode = getIntent().getBooleanExtra("isBattleMode", false);
         isMultiplayer = getIntent().getBooleanExtra("isMultiplayer", false);
         opponentAlreadyLeft = getIntent().getBooleanExtra("opponentAlreadyLeft", false);
+        isFriendly = getIntent().getBooleanExtra("isFriendly", false);
         db = FirebaseFirestore.getInstance();
         currentUid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
@@ -138,7 +154,14 @@ public class AssociationsActivity extends AppCompatActivity {
         tvTurn = findViewById(R.id.tvAssociationsTurn);
         tvFinalSolution = findViewById(R.id.tvFinalSolution);
         btnPass = findViewById(R.id.btnPassAssociations);
+
+        if (isBattleMode) {
+            tvPlayerScore.setVisibility(android.view.View.GONE);
+            tvOpponentScore.setVisibility(android.view.View.GONE);
+        }
     }
+
+
 
     private void setupLeaveButton() {
         Button btnLeave = findViewById(R.id.btnLeaveAssociations);
@@ -232,9 +255,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
                     loadPlayerPanels();
                     listenForAssociationsState();
-                    if (!opponentAlreadyLeft) {
-                        listenForAbandon();
-                    }
+                    listenForAbandon();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to load players.", Toast.LENGTH_SHORT).show();
@@ -394,7 +415,10 @@ public class AssociationsActivity extends AppCompatActivity {
                 int myScore = (int) getScoreFor(currentUid);
                 boolean solvedNumber = myScore > 0;
 
-                StatisticsRepository.saveAssociationsResult(myScore, solvedNumber);
+                // Friendly matches do not count towards statistics.
+                if (!isFriendly) {
+                    StatisticsRepository.saveAssociationsResult(myScore, solvedNumber);
+                }
             }
 
             Intent resultIntent = new Intent();
@@ -490,7 +514,7 @@ public class AssociationsActivity extends AppCompatActivity {
     }
 
     private void updateActiveState() {
-        boolean myTurn = currentUid != null && currentUid.equals(activeUid);
+        boolean myTurn = opponentAlreadyLeft || (currentUid != null && currentUid.equals(activeUid));
         boolean opponentTurn = opponentUid != null && opponentUid.equals(activeUid);
 
         tvPlayerAvatar.setBackgroundResource(myTurn
@@ -671,7 +695,7 @@ public class AssociationsActivity extends AppCompatActivity {
     }
 
     private void promptColumnGuess(int column) {
-        if (isMultiplayer && !currentUid.equals(activeUid)) {
+        if (isMultiplayer && !opponentAlreadyLeft && !currentUid.equals(activeUid)) {
             return;
         }
 
@@ -697,7 +721,7 @@ public class AssociationsActivity extends AppCompatActivity {
     }
 
     private void promptFinalGuess() {
-        if (isMultiplayer && !currentUid.equals(activeUid)) {
+        if (isMultiplayer && !opponentAlreadyLeft && !currentUid.equals(activeUid)) {
             return;
         }
 
@@ -749,7 +773,7 @@ public class AssociationsActivity extends AppCompatActivity {
 
     @SuppressWarnings("unchecked")
     private void revealMultiplayerClue(int column, int row) {
-        if (!gameLoaded || !currentUid.equals(activeUid) || !canOpenClue
+        if (!gameLoaded || (!opponentAlreadyLeft && !currentUid.equals(activeUid)) || !canOpenClue
                 || solvedColumns[column] || openedClues[column][row]) {
             return;
         }
@@ -1085,16 +1109,29 @@ public class AssociationsActivity extends AppCompatActivity {
                 .addSnapshotListener((snapshot, e) -> {
                     if (snapshot == null || !snapshot.exists()) return;
                     String abandonedBy = snapshot.getString("abandonedBy");
-                    if (abandonedBy != null && !abandonedBy.equals(currentUid)) {
-                        if (abandonListener != null) { abandonListener.remove(); abandonListener = null; }
-                        if (timer != null) { timer.cancel(); timer = null; }
-                        multiplayerResultSent = true;
-                        int myScore = (int) getScoreFor(currentUid);
-                        Intent r = new Intent();
-                        r.putExtra("score", myScore);
-                        r.putExtra("points", myScore);
-                        setResult(RESULT_OK, r);
-                        finish();
+                    if (abandonedBy != null && !abandonedBy.equals(currentUid)
+                            && !opponentAlreadyLeft) {
+                        // Opponent left. Per REQ3f I continue this game SOLO.
+                        opponentAlreadyLeft = true;
+                        Toast.makeText(this,
+                                "Opponent left — finish this game solo.",
+                                Toast.LENGTH_SHORT).show();
+                        // If the opponent was the active player, take over the turn so
+                        // the board unlocks. Writing activeUid triggers the state
+                        // listener which refreshes the UI (updateActiveState +
+                        // setMultiplayerControls), letting me open clues and guess.
+                        if (associationsStateRef != null
+                                && !currentUid.equals(activeUid)) {
+                            Map<String, Object> takeover = new HashMap<>();
+                            takeover.put("activeUid", currentUid);
+                            takeover.put("canOpenClue", true);
+                            associationsStateRef.update(takeover);
+                        } else {
+                            // Already my turn: just refresh controls locally.
+                            updateActiveState();
+                            setMultiplayerControls(true);
+                            setBoardEnabled(true);
+                        }
                     }
                 });
     }

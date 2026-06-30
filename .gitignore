@@ -4,3 +4,5 @@ Slagalica/app/build/
 Slagalica/build/
 *.iml
 .gradle/
+node_modules/
+notification-server/node_modules/
