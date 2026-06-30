@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.CAMERA"/>
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <application
         android:name=".SlagalicaApplication"
         android:allowBackup="true"
@@ -67,6 +71,7 @@
         <activity android:name=".leagues.LeagueActivity" android:exported="false" />
         <activity android:name=".friends.FriendsActivity" android:exported="false" />
         <activity android:name=".ranking.LeaderboardActivity" android:exported="false" />
+        <activity android:name=".regions.RegionsActivity" android:exported="false" />
 
         <service
             android:name=".notifications.SlagalicaMessagingService"
