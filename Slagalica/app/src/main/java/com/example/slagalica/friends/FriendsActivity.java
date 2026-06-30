@@ -20,6 +20,7 @@ import com.example.slagalica.leagues.LeagueManager;
 import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.notifications.NotificationFactory;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.profile.statistics.StatisticsDashboardActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -451,7 +452,7 @@ public class FriendsActivity extends AppCompatActivity {
                 startActivity(new Intent(FriendsActivity.this, NotificationCenterActivity.class)));
 
         findViewById(R.id.navStatistics).setOnClickListener(v ->
-                startActivity(new Intent(FriendsActivity.this, ProfileActivity.class)));
+                startActivity(new Intent(FriendsActivity.this, StatisticsDashboardActivity.class)));
 
         findViewById(R.id.navLeaderboard).setOnClickListener(v ->
                 startActivity(new Intent(FriendsActivity.this, LeaderboardActivity.class)));

@@ -22,6 +22,7 @@ import com.example.slagalica.leagues.League;
 import com.example.slagalica.leagues.LeagueManager;
 import com.example.slagalica.notifications.NotificationCenterActivity;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.profile.statistics.StatisticsDashboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -268,7 +269,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         findViewById(R.id.navLeaderboard).setOnClickListener(v ->
                 Toast.makeText(this, "You are already on Leaderboard", Toast.LENGTH_SHORT).show());
         findViewById(R.id.navStatistics).setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class)));
+                startActivity(new Intent(this, StatisticsDashboardActivity.class)));
         findViewById(R.id.navProfile).setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
     }

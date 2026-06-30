@@ -27,6 +27,7 @@ import com.example.slagalica.notifications.NotificationChannelManager;
 import com.example.slagalica.notifications.NotificationRepository;
 import com.example.slagalica.notifications.RewardsNotificationsActivity;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.profile.statistics.StatisticsDashboardActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
 import com.example.slagalica.ranking.RankingRepository;
 import com.example.slagalica.ranking.RankingRewardDialog;
@@ -361,7 +362,7 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ProfileActivity.class)));
 
         navStatistics.setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class)));
+                startActivity(new Intent(this, StatisticsDashboardActivity.class)));
 
         navFriends.setOnClickListener(v ->
                 startActivity(new Intent(this, FriendsActivity.class)));

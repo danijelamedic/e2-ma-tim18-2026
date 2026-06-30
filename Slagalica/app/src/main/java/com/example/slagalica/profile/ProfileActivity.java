@@ -17,6 +17,7 @@ import com.example.slagalica.profile.statistics.QuizStatisticsActivity;
 import com.example.slagalica.profile.statistics.MatchingStatisticsActivity;
 import com.example.slagalica.profile.statistics.AssociationsStatisticsActivity;
 import com.example.slagalica.profile.statistics.SkockoStatisticsActivity;
+import com.example.slagalica.profile.statistics.StatisticsDashboardActivity;
 import com.example.slagalica.profile.statistics.StepByStepStatisticsActivity;
 import com.example.slagalica.profile.statistics.MyNumberStatisticsActivity;
 import android.widget.ProgressBar;
@@ -170,7 +171,7 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, NotificationCenterActivity.class)));
 
         findViewById(R.id.navStatistics).setOnClickListener(v ->
-                Toast.makeText(this, "Statistics screen coming soon", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(ProfileActivity.this, StatisticsDashboardActivity.class)));
 
         findViewById(R.id.navFriends).setOnClickListener(v ->
                 startActivity(new Intent(ProfileActivity.this, FriendsActivity.class)));
