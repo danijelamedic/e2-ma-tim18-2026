@@ -27,10 +27,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class FriendsActivity extends AppCompatActivity {
@@ -336,6 +339,15 @@ public class FriendsActivity extends AppCompatActivity {
         starsView.setTextSize(14);
         starsView.setTypeface(null, android.graphics.Typeface.BOLD);
         infoLayout.addView(starsView);
+
+        TextView monthlyRankView = new TextView(this);
+        monthlyRankView.setText("🏆 Monthly rank: loading...");
+        monthlyRankView.setTextColor(android.graphics.Color.parseColor("#6F50B5"));
+        monthlyRankView.setTextSize(12);
+        monthlyRankView.setTypeface(null, android.graphics.Typeface.ITALIC);
+        infoLayout.addView(monthlyRankView);
+
+        loadFriendMonthlyRank(friendId, monthlyRankView);
 
         card.addView(infoLayout);
 
@@ -713,5 +725,43 @@ public class FriendsActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to cancel request.", Toast.LENGTH_SHORT).show()
                 );
+    }
+
+    private void loadFriendMonthlyRank(String friendId, TextView monthlyRankView) {
+        String monthlyCycleId = getCurrentMonthlyCycleId();
+
+        db.collection("leaderboards")
+                .document(monthlyCycleId)
+                .collection("entries")
+                .orderBy("stars", Query.Direction.DESCENDING)
+                .limit(50)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    int rank = 1;
+
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        if (doc.getId().equals(friendId)) {
+                            monthlyRankView.setText("🏆 Monthly rank: #" + rank);
+                            return;
+                        }
+                        rank++;
+                    }
+
+                    monthlyRankView.setText("🏆 Monthly rank: Not ranked");
+                })
+                .addOnFailureListener(e ->
+                        monthlyRankView.setText("🏆 Monthly rank: unavailable")
+                );
+    }
+
+    private String getCurrentMonthlyCycleId() {
+        Calendar calendar = Calendar.getInstance();
+
+        return String.format(
+                Locale.ROOT,
+                "monthly_%04d_%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1
+        );
     }
 }
