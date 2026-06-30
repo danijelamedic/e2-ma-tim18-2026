@@ -111,7 +111,7 @@ The application stores detailed statistics for every player.
 
 Every match consists of six games played in the following order.
 
-## 1. Quiz (Ko zna zna)
+## 1. Quiz
 
 - 5 questions
 - 4 possible answers
@@ -121,7 +121,7 @@ Every match consists of six games played in the following order.
 
 ---
 
-## 2. Matching (Spojnice)
+## 2. Matching
 
 - Two rounds
 - 30 seconds each
@@ -496,6 +496,12 @@ git clone <repository-link>
 Developed as the final project for the course:
 
 **Mobile Applications**
+
+Danijela Medić 
+
+Anđela Kumazec
+
+Bojana Milošević
 
 Faculty of Technical Sciences
 
