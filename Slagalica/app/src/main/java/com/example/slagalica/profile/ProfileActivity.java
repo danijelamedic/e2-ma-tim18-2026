@@ -2,6 +2,7 @@ package com.example.slagalica.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView imgAvatar;
     private String currentAvatar = "owl";
     private ImageView imgQrCode;
+    private View avatarBorderFrame;
 
 
     @Override
@@ -78,6 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvEmail = findViewById(R.id.tvEmail);
         tvRegion = findViewById(R.id.tvRegion);
         imgAvatar = findViewById(R.id.imgAvatar);
+        avatarBorderFrame = findViewById(R.id.avatarBorderFrame);
         imgQrCode = findViewById(R.id.imgQrCode);
 
         tvQuizOverviewPercent = findViewById(R.id.tvQuizOverviewPercent);
@@ -436,6 +439,7 @@ public class ProfileActivity extends AppCompatActivity {
                     String email = document.getString("email");
                     String region = document.getString("region");
                     String avatar = document.getString("avatar");
+                    String avatarBorder = document.getString("avatarBorder");
                     currentAvatar = avatar != null ? avatar : "owl";
 
                     Long tokens = document.getLong("tokens");
@@ -461,6 +465,7 @@ public class ProfileActivity extends AppCompatActivity {
                     generateQrCode(userId);
 
                     imgAvatar.setImageResource(getAvatarResource(avatar));
+                    applyAvatarBorder(avatarBorder);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to load user profile", Toast.LENGTH_SHORT).show()
@@ -550,5 +555,30 @@ public class ProfileActivity extends AppCompatActivity {
 
     private int average(long totalScore, long gamesPlayed) {
         return gamesPlayed > 0 ? (int) Math.round((totalScore * 1.0) / gamesPlayed) : 0;
+    }
+
+    private void applyAvatarBorder(String avatarBorder) {
+        if (avatarBorderFrame == null) return;
+
+        if (avatarBorder == null) {
+            avatarBorderFrame.setBackgroundResource(R.drawable.avatar_border_none);
+            return;
+        }
+
+        switch (avatarBorder) {
+            case "gold":
+                avatarBorderFrame.setBackgroundResource(R.drawable.avatar_border_gold);
+                break;
+            case "silver":
+                avatarBorderFrame.setBackgroundResource(R.drawable.avatar_border_silver);
+                break;
+            case "bronze":
+                avatarBorderFrame.setBackgroundResource(R.drawable.avatar_border_bronze);
+                break;
+            case "none":
+            default:
+                avatarBorderFrame.setBackgroundResource(R.drawable.avatar_border_none);
+                break;
+        }
     }
 }

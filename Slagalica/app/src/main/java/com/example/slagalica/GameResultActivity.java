@@ -114,6 +114,7 @@ public class GameResultActivity extends AppCompatActivity {
 
                     db.collection("users").document(currentUid)
                             .update("stars", newStars,
+                                    "monthlyStars", FieldValue.increment(starsDelta),
                                     "tokens", FieldValue.increment(tokensEarned),
                                     "gamesPlayed", FieldValue.increment(1),
                                     "league", newLeague)
