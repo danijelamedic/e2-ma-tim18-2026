@@ -1,253 +1,479 @@
 # e2-ma-tim18-2026
 
-# BrainBattle - Mobile Applications Project
+# BrainBattle – Mobile Applications Project
 
 BrainBattle is an Android mobile application inspired by the Serbian TV quiz **Slagalica**.
 
-The application allows players to compete in multiple quiz mini-games, customize their profiles, track game statistics and receive notifications through a unified game interface.
+The application enables registered and guest users to compete in real-time multiplayer quiz matches, track their progress, climb leagues, communicate with other players, participate in tournaments and challenges, and monitor detailed game statistics through a modern mobile interface.
 
 ---
 
-## Technologies
+# Technologies
 
-* Java
-* Android Studio
-* XML Layouts
-* Android SDK
-* Firebase Authentication
-* Firebase Firestore
-* Firebase Storage
-* Material Design Components
-* QR Code Generator
-
----
-
-## Implemented Features
-
-### Authentication
-
-* User registration
-* Email verification
-* Login using email or username
-* Password reset
-* Logout
+- Java
+- Android Studio
+- XML Layouts
+- Android SDK
+- Firebase Authentication
+- Firebase Firestore
+- Firebase Storage
+- Firebase Cloud Messaging
+- Material Design Components
+- OpenStreetMap (osmdroid)
+- ZXing QR Code Scanner
+- QR Code Generator
+- Android Sensors (Shake Sensor)
 
 ---
 
-### User Profile
+# Main Features
 
-Each registered user has a profile containing:
+## Authentication
 
-* Username
-* Email address
-* Avatar
-* Region
-* Number of tokens
-* Total stars
-* League name and icon
-* QR code for adding friends
-
-Additional features:
-
-* Change avatar
-* Logout
+- User registration
+- Email verification
+- Login using email or username
+- Password reset
+- Logout
+- Guest mode
 
 ---
 
-### Statistics
+## User Profile
 
-The application keeps track of player statistics.
+Each registered user has a personalized profile containing:
 
-#### Overall statistics
+- Username
+- Email address
+- Avatar
+- Avatar border
+- League
+- Region
+- Total stars
+- Tokens
+- QR code for adding friends
 
-* Total games played
-* Win percentage
-* Loss percentage
-* Overall success percentage
+Users can:
 
-#### Quiz statistics
-
-* Games played
-* Correct answers
-* Wrong answers
-* Success percentage
-
-#### Matching statistics
-
-* Games played
-* Correct matches
-* Wrong matches
-* Success percentage
-
-#### Associations statistics
-
-* Solved vs unsolved associations
-
-#### Skocko statistics
-
-* Success percentage by attempt
-
-#### Step By Step statistics
-
-* Success percentage by step
-
-#### My Number statistics
-
-* Percentage of exact solutions
+- Change avatar
+- View detailed statistics
+- View league progress
+- Logout
 
 ---
 
-## Games
+## Statistics
 
-A complete match consists of six mini-games played in sequence.
+The application stores detailed statistics for every player.
 
-### 1. Quiz (Ko zna zna)
+### Overall statistics
 
-* 5 questions
-* 4 possible answers
-* 5 seconds per question
-* Correct answer: +10 points
-* Wrong answer: -5 points
+- Total matches played
+- Wins
+- Losses
+- Win percentage
+- Overall success percentage
+
+### Game statistics
+
+#### Quiz
+
+- Correct answers
+- Wrong answers
+- Success percentage
+
+#### Matching
+
+- Correct matches
+- Wrong matches
+- Success percentage
+
+#### Associations
+
+- Solved associations
+- Unsolved associations
+
+#### Skocko
+
+- Success percentage for every attempt
+
+#### Step By Step
+
+- Success percentage for every clue
+
+#### My Number
+
+- Percentage of exact solutions
 
 ---
 
-### 2. Matching (Spojnice)
+# Mini Games
 
-* Two rounds
-* 30 seconds per round
-* Match terms from left and right columns
-* Each correct match gives 2 points
+Every match consists of six games played in the following order.
 
----
+## 1. Quiz (Ko zna zna)
 
-### 3. Associations
-
-* Four columns with hidden clues
-* Guess column solutions
-* Guess the final solution
+- 5 questions
+- 4 possible answers
+- 5 seconds per question
+- Multiplayer synchronized
+- Score calculation according to specification
 
 ---
 
-### 4. Skocko
+## 2. Matching (Spojnice)
 
-* Guess a sequence of four symbols
-* Maximum six attempts
+- Two rounds
+- 30 seconds each
+- Five pairs per round
+- Real-time synchronization
+
+---
+
+## 3. Associations
+
+- Four columns
+- Hidden clues
+- Column solutions
+- Final solution
+- Multiplayer gameplay
+
+---
+
+## 4. Skocko
+
+- Guess the four-symbol combination
+- Six attempts
+- Multiplayer synchronized rounds
 
 Symbols:
 
-* Skocko
-* Circle
-* Square
-* Heart
-* Triangle
-* Star
+- Skocko
+- Circle
+- Square
+- Heart
+- Triangle
+- Star
 
 ---
 
-### 5. Step By Step
+## 5. Step By Step
 
-* Up to seven clues
-* New clue every 10 seconds
-* Earlier guesses bring more points
-
----
-
-### 6. My Number
-
-* Randomly generated numbers
-* Create an arithmetic expression to obtain the target number
-
-Allowed operators:
-
-* *
-* *
-* *
-* /
-* ()
-* Shake sensor for stopping number generation
+- Seven clues
+- One clue every 10 seconds
+- Earlier solutions award more points
 
 ---
 
-## Match System
+## 6. My Number
 
-Players use tokens to start matches.
+- Random target number
+- Random available numbers
+- Arithmetic expression editor
+- Automatic validation
+- Shake sensor for stopping number generation
 
-* One token = one match
-* New users receive 5 tokens
-* Players receive additional tokens every day
+Supported operators:
 
-A match can be started:
+- +
+- -
+- *
+- /
+- ()
 
-* Against a random player
-* Against a friend
+---
 
-After a match:
+# Multiplayer Match System
 
-* Winners gain stars
-* Losers lose stars
-* Stars contribute to league progress
-* Every 50 stars awards one additional token
+Players can play:
+
+- Random matchmaking
+- Friendly matches
+
+Features include:
+
+- Real-time synchronization
+- Live score updates
+- Turn management
+- Automatic game progression
+- Match results
+- Token system
+- Star rewards
+- Friendly match invitations
 
 Friendly matches:
 
-* Do not consume tokens
-* Do not affect statistics
-* Do not affect stars
+- Do not consume tokens
+- Do not affect statistics
+- Do not affect stars
 
 ---
 
-## Notifications
+# Leagues
 
-Implemented notification system with:
+Players progress through leagues by collecting stars.
 
-* Notification history
-* Read/unread status
-* Filtering notifications
-* Reward notifications
-* Match invitation notifications
+Features:
 
----
-
-## Application Flow
-
-* Splash Screen
-* Login / Registration
-* Home Screen
-* Game Session
-* Quiz
-* Matching
-* Associations
-* Skocko
-* Step By Step
-* My Number
-* Profile
-* Statistics
-* Notifications
+- Automatic promotion
+- Automatic demotion
+- League icons
+- Daily token bonuses
+- League notifications
 
 ---
 
-## Project Architecture
+# Regional System
 
-The application follows a three-layer architecture:
+The application includes an interactive map of Serbia.
 
-* Presentation Layer
-* Business Logic Layer
-* Data Layer
+Features:
+
+- OpenStreetMap integration
+- Player locations
+- Monthly regional rankings
+- Region statistics
+- Regional avatar borders
+- Region icons
+
+Each region displays:
+
+- Monthly stars
+- First places
+- Second places
+- Third places
+- Active players
+- Registered players
+
+---
+
+# Friends
+
+Players can:
+
+- Search users
+- Add friends
+- Remove friends
+- Scan QR codes
+- Send game invitations
+- Cancel invitations
+- Accept or decline invitations
+- View online status
+
+Friend profiles display:
+
+- Avatar
+- Username
+- League
+- Total stars
+- Monthly rank
+
+---
+
+# Leaderboards
+
+Weekly and monthly leaderboards include:
+
+- Player rankings
+- League icons
+- Stars earned during the current cycle
+- Automatic refresh
+- Reward distribution
+- Ranking notifications
+
+---
+
+# Tournament
+
+Tournament mode allows:
+
+- Four-player brackets
+- Semi-finals
+- Finals
+- Tournament rewards
+- Tournament visualization
+- Token entry fee
+
+---
+
+# Challenges
+
+Players can create regional challenges.
+
+Features:
+
+- Up to four players
+- Token betting
+- Star betting
+- Independent gameplay
+- Automatic reward distribution
+
+---
+
+# Regional Chat
+
+Players from the same region can communicate through:
+
+- Real-time chat
+- Sender information
+- Message timestamps
+- Push notifications
+
+---
+
+# Notifications
+
+Notification center includes:
+
+- Match invitations
+- Friend requests
+- Chat notifications
+- League notifications
+- Reward notifications
+- Ranking notifications
+- Read / unread status
+- Notification filters
+- Notification history
+
+---
+
+# Daily Missions
+
+Daily missions include tasks such as:
+
+- Win a match
+- Send a chat message
+- Play a friendly match
+- Win a tournament game
+
+Completing missions awards:
+
+- Stars
+- Tokens
+- Bonus rewards
+
+---
+
+# Economy System
+
+Players use:
+
+## Tokens
+
+Used for:
+
+- Starting matches
+- Entering tournaments
+
+Obtained through:
+
+- Registration
+- Daily rewards
+- League bonuses
+- Leaderboards
+- Star milestones
+
+## Stars
+
+Used for:
+
+- League progression
+- Rankings
+- Match rewards
+
+---
+
+# Firebase Integration
 
 Firebase is used for:
 
-* Authentication
-* User profiles
-* Game data
-* Statistics
-* Notifications
-* Multiplayer synchronization
+- Authentication
+- User management
+- Multiplayer synchronization
+- Game data
+- Statistics
+- Friends
+- Regions
+- Leaderboards
+- Notifications
+- Chat
+- Challenges
+- Tournament data
 
 ---
 
-## How to Run the Application
+# Architecture
 
-1. Clone the repository:
+The project follows a three-layer architecture.
+
+## Presentation Layer
+
+- Activities
+- Fragments
+- XML layouts
+- Adapters
+
+## Business Logic Layer
+
+- Managers
+- Game engines
+- Controllers
+- Match logic
+
+## Data Layer
+
+- Firebase Firestore
+- Firebase Authentication
+- Firebase Storage
+- Repository classes
+
+---
+
+# Application Flow
+
+- Splash Screen
+- Login / Registration
+- Home Screen
+
+Navigation includes:
+
+- Profile
+- Statistics
+- Friends
+- Regions
+- Leaderboards
+- Notifications
+- Daily Missions
+
+Gameplay:
+
+- Random Match
+- Friendly Match
+- Tournament
+- Challenge
+
+Game sequence:
+
+1. Quiz
+2. Matching
+3. Associations
+4. Skocko
+5. Step By Step
+6. My Number
+
+After the match:
+
+- Results
+- Updated statistics
+- Updated stars
+- League progression
+- Rewards
+
+---
+
+# How to Run
+
+1. Clone the repository
 
 ```bash
 git clone <repository-link>
@@ -257,16 +483,22 @@ git clone <repository-link>
 
 3. Wait for Gradle synchronization.
 
-4. Connect an Android device or start an emulator.
+4. Configure Firebase using the provided `google-services.json`.
 
-5. Run the application using the green **Run** button.
+5. Build the project.
+
+6. Run the application on an Android device or emulator.
 
 ---
 
-## Authors
+# Authors
 
-Project developed as part of the course:
+Developed as the final project for the course:
 
 **Mobile Applications**
-Faculty of Technical Sciences, Novi Sad
-Academic year 2025/2026
+
+Faculty of Technical Sciences
+
+University of Novi Sad
+
+Academic Year 2025/2026

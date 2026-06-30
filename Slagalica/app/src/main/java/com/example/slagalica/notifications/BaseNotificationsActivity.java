@@ -22,6 +22,7 @@ import com.example.slagalica.R;
 import com.example.slagalica.daily.DailyMissionsActivity;
 import com.example.slagalica.friends.FriendsActivity;
 import com.example.slagalica.profile.ProfileActivity;
+import com.example.slagalica.profile.statistics.StatisticsDashboardActivity;
 import com.example.slagalica.ranking.LeaderboardActivity;
 import com.example.slagalica.ranking.RankingRewardDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -542,7 +543,7 @@ public abstract class BaseNotificationsActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ProfileActivity.class)));
 
         findViewById(R.id.navStatistics).setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class)));
+                startActivity(new Intent(this, StatisticsDashboardActivity.class)));
 
         findViewById(R.id.navFriends).setOnClickListener(v ->
                 startActivity(new Intent(this, FriendsActivity.class)));

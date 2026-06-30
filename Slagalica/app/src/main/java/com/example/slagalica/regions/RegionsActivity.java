@@ -90,8 +90,8 @@ public class RegionsActivity extends AppCompatActivity {
         rvRegions.setLayoutManager(new LinearLayoutManager(this));
         rvRegions.setAdapter(adapter);
         rvRegions.setNestedScrollingEnabled(false);
+        rvRegions.setHasFixedSize(false);
     }
-
     private void setupListeners() {
         btnBackRegions.setOnClickListener(v -> finish());
 
@@ -121,6 +121,15 @@ public class RegionsActivity extends AppCompatActivity {
         repository.loadRegionalRanking(currentUid, new RegionRepository.RegionRankingCallback() {
             @Override
             public void onSuccess(List<RegionRankingItem> regions) {
+                android.util.Log.d("REGIONS", "Loaded regions = " + regions.size());
+
+                for (RegionRankingItem item : regions) {
+                    android.util.Log.d(
+                            "REGIONS",
+                            item.regionId + " stars=" + item.monthlyStars
+                    );
+                }
+
                 adapter.setRegions(regions);
 
                 for (RegionRankingItem item : regions) {
